@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>MagicOnion.Serialization.MessagePack</id>
+    <version>6.1.5</version>
+    <authors>Cysharp</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://github.com/Cysharp/MagicOnion</projectUrl>
+    <description>MagicOnion extension package for serialization using MessagePack.</description>
+    <copyright>© Cysharp, Inc.</copyright>
+    <tags>magiconion grpc http2</tags>
+    <repository type="git" url="https://github.com/Cysharp/MagicOnion" commit="e9d244428208f796fbf2d74801b6d41e509b3521" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="MagicOnion.Abstractions" version="6.1.5" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

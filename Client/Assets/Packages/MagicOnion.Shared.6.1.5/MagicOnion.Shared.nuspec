@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>MagicOnion.Shared</id>
+    <version>6.1.5</version>
+    <authors>Cysharp</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>Icon.png</icon>
+    <projectUrl>https://github.com/Cysharp/MagicOnion</projectUrl>
+    <description>Provides shared classes and interfaces used by MagicOnion server and client. Unified Realtime/API framework for .NET platform and Unity.</description>
+    <copyright>© Cysharp, Inc.</copyright>
+    <tags>magiconion grpc http2</tags>
+    <repository type="git" url="https://github.com/Cysharp/MagicOnion" commit="e9d244428208f796fbf2d74801b6d41e509b3521" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="MagicOnion.Abstractions" version="6.1.5" exclude="Build,Analyzers" />
+        <dependency id="MagicOnion.Serialization.MessagePack" version="6.1.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="MagicOnion.Abstractions" version="6.1.5" exclude="Build,Analyzers" />
+        <dependency id="MagicOnion.Serialization.MessagePack" version="6.1.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="MagicOnion.Abstractions" version="6.1.5" exclude="Build,Analyzers" />
+        <dependency id="MagicOnion.Serialization.MessagePack" version="6.1.5" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="MagicOnion.Abstractions" version="6.1.5" exclude="Build,Analyzers" />
+        <dependency id="MagicOnion.Serialization.MessagePack" version="6.1.5" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

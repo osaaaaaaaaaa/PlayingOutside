@@ -1,0 +1,489 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MagicOnion.Client</name>
+    </assembly>
+    <members>
+        <member name="T:MagicOnion.Client.DynamicClient.DynamicMagicOnionClientFactoryProvider">
+            <summary>
+            Provides to get a MagicOnionClient factory of the specified service type. The provider is backed by DynamicMagicOnionClientBuilder.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Client.DynamicClient.ServiceClientDefinition.GetRequestTypeFromMethod(System.Reflection.MethodInfo)">
+            <summary>
+            Gets the type of wrapped request parameters from the method parameters.
+            </summary>
+            <param name="methodInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MagicOnion.Client.IMagicOnionAwareGrpcChannel.ManageStreamingHubClient(System.Type,MagicOnion.IStreamingHubMarker,System.Func{System.Threading.Tasks.Task},System.Threading.Tasks.Task)">
+            <summary>
+            Register the StreamingHub under the management of the channel.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Client.IMagicOnionAwareGrpcChannel.GetAllManagedStreamingHubs">
+            <summary>
+            Gets all StreamingHubs that depends on the channel.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MagicOnion.Client.IMagicOnionAwareGrpcChannel.CreateCallInvoker">
+            <summary>
+            Create a <see cref="T:Grpc.Core.CallInvoker"/> from the channel.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:MagicOnion.Client.IStreamingHubDiagnosticHandler">
+            <summary>
+            [Preview] The interface of the handler for StreamingHub diagnostics. This API may change in the future.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Client.IStreamingHubDiagnosticHandler.OnMethodInvoke``3(``0,System.Int32,System.String,``1,System.Boolean,MagicOnion.Client.IStreamingHubDiagnosticHandler.InvokeMethodDelegate{``1,``2})">
+            <summary>
+            The callback method at the beginning of a Hub method request. This API may change in the future.
+            </summary>
+            <typeparam name="THub"></typeparam>
+            <typeparam name="TRequest"></typeparam>
+            <typeparam name="TResponse"></typeparam>
+            <param name="hubInstance"></param>
+            <param name="methodId"></param>
+            <param name="methodName"></param>
+            <param name="request"></param>
+            <param name="isFireAndForget"></param>
+            <param name="invokeMethod"></param>
+        </member>
+        <member name="M:MagicOnion.Client.IStreamingHubDiagnosticHandler.OnBroadcastEvent``2(``0,System.String,``1)">
+            <summary>
+            [Preview] The callback method when a method of HubReceiver is invoked. This API may change in the future.
+            </summary>
+            <typeparam name="THub"></typeparam>
+            <typeparam name="T"></typeparam>
+            <param name="hubInstance"></param>
+            <param name="methodName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="T:MagicOnion.Client.MagicOnionClientFactoryProvider">
+            <summary>
+            Provides to get a MagicOnionClient factory of the specified service type.
+            </summary>
+        </member>
+        <member name="P:MagicOnion.Client.MagicOnionClientFactoryProvider.Default">
+            <summary>
+            Gets or set the MagicOnionClient factory provider to use by default.
+            </summary>
+        </member>
+        <member name="T:MagicOnion.Client.IMagicOnionClientFactoryProvider">
+            <summary>
+            Provides to get a MagicOnionClient factory of the specified service type.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Client.IMagicOnionClientFactoryProvider.TryGetFactory``1(MagicOnion.Client.MagicOnionClientFactoryDelegate{``0}@)">
+            <summary>
+            Gets the MagicOnionClient factory of the specified service type. A return value indicates whether a factory was found or not.
+            </summary>
+            <typeparam name="T">A MagicOnion service interface type.</typeparam>
+            <param name="factory">A MagicOnionClient factory of specified service type.</param>
+            <returns>The value indicates whether a factory was found or not.</returns>
+        </member>
+        <member name="T:MagicOnion.Client.StreamingHubClientFactoryProvider">
+            <summary>
+            Provides to get a StreamingHubClient factory of the specified service type.
+            </summary>
+        </member>
+        <member name="P:MagicOnion.Client.StreamingHubClientFactoryProvider.Default">
+            <summary>
+            Gets or set the StreamingHubClient factory provider to use by default.
+            </summary>
+        </member>
+        <member name="T:MagicOnion.Client.IStreamingHubClientFactoryProvider">
+            <summary>
+            Provides to get a StreamingHubClient factory of the specified service type.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Client.IStreamingHubClientFactoryProvider.TryGetFactory``2(MagicOnion.Client.StreamingHubClientFactoryDelegate{``0,``1}@)">
+            <summary>
+            Gets the StreamingHubClient factory of the specified service type. A return value indicates whether a factory was found or not.
+            </summary>
+            <typeparam name="TStreamingHub">A MagicOnion StreamingHub interface type.</typeparam>
+            <typeparam name="TReceiver">A hub receiver interface type.</typeparam>
+            <param name="factory">A StreamingHubClient factory of specified service type.</param>
+            <returns>The value indicates whether a factory was found or not.</returns>
+        </member>
+        <member name="T:MagicOnion.Internal.DangerousDummyNull">
+             <summary>
+             Provide a dummy Null object to cheat grpc-dotnet.
+             </summary>
+             <remarks>
+             <para>
+             Grpc.Net (grpc-dotnet) does not allow null values as messages.
+             However, gRPC does not need to know the contents of the message, and MagicOnion natively handles CLR objects.
+             so there is no problem if a null object is encountered between implementation and serialization.
+             </para>
+             <para>
+             See: https://github.com/grpc/grpc-dotnet/blob/51ec4d05e6b38532c959018728277f2477cc6a7e/src/Grpc.AspNetCore.Server/Internal/CallHandlers/UnaryServerCallHandler.cs#L52-L56
+             </para>
+             <para>
+             grpc-dotnet also does not care about the message content,
+             MagicOnion will replace the null value with a singleton-dummy `System.Object` instance as `T` by `Unsafe.As`.
+             When serializing or deserializing a request/response, it will replace the dummy object back to `null` or with a dummy object.
+             </para>
+             </remarks>
+             <code>
+             - Request (on server):
+                 [MagicOnion Client]
+                           |
+                           | (MessagePack binary)
+                           |
+                 [ASP.NET Core gRPC server (grpc-dotnet)]
+                           |
+                 [MessageSerializer.Deserialize&lt;T> (MagicOnion)]
+                           |
+                           | (object or null)
+                           |
+                 [DangerousDummyNull.GetObjectOrDummyNull (MagicOnion)]
+                           |
+                           | (object or DummyNull)
+                           |
+                 [CallHandler (grpc-dotnet)]
+                           |
+                 [DangerousDummyNull.GetObjectOrDefault (MagicOnion)]
+                           |
+                           | (object or null)
+                           |
+                 [Unary method (User-code)]
+            
+            
+             - Response (on server):
+                 [Unary method (User-code)]
+                           |
+                           | (object or null)
+                           |
+                 [DangerousDummyNull.GetObjectOrDummyNull (MagicOnion)]
+                           |
+                           | (object or DummyNull)
+                           |
+                 [CallHandler (grpc-dotnet)]
+                           |
+                 [DangerousDummyNull.GetObjectOrDefault (MagicOnion)]
+                           |
+                           | (object or null)
+                           |
+                 [MessageSerializer.Serialize&lt;T> (MagicOnion)]
+                           |
+                           | (MessagePack binary)
+                           |
+                 [ASP.NET Core gRPC server (grpc-dotnet)]
+                           |
+                 [MagicOnion Client]
+             </code>
+        </member>
+        <member name="T:MagicOnion.Internal.Reflection.ILGeneratorExtensions">
+            <summary>
+            Provides optimized generation code and helpers.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Internal.Reflection.ILGeneratorExtensions.EmitLdloc(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Loads the local variable at a specific index onto the evaluation stack.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Internal.Reflection.ILGeneratorExtensions.EmitStloc(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Pops the current value from the top of the evaluation stack and stores it in a the local variable list at a specified index.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Internal.Reflection.ILGeneratorExtensions.EmitLdloca(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Loads the address of the local variable at a specific index onto the evaluation statck.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Internal.Reflection.ILGeneratorExtensions.EmitLdc_I4(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Pushes a supplied value of type int32 onto the evaluation stack as an int32.
+            </summary>
+        </member>
+        <member name="M:MagicOnion.Internal.Reflection.ILGeneratorExtensions.EmitPop(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Helper for Pop op.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute">
+            <summary>
+            An attribute that allows parameters to receive the expression of other parameters.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute"/> class.
+            </summary>
+            <param name="parameterName">The condition parameter value.</param>
+        </member>
+        <member name="P:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute.ParameterName">
+            <summary>
+            Gets the parameter name the expression is retrieved from.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute">
+            <summary>
+            Indicates that compiler support for a particular feature is required for the location where this attribute is applied.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.#ctor(System.String)">
+            <summary>
+            Creates a new instance of the <see cref="T:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute"/> type.
+            </summary>
+            <param name="featureName">The name of the feature to indicate.</param>
+        </member>
+        <member name="P:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.FeatureName">
+            <summary>
+            The name of the compiler feature.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.IsOptional">
+            <summary>
+            If true, the compiler can choose to allow access to the location where this attribute is applied if it does not understand <see cref="P:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.FeatureName"/>.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.RefStructs">
+            <summary>
+            The <see cref="P:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.FeatureName"/> used for the ref structs C# feature.
+            </summary>
+        </member>
+        <member name="F:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.RequiredMembers">
+            <summary>
+            The <see cref="P:System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute.FeatureName"/> used for the required members C# feature.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute">
+            <summary>
+            Indicates which arguments to a method involving an interpolated string handler should be passed to that handler.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute"/> class.
+            </summary>
+            <param name="argument">The name of the argument that should be passed to the handler.</param>
+            <remarks><see langword="null"/> may be used as the name of the receiver in an instance method.</remarks>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute.#ctor(System.String[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute"/> class.
+            </summary>
+            <param name="arguments">The names of the arguments that should be passed to the handler.</param>
+            <remarks><see langword="null"/> may be used as the name of the receiver in an instance method.</remarks>
+        </member>
+        <member name="P:System.Runtime.CompilerServices.InterpolatedStringHandlerArgumentAttribute.Arguments">
+            <summary>
+            Gets the names of the arguments that should be passed to the handler.
+            </summary>
+            <remarks><see langword="null"/> may be used as the name of the receiver in an instance method.</remarks>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.InterpolatedStringHandlerAttribute">
+            <summary>
+            Indicates the attributed type is to be used as an interpolated string handler.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.IsExternalInit">
+            <summary>
+            Reserved to be used by the compiler for tracking metadata.
+            This class should not be used by developers in source code.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.ModuleInitializerAttribute">
+             <summary>
+             Used to indicate to the compiler that a method should be called
+             in its containing module's initializer.
+             </summary>
+             <remarks>
+             When one or more valid methods
+             with this attribute are found in a compilation, the compiler will
+             emit a module initializer which calls each of the attributed methods.
+            
+             Certain requirements are imposed on any method targeted with this attribute:
+             - The method must be `static`.
+             - The method must be an ordinary member method, as opposed to a property accessor, constructor, local function, etc.
+             - The method must be parameterless.
+             - The method must return `void`.
+             - The method must not be generic or be contained in a generic type.
+             - The method's effective accessibility must be `internal` or `public`.
+            
+             The specification for module initializers in the .NET runtime can be found here:
+             https://github.com/dotnet/runtime/blob/main/docs/design/specs/Ecma-335-Augments.md#module-initializer
+             </remarks>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.RequiredMemberAttribute">
+            <summary>
+            Specifies that a type has required members or that a member is required.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.SkipLocalsInitAttribute">
+            <summary>
+            Used to indicate to the compiler that the <c>.locals init</c> flag should not be set in method headers.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute"/> class.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute"/> class with the specified message.
+            </summary>
+            <param name="message">An optional message associated with this attribute instance.</param>
+        </member>
+        <member name="P:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute.Message">
+            <summary>
+            Returns the optional message associated with this attribute instance.
+            </summary>
+        </member>
+        <member name="P:System.Runtime.Versioning.RequiresPreviewFeaturesAttribute.Url">
+            <summary>
+            Returns the optional URL associated with this attribute instance.
+            </summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute">
+            <summary>
+            Specifies that the method or property will ensure that the listed field and property members have not-null values.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String)">
+            <summary>
+            Initializes the attribute with a field or property member.
+            </summary>
+            <param name="member">The field or property member that is promised to be not-null.</param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.#ctor(System.String[])">
+            <summary>
+            Initializes the attribute with the list of field and property members.
+            </summary>
+            <param name="members">The list of field and property members that are promised to be not-null.</param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute.Members">
+            <summary>
+            Gets field or property member names.
+            </summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute">
+            <summary>
+            Specifies that the method or property will ensure that the listed field and property
+            members have not-null values when returning with the specified return value condition.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String)">
+            <summary>
+            Initializes the attribute with the specified return value condition and a field or property member.
+            </summary>
+            <param name="returnValue">The return value condition. If the method returns this value, the associated parameter will not be null.</param>
+            <param name="member">The field or property member that is promised to be not-null.</param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.#ctor(System.Boolean,System.String[])">
+            <summary>
+            Initializes the attribute with the specified return value condition and list of field and property members.
+            </summary>
+            <param name="returnValue">The return value condition. If the method returns this value, the associated parameter will not be null.</param>
+            <param name="members">The list of field and property members that are promised to be not-null.</param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.ReturnValue">
+            <summary>
+            Gets the return value condition.
+            </summary>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute.Members">
+            <summary>
+            Gets field or property member names.
+            </summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.SetsRequiredMembersAttribute">
+            <summary>
+            Specifies that this constructor sets all required members for the current type,
+            and callers do not need to set any required members themselves.
+            </summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute">
+            <summary>
+            Specifies the syntax used in a string.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.#ctor(System.String)">
+            <summary>
+            Initializes the <see cref="T:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute"/> with the identifier of the syntax used.
+            </summary>
+            <param name="syntax">The syntax identifier.</param>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.#ctor(System.String,System.Object[])">
+            <summary>Initializes the <see cref="T:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute"/> with the identifier of the syntax used.</summary>
+            <param name="syntax">The syntax identifier.</param>
+            <param name="arguments">Optional arguments associated with the specific syntax employed.</param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Syntax">
+            <summary>Gets the identifier of the syntax used.</summary>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Arguments">
+            <summary>Optional arguments associated with the specific syntax employed.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.CompositeFormat">
+            <summary>The syntax identifier for strings containing composite formats for string formatting.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.DateOnlyFormat">
+            <summary>The syntax identifier for strings containing date format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.DateTimeFormat">
+            <summary>The syntax identifier for strings containing date and time format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.EnumFormat">
+            <summary>The syntax identifier for strings containing <see cref="T:System.Enum"/> format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.GuidFormat">
+            <summary>The syntax identifier for strings containing <see cref="T:System.Guid"/> format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Json">
+            <summary>The syntax identifier for strings containing JavaScript Object Notation (JSON).</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.NumericFormat">
+            <summary>The syntax identifier for strings containing numeric format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Regex">
+            <summary>The syntax identifier for strings containing regular expressions.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.TimeOnlyFormat">
+            <summary>The syntax identifier for strings containing time format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.TimeSpanFormat">
+            <summary>The syntax identifier for strings containing <see cref="T:System.TimeSpan"/> format specifiers.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Uri">
+            <summary>The syntax identifier for strings containing URIs.</summary>
+        </member>
+        <member name="F:System.Diagnostics.CodeAnalysis.StringSyntaxAttribute.Xml">
+            <summary>The syntax identifier for strings containing XML.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.UnscopedRefAttribute">
+            <summary>
+            Used to indicate a byref escapes and is not scoped.
+            </summary>
+            <remarks>
+            <para>
+            There are several cases where the C# compiler treats a <see langword="ref"/> as implicitly
+            <see langword="scoped"/> - where the compiler does not allow the <see langword="ref"/> to escape the method.
+            </para>
+            <para>
+            For example:
+            <list type="number">
+                <item><see langword="this"/> for <see langword="struct"/> instance methods.</item>
+                <item><see langword="ref"/> parameters that refer to <see langword="ref"/> <see langword="struct"/> types.</item>
+                <item><see langword="out"/> parameters.</item>
+            </list>
+            </para>
+            <para>
+            This attribute is used in those instances where the <see langword="ref"/> should be allowed to escape.
+            </para>
+            <para>
+            Applying this attribute, in any form, has impact on consumers of the applicable API. It is necessary for
+            API authors to understand the lifetime implications of applying this attribute and how it may impact their users.
+            </para>
+            </remarks>
+        </member>
+    </members>
+</doc>
