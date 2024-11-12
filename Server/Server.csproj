@@ -9,7 +9,9 @@
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
     <PackageReference Include="MagicOnion.Server" Version="6.1.5" />
+    <PackageReference Include="MagicOnion.Server.HttpGateway" Version="6.1.5" />
     <PackageReference Include="MessagePack.UnityShims" Version="2.5.187" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>

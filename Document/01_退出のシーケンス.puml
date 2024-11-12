@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant クライアントA
+participant クライアントB
+participant クライアントC
+participant サーバー
+
+autonumber
+title 退出のシーケンス図
+クライアントA -> サーバー:退出、ユーザー情報
+クライアントB <-- サーバー:退出したユーザー情報
+クライアントC <-- サーバー:退出したユーザー情報
+rnote over クライアントB,クライアントC:該当のプレイヤーを削除
+
+
+
+クライアントB -> サーバー:退出、ユーザー情報
+クライアントC <-- サーバー:退出したユーザー情報
+rnote over クライアントC:該当のプレイヤーを削除
+
+クライアントC -> サーバー:退出、ユーザー情報
+@enduml

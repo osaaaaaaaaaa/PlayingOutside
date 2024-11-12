@@ -47,8 +47,11 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(0)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(3)
             {
+                { typeof(global::Server.Model.Entity.User), 0 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 1 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 2 },
             };
         }
 
@@ -62,6 +65,9 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
+                case 0: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 1: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 2: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }

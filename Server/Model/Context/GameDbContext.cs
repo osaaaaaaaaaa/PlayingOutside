@@ -1,0 +1,21 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Model.Entity;
+
+namespace Server.Model.Context
+{
+    /// <summary>
+    /// Context配下にDB毎にクラス作成
+    /// </summary>
+    public class GameDbContext : DbContext
+    {
+        // テーブル数分のプロパティを用意する
+        public DbSet<User> Users { get; set; }
+
+        // DBの接続先設定
+        readonly string connectionString = "server=localhost;database=realtime_game;user=jobi;password=jobi;";
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMySql(connectionString,new MySqlServerVersion(new Version(8,0)));
+        }
+    }
+}
