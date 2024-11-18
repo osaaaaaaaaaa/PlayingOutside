@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Interfaces.StreamingHubs
 {
-    internal interface IRoomHub:IStreamingHub<IRoomHub,IRoomHubReceiver>
+    public interface IRoomHub : IStreamingHub<IRoomHub, IRoomHubReceiver>
     {
         // クライアント側からサーバー側を呼び出す関数を定義する
 

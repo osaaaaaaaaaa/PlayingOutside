@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Shared.Interfaces.StreamingHubs
 {
-    internal interface IRoomHubReceiver
+    /// <summary>
+    /// サーバー側からクライアントを呼び出す関数を定義
+    /// </summary>
+    public interface IRoomHubReceiver
     {
         // [ここにサーバー側からクライアントを呼び出す関数を定義]
 

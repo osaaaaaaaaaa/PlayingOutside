@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="StreamingHubs\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
