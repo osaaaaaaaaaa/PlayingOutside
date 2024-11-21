@@ -14,5 +14,11 @@ namespace Shared.Interfaces.StreamingHubs
 
         // ユーザーの入室通知
         void OnJoin(JoinedUser user);
+
+        // ユーザーの退室通知
+        void OnLeave(Guid connectionId);
+
+        // プレイヤーの情報更新通知
+        void OnUpdatePlayerState(Guid connectionId, PlayerState state);
     }
 }

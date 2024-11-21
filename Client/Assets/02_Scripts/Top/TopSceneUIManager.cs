@@ -8,26 +8,29 @@ public class TopSceneUIManager : MonoBehaviour
 {
     [SerializeField] CharacterManager characterManager;
     [SerializeField] List<GameObject> selectButtonList;
+    [SerializeField] GameObject textUserName;
 
-    void ToggleSelectButtonsVisibility(bool isVisibility)
+    void ToggleTopUIVisibility(bool isVisibility)
     {
+        Vector3 endScale = isVisibility ? Vector3.one : Vector3.zero;
+        Ease setEase = isVisibility ? Ease.OutBack : Ease.InBack;
+
         foreach (var button in selectButtonList)
         {
-            Vector3 endScale = isVisibility ? Vector3.one : Vector3.zero;
-            Ease setEase = isVisibility ? Ease.OutBack : Ease.InBack;
             button.transform.DOScale(endScale, 0.2f).SetEase(setEase);
         }
+        textUserName.transform.DOScale(endScale, 0.2f).SetEase(setEase);
     }
 
     public void OnEditPlayerButton()
     {
-        ToggleSelectButtonsVisibility(false);
+        ToggleTopUIVisibility(false);
         characterManager.DOMoveCharacter();
     }
 
     public void OnEndEditPlayerButton()
     {
-        ToggleSelectButtonsVisibility(true);
+        ToggleTopUIVisibility(true);
         characterManager.DOResetCharacter();
     }
 }

@@ -2,6 +2,7 @@ using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
@@ -9,21 +10,47 @@ using UnityEngine.Windows;
 public class GameDirector : MonoBehaviour
 {
     [SerializeField] InputField userIdField;
+
+    [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     [SerializeField] RoomModel roomModel;
     Dictionary<Guid,GameObject> characterList = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
 
+    Coroutine updateCoroutine;
+
     private async void Start()
     {
         // ユーザーが入室したときにthis.OnJoinedUserメソッドを実行するようにする
-        roomModel.OnJoinedUser += this.OnJoinedUser;
+        roomModel.OnJoinedUser += this.NotifyJoinedUser;
+        roomModel.OnLeavedUser += this.NotifyLeavedUser;
+        roomModel.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
 
         // 接続処理
         await roomModel.ConnectAsync();
     }
 
+    private void Update()
+    {
+        if (updateCoroutine == null && roomModel.userState == RoomModel.USER_STATE.joined) 
+        {
+            updateCoroutine = StartCoroutine(UpdateCoroutine());
+        }
+    }
+
+    IEnumerator UpdateCoroutine()
+    {
+        while (roomModel.userState == RoomModel.USER_STATE.joined)
+        {
+            UpdatePlayerState();
+
+            yield return new WaitForSeconds(0.04f);
+        }
+
+        updateCoroutine = null;
+    }
+
     /// <summary>
-    /// 入室処理
+    /// 入室リクエスト
     /// </summary>
     /// <param name="strId"></param>
     public async void JoinRoom()
@@ -35,14 +62,85 @@ public class GameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ユーザー入室通知処理
+    /// 入室通知処理
     /// </summary>
     /// <param name="user"></param>
-    void OnJoinedUser(JoinedUser user)
+    void NotifyJoinedUser(JoinedUser user)
     {
         // キャラクター生成,
-        GameObject caracterObject = Instantiate(characterPrefab);
-        caracterObject.transform.position = Vector3.zero;
-        characterList[user.ConnectionId] = caracterObject;
+        GameObject character = Instantiate(characterPrefab);
+        characterList[user.ConnectionId] = character;
+
+        // プレイヤーの初期化処理
+        bool isMyCharacter = user.ConnectionId == roomModel.ConnectionId;
+        Debug.Log(user.JoinOrder);
+        character.GetComponent<PlayerController>().InitPlayer(this, characterStartPoints[user.JoinOrder - 1].position);
+
+        // ユーザー名の初期化処理
+        Color colorText = isMyCharacter ? Color.white : Color.green;
+        character.GetComponent<PlayerUIController>().InitUI(user.UserData.Name, colorText);
+
+        // 自分ではない場合はPlayerControllerを外す
+        character.GetComponent<PlayerController>().enabled = isMyCharacter;
     }
+
+    /// <summary>
+    /// 退室リクエスト
+    /// </summary>
+    public async void LeaveRoom()
+    {
+        await roomModel.LeaveAsync();
+    }
+
+    /// <summary>
+    /// 退室通知処理
+    /// </summary>
+    void NotifyLeavedUser(Guid connectionId)
+    {
+        if (connectionId == roomModel.ConnectionId) 
+        {
+            // 自分が退出する場合は全て削除
+            foreach (var character in characterList.Values)
+            {
+                Destroy(character);
+            }
+            characterList.Clear();
+        }
+        else
+        {
+            // 該当のキャラクター削除
+            Destroy(characterList[connectionId]);
+            characterList.Remove(connectionId);
+        }
+    }
+
+    /// <summary>
+    /// プレイヤー情報更新リクエスト
+    /// </summary>
+    public async void UpdatePlayerState()
+    {
+        var character = characterList[roomModel.ConnectionId];
+        PlayerState playerState = new PlayerState()
+        {
+            position = character.transform.position,
+            angle = character.transform.eulerAngles,
+            animationId = character.GetComponent<PlayerAnimatorController>().GetAnimId(),
+        };
+        await roomModel.UpdatePlayerStateAsync(playerState);
+    }
+
+    /// <summary>
+    /// プレイヤー情報更新通知処理
+    /// </summary>
+    /// <param name="user"></param>
+    void NotifyUpdatedPlayerState(Guid connectionId,PlayerState playerState)
+    {
+        if (!characterList.ContainsKey(connectionId)) return;   // プレイヤーの存在チェック
+        Debug.Log(playerState.position.ToString());
+        Debug.Log(playerState.angle.ToString());
+        characterList[connectionId].transform.position = playerState.position;
+        characterList[connectionId].transform.rotation = Quaternion.Euler(playerState.angle);
+        characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
+    }
+
 }

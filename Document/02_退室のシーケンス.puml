@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant クライアントA
+participant クライアントB
+participant クライアントC
+participant サーバー
+
+autonumber
+title 退室のシーケンス図
+クライアントA -> サーバー:退室処理のリクエスト
+rnote over クライアントA:全クライアント削除
+クライアントB <-- サーバー:退室したユーザーの接続ID
+クライアントC <-- サーバー:退室したユーザーの接続ID
+rnote over クライアントB,クライアントC:クライアントAを削除
+
+
+
+クライアントB -> サーバー:退室処理のリクエスト
+rnote over クライアントB:全クライアント削除
+クライアントC <-- サーバー:退室したユーザーの接続ID
+rnote over クライアントC:クライアントBを削除
+
+クライアントC -> サーバー:退室処理のリクエスト
+rnote over クライアントC:全クライアント削除
+@enduml
