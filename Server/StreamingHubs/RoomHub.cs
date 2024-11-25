@@ -2,6 +2,7 @@
 using Server.Model.Context;
 using Shared.Interfaces.Model.Entity;
 using Shared.Interfaces.StreamingHubs;
+using System.Runtime.Intrinsics.X86;
 
 namespace Server.StreamingHubs
 {
@@ -30,7 +31,7 @@ namespace Server.StreamingHubs
             var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
             var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder　};
-            var roomData = new RoomData() { JoinedUser = joinedUser };
+            var roomData = new RoomData() { JoinedUser = joinedUser ,PlayerState = null};
             roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
 
             Console.WriteLine("ID:" + this.ConnectionId);
@@ -58,11 +59,21 @@ namespace Server.StreamingHubs
         {
             int joinOrder = 1;
 
-            for (int i = roomData.Length - 1; i >= 0; i--)
+            int roopCnt = 0;
+            while (roopCnt < roomData.Length)
             {
-                if (roomData[i].JoinedUser.JoinOrder == joinOrder) joinOrder++;
-                else break;
+                roopCnt = 0;
+                for (int i = roomData.Length - 1; i >= 0; i--, roopCnt++)
+                {
+                    if (roomData[i].JoinedUser.JoinOrder == joinOrder)
+                    {
+                        joinOrder++;
+                        break;
+                    }
+                }
             }
+            Console.WriteLine(joinOrder + "番目");
+
             return joinOrder;
         }
 
@@ -91,6 +102,10 @@ namespace Server.StreamingHubs
         public async Task UpdatePlayerStateAsynk(PlayerState state)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
+
+            // ストレージ内のプレイヤー情報を更新する
+            var data =  roomStorage.Get(this.ConnectionId);
+            data.PlayerState = state;
 
             // ルーム参加者にプレイヤー情報更新通知を送信
             this.BroadcastExceptSelf(room).OnUpdatePlayerState(this.ConnectionId, state);

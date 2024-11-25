@@ -6,11 +6,10 @@ using DG.Tweening;
 
 public class TopSceneUIManager : MonoBehaviour
 {
-    [SerializeField] CharacterManager characterManager;
     [SerializeField] List<GameObject> selectButtonList;
     [SerializeField] GameObject textUserName;
 
-    void ToggleTopUIVisibility(bool isVisibility)
+    void ToggleUIVisibility(bool isVisibility)
     {
         Vector3 endScale = isVisibility ? Vector3.one : Vector3.zero;
         Ease setEase = isVisibility ? Ease.OutBack : Ease.InBack;
@@ -22,15 +21,13 @@ public class TopSceneUIManager : MonoBehaviour
         textUserName.transform.DOScale(endScale, 0.2f).SetEase(setEase);
     }
 
-    public void OnEditPlayerButton()
+    public virtual void OnSelectButton()
     {
-        ToggleTopUIVisibility(false);
-        characterManager.DOMoveCharacter();
+        ToggleUIVisibility(false);
     }
 
-    public void OnEndEditPlayerButton()
+    public virtual void OnBackButton()
     {
-        ToggleTopUIVisibility(true);
-        characterManager.DOResetCharacter();
+        ToggleUIVisibility(true);
     }
 }

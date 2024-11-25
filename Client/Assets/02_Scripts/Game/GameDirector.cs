@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
+using DG.Tweening;
 
 public class GameDirector : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class GameDirector : MonoBehaviour
     Dictionary<Guid,GameObject> characterList = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
 
     Coroutine updateCoroutine;
+    const float waitSeconds = 0.1f;
 
     private async void Start()
     {
@@ -42,8 +44,7 @@ public class GameDirector : MonoBehaviour
         while (roomModel.userState == RoomModel.USER_STATE.joined)
         {
             UpdatePlayerState();
-
-            yield return new WaitForSeconds(0.04f);
+            yield return new WaitForSeconds(waitSeconds);
         }
 
         updateCoroutine = null;
@@ -57,7 +58,7 @@ public class GameDirector : MonoBehaviour
     {
         int id = int.Parse(userIdField.text);
 
-        // 入室処理[ルーム名,ユーザーID(最終的にはローカルに保存してあるIDを使う)]
+        // 入室処理[ルーム名 = [最終的]入力されたルーム名,ユーザーID = [最終的]はローカルに保存してあるユーザーID]
         await roomModel.JoinAsync("sampleRoom", id);
     }
 
@@ -136,10 +137,10 @@ public class GameDirector : MonoBehaviour
     void NotifyUpdatedPlayerState(Guid connectionId,PlayerState playerState)
     {
         if (!characterList.ContainsKey(connectionId)) return;   // プレイヤーの存在チェック
-        Debug.Log(playerState.position.ToString());
-        Debug.Log(playerState.angle.ToString());
-        characterList[connectionId].transform.position = playerState.position;
-        characterList[connectionId].transform.rotation = Quaternion.Euler(playerState.angle);
+
+        // 移動・回転・アニメーション処理
+        characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
+        characterList[connectionId].transform.DORotate(playerState.angle,waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
     }
 
