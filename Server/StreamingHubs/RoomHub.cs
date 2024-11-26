@@ -11,6 +11,29 @@ namespace Server.StreamingHubs
         private IGroup room;    // どのルームに入っているか
 
         /// <summary>
+        /// ユーザーの切断処理
+        /// </summary>
+        /// <returns></returns>
+        protected override ValueTask OnDisconnected()
+        {
+            Console.WriteLine("切断検知");
+
+            // 入室した状態で切断した場合
+            if (this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
+            {
+                // ルームデータを削除
+                this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
+
+                // 退室したことを全メンバーに通知
+                this.Broadcast(room).OnLeave(this.ConnectionId);
+            }
+
+            // ルーム内のメンバーから削除
+            room.RemoveAsync(this.Context);
+            return CompletedTask;
+        }
+
+        /// <summary>
         /// 入室処理
         /// </summary>
         /// <param name="roomName"></param>
@@ -25,16 +48,12 @@ namespace Server.StreamingHubs
             GameDbContext context = new GameDbContext();
             var user = context.Users.Where(user => user.Id == userId).FirstOrDefault();
 
-            Console.WriteLine(user.Name + "が入室しました");
-
             // グループストレージにユーザーデータを格納
             var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
             var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder　};
             var roomData = new RoomData() { JoinedUser = joinedUser ,PlayerState = null};
             roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
-
-            Console.WriteLine("ID:" + this.ConnectionId);
 
             // 自分以外のルーム参加者全員に、ユーザーの入室通知を送信(Broodcast:配布する,Except:自分以外)
             // ※Broadcast(room) で自身も含めて関数を実行できる
@@ -49,6 +68,9 @@ namespace Server.StreamingHubs
             {
                 joinedUserList[i] = roomDataList[i].JoinedUser;
             }
+
+            Console.WriteLine(roomData.JoinedUser.ConnectionId + "：" + roomData.JoinedUser.UserData.Name + "が入室");
+
             return joinedUserList;
         }
 
@@ -72,7 +94,6 @@ namespace Server.StreamingHubs
                     }
                 }
             }
-            Console.WriteLine(joinOrder + "番目");
 
             return joinOrder;
         }

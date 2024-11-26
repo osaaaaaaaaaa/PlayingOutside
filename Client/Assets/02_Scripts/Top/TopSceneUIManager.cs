@@ -9,6 +9,9 @@ public class TopSceneUIManager : MonoBehaviour
     [SerializeField] List<GameObject> selectButtonList;
     [SerializeField] GameObject textUserName;
 
+    [SerializeField] List<Sprite> spriteIcons;
+    public List<Sprite> SpriteIcons { get { return spriteIcons; } }
+
     void ToggleUIVisibility(bool isVisibility)
     {
         Vector3 endScale = isVisibility ? Vector3.one : Vector3.zero;

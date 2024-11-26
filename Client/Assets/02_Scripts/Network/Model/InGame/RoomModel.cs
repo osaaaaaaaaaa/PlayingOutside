@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -19,6 +20,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     // 接続ID
     public Guid ConnectionId { get; private set; }
+    // 自分のユーザー情報
+    User myUserData;
+    public User MyUserData { get { return myUserData; }set { myUserData = value; } }
+    // 参加しているユーザーの情報
+    public Dictionary<Guid,JoinedUser> JoinedUsers { get; private set; } = new Dictionary<Guid,JoinedUser>();
+
     // ユーザー接続通知
     public Action<JoinedUser> OnJoinedUser { get; set; }    // サーバーから通知が届いた際に、Action型に登録されている関数を呼び出す
     // ユーザー切断通知
@@ -38,6 +45,23 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         leave_done,     // ルームからの退室が完了した
     }
     public USER_STATE userState { get; private set; } = USER_STATE.disconnect;
+
+    // インスタンス作成
+    private static RoomModel instance;
+    public static RoomModel Instance
+    {
+        get
+        {
+            // GETプロパティを呼ばれたときにインスタンスを作成する(初回のみ)
+            if (instance == null)
+            {
+                GameObject gameObj = new GameObject("RoomModel");
+                instance = gameObj.AddComponent<RoomModel>();
+                DontDestroyOnLoad(gameObj);
+            }
+            return instance;
+        }
+    }
 
     /// <summary>
     /// MagicOnion接続処理
@@ -64,11 +88,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// // 破棄する際(アプリ終了時など)にサーバーとの接続を切断
+    /// 破棄する際(アプリ終了時など)にサーバーとの接続を切断
     /// </summary>
     private async void OnDestroy()
     {
-        if(userState == USER_STATE.joined) await LeaveAsync(); // 退出処理
         DisconnectAsync();
     }
 
@@ -83,6 +106,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         JoinedUser[] users = await roomHub.JoinAsynk(roomName, userId);
         foreach (JoinedUser user in users)
         {
+            JoinedUsers.Add(user.ConnectionId, user);
             if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
             OnJoinedUser(user); // アクションでモデルを使うクラスに通知
         }
@@ -98,6 +122,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnJoin(JoinedUser user)
     {
         // アクション実行
+        JoinedUsers.Add(user.ConnectionId, user);
         if (userState == USER_STATE.joined) OnJoinedUser(user);
     }
 
@@ -110,6 +135,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public async UniTask LeaveAsync()
     {
         userState = USER_STATE.leave;
+        JoinedUsers.Clear();
 
         // サーバーに退室処理をリクエスト
         await roomHub.LeaveAsynk();
@@ -123,11 +149,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnLeave(Guid connectionId)
     {
         if (userState == USER_STATE.leave_done) return;
+
         // アクション実行
         OnLeavedUser(connectionId);
+        JoinedUsers.Remove(connectionId);
 
         // 自分が退室する場合
-        if(this.ConnectionId == connectionId) userState = USER_STATE.leave_done;
+        if (this.ConnectionId == connectionId) userState = USER_STATE.leave_done;
     }
 
     /// <summary>

@@ -22,13 +22,13 @@ public class GameDirector : MonoBehaviour
 
     private async void Start()
     {
-        // ユーザーが入室したときにthis.OnJoinedUserメソッドを実行するようにする
-        roomModel.OnJoinedUser += this.NotifyJoinedUser;
-        roomModel.OnLeavedUser += this.NotifyLeavedUser;
-        roomModel.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
+        //// ユーザーが入室したときにthis.OnJoinedUserメソッドを実行するようにする
+        //roomModel.OnJoinedUser += this.NotifyJoinedUser;
+        //roomModel.OnLeavedUser += this.NotifyLeavedUser;
+        //roomModel.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
 
-        // 接続処理
-        await roomModel.ConnectAsync();
+        //// 接続処理
+        //await roomModel.ConnectAsync();
     }
 
     private void Update()
@@ -109,7 +109,7 @@ public class GameDirector : MonoBehaviour
         }
         else
         {
-            // 該当のキャラクター削除
+            // 該当のキャラクター削除&リストから削除
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
         }

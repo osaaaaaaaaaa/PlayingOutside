@@ -12,6 +12,7 @@ namespace TedLab
         [SerializeField] private RectTransform refRect = null;
         [SerializeField] private Vector2 referenceResolution = new Vector2(1920, 1080);
         [Range(0, 1)] [SerializeField] private float matchWidthOrHeight = 0;
+        bool isUpdateRect = false;
 
         private float _width = -1;
         private float _height = -1;
@@ -33,6 +34,7 @@ namespace TedLab
 
         public void UpdateRectWithCheck()
         {
+            if (isUpdateRect) return;
             if (refRect == null)
                 return;
 
@@ -100,6 +102,8 @@ namespace TedLab
             _width = width;
             _height = height;
             _matchWidthOrHeight = matchWidthOrHeight;
+
+            isUpdateRect = true;
         }
     }
 }
