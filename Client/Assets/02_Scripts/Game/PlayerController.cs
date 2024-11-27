@@ -8,7 +8,6 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
 {
-    GameDirector gameDirector;
     PlayerAnimatorController animController;
     Rigidbody rb;
     float moveX;
@@ -59,9 +58,8 @@ public class PlayerController : MonoBehaviour
         transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // ‰ñ“]‘¬“x‚ð‚©‚¯‚é
     }
 
-    public void InitPlayer(GameDirector director,Vector3 startPosition)
+    public void InitPlayer(Vector3 startPosition)
     {
-        gameDirector = director;
         transform.position = startPosition;
     }
 }

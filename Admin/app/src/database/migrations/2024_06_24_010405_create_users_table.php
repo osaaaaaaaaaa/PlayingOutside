@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name', 128);    // 名前
             $table->string('token', 128);   // トークン
+            $table->integer('character_id');      // キャラクターID
             $table->timestamps();
 
             $table->unique('name');

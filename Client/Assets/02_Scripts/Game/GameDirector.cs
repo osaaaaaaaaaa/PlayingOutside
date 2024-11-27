@@ -75,7 +75,7 @@ public class GameDirector : MonoBehaviour
         // プレイヤーの初期化処理
         bool isMyCharacter = user.ConnectionId == roomModel.ConnectionId;
         Debug.Log(user.JoinOrder);
-        character.GetComponent<PlayerController>().InitPlayer(this, characterStartPoints[user.JoinOrder - 1].position);
+        character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1].position);
 
         // ユーザー名の初期化処理
         Color colorText = isMyCharacter ? Color.white : Color.green;
