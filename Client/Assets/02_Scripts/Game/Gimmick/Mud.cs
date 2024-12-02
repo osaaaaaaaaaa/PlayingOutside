@@ -9,6 +9,7 @@ public class Mud : MonoBehaviour
         if(other.GetComponent<PlayerController>())
         {
             other.GetComponent<PlayerController>().Speed = 2f;
+            //other.GetComponent<PlayerController>().JumpPower = 250;
         }
     }
 
@@ -17,6 +18,7 @@ public class Mud : MonoBehaviour
         if (other.GetComponent<PlayerController>())
         {
             other.GetComponent<PlayerController>().Speed = other.GetComponent<PlayerController>().defaultSpeed;
+            //other.GetComponent<PlayerController>().JumpPower = other.GetComponent<PlayerController>().defaultJumpPower;
         }
     }
 }

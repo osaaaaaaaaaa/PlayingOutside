@@ -65,7 +65,7 @@ public class GameDirector : MonoBehaviour
     {
         var users = RoomModel.Instance.JoinedUsers;
 
-        foreach (var user in users) 
+        foreach (var user in users)
         {
             // キャラクター生成,
             GameObject character = Instantiate(characterPrefab);
@@ -89,7 +89,7 @@ public class GameDirector : MonoBehaviour
             if (isMyCharacter)
             {
                 // 自分のモデルにカメラのターゲットを設定
-                targetCameraController.InitTarget(character.transform);
+                targetCameraController.InitCamera(character.transform, 0);
             }
         }
     }
@@ -139,6 +139,7 @@ public class GameDirector : MonoBehaviour
                 position = character.transform.position,
                 angle = character.transform.eulerAngles,
                 animationId = character.GetComponent<PlayerAnimatorController>().GetAnimId(),
+                isActiveSelf = character.activeSelf,
             };
             await RoomModel.Instance.UpdatePlayerStateAsync(playerState);
         }
@@ -151,10 +152,10 @@ public class GameDirector : MonoBehaviour
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
         // プレイヤーの存在チェック
-        if (!characterList.ContainsKey(connectionId) || characterList[connectionId] == null
-            || !characterList[connectionId].activeSelf) return;
+        if (!characterList.ContainsKey(connectionId) || characterList[connectionId] == null) return;
 
         // 移動・回転・アニメーション処理
+        characterList[connectionId].SetActive(playerState.isActiveSelf);
         characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);

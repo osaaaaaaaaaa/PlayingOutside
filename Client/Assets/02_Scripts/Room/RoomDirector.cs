@@ -94,7 +94,7 @@ public class RoomDirector : MonoBehaviour
         if (isMyCharacter)
         {
             // 自分のモデルにカメラのターゲットを設定
-            targetCameraController.InitTarget(character.transform);
+            targetCameraController.InitCamera(character.transform,0);
 
             // ロード画面を閉じる
             SceneControler.Instance.StopSceneLoad();

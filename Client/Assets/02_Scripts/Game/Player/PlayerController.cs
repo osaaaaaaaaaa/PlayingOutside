@@ -23,21 +23,37 @@ public class PlayerController : MonoBehaviour
     #region プレイヤーのステータス
     float moveX;
     float moveZ;
+    bool isInvincible;  // 無敵状態かどうか
+
+
+    #region スピード・ジャンプ
     float speed;
     public float Speed { get { return speed; } set { speed = value; } }
     public float defaultSpeed { get; private set; } = 5;
-    public float jumpPower;
+    float jumpPower;
+    public float JumpPower { get { return speed; } set { speed = value; } }
+    public float defaultJumpPower { get; private set; } = 500;
+    #endregion
+    #endregion
+
+    #region メッシュ関係
+    [SerializeField] List<SkinnedMeshRenderer> skinnedMeshs;
+    [SerializeField] MeshRenderer meshMain;
     #endregion
 
     private void Start()
     {
+        isInvincible = false;
         speed = defaultSpeed;
+        jumpPower = defaultJumpPower;
         animController = GetComponent<PlayerAnimatorController>();
         rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
+        if (!animController.isStandUp) return;
+
         // キー入力で移動方向を更新
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
@@ -65,6 +81,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!animController.isStandUp) return;
+
         // カメラの向きと右方向の大きさを取得する
         Vector3 cameraRot = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
         Vector3 cameraRight = new Vector3(Camera.main.transform.right.x, 0, Camera.main.transform.right.z);
@@ -77,7 +95,7 @@ public class PlayerController : MonoBehaviour
         transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // 回転速度をかける
     }
 
-    bool IsGround()
+    public bool IsGround()
     {
         Vector3 basePos = transform.position;    // モンスターのピボットが中心にあるため調整する
         Vector3 leftStartPos= basePos - Vector3.right * rayWeight;      // 左側の始点
@@ -95,6 +113,45 @@ public class PlayerController : MonoBehaviour
             || Physics.Linecast(rightStartPos, endPosition, groundRayer)
             || Physics.Linecast(forwardStartPos, endPosition, groundRayer)
             || Physics.Linecast(backStartPos, endPosition, groundRayer);
+    }
+
+    /// <summary>
+    /// ノックバックしつつダウンする処理
+    /// </summary>
+    /// <param name="knockBackVec"></param>
+    public void KnockBackAndDown(Vector3 knockBackVec)
+    {
+        if (isInvincible) return;
+
+        if (animController.isStandUp)
+        {
+            transform.position += Vector3.up * rayHeight;
+            animController.PlayKnockBackAnim();
+            rb.AddForce(knockBackVec, ForceMode.Impulse);
+        }
+    }
+
+    /// <summary>
+    /// 点滅処理
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator FlashCoroutine()
+    {
+        isInvincible = true;
+
+        float waitSec = 0.125f;
+        for(float i = 0; i < 1; i += waitSec)
+        {
+            yield return new WaitForSeconds(waitSec);
+
+            foreach(var meshs in skinnedMeshs)
+            {
+                meshs.enabled = !meshs.enabled;
+            }
+            meshMain.enabled = !meshMain.enabled;
+        }
+
+        isInvincible = false;
     }
 
     public void InitPlayer(Vector3 startPosition)

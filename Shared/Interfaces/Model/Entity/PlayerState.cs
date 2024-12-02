@@ -16,5 +16,7 @@ namespace Shared.Interfaces.Model.Entity
         public Vector3 angle { get; set; }
         [Key(2)]
         public int animationId { get; set; }
+        [Key(3)]
+        public bool isActiveSelf { get; set; }
     }
 }

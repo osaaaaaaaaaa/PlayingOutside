@@ -2379,7 +2379,10 @@ MonoBehaviour:
   groundRayer:
     serializedVersion: 2
     m_Bits: 64
-  jumpPower: 400
+  skinnedMeshs:
+  - {fileID: 8328451626734835085}
+  - {fileID: 7582023821497317957}
+  meshMain: {fileID: 2872953757129261344}
 --- !u!114 &4862314042129052867
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -63,11 +63,11 @@ Material:
     - _VoronoiOffset: 2
     - _VoronoiPower: 2
     m_Colors:
-    - _ColorAmbient: {r: 0.93333334, g: 0.6367632, b: 0.46274513, a: 1}
-    - _ColorDeep: {r: 0.5999999, g: 0.32506424, b: 0.12566036, a: 1}
-    - _ColorFoam: {r: 0.86536133, g: 0.9716981, b: 0.9598829, a: 1}
-    - _ColorShallow: {r: 0.8, g: 0.5132147, b: 0.31372553, a: 1}
-    - _ColorSurface: {r: 0.8862745, g: 0.60256535, b: 0.41176468, a: 1}
+    - _ColorAmbient: {r: 0.5999999, g: 0.37988672, b: 0.25245276, a: 1}
+    - _ColorDeep: {r: 0.4792453, g: 0.27680093, b: 0.12930578, a: 1}
+    - _ColorFoam: {r: 0.6830188, g: 0.47735375, b: 0.32862222, a: 1}
+    - _ColorShallow: {r: 0.4264151, g: 0.27532062, b: 0.16976145, a: 1}
+    - _ColorSurface: {r: 0.4113207, g: 0.23260497, b: 0.11097896, a: 1}
     - _VoronoiST: {r: 0.05, g: 0.05, b: 0.05, a: 0.05}
     - _VoronoiSpeed: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
