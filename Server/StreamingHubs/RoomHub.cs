@@ -8,7 +8,13 @@ namespace Server.StreamingHubs
 {
     public class RoomHub : StreamingHubBase<IRoomHub, IRoomHubReceiver>, IRoomHub
     {
-        private IGroup room;    // どのルームに入っているか
+        // どのルームに入っているか
+        IGroup room;
+
+        // 参加可能人数
+        const int maxUsers = 4;
+        // ゲーム開始可能人数
+        const int minRequiredUsers = 2;
 
         /// <summary>
         /// ユーザーの切断処理
@@ -52,7 +58,7 @@ namespace Server.StreamingHubs
             var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
             var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder　};
-            var roomData = new RoomData() { JoinedUser = joinedUser ,PlayerState = null};
+            var roomData = new RoomData() { JoinedUser = joinedUser ,PlayerState = new PlayerState(), UserState = new UserState()};
             roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
 
             // 自分以外のルーム参加者全員に、ユーザーの入室通知を送信(Broodcast:配布する,Except:自分以外)
@@ -130,6 +136,60 @@ namespace Server.StreamingHubs
 
             // ルーム参加者にプレイヤー情報更新通知を送信
             this.BroadcastExceptSelf(room).OnUpdatePlayerState(this.ConnectionId, state);
+        }
+
+        /// <summary>
+        /// 準備完了したかどうか
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnReadyAsynk(bool isReady)
+        {
+            // 送信したユーザーのデータを更新
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            var data = roomStorage.Get(this.ConnectionId);
+            data.UserState.isReady = isReady;
+            Console.WriteLine(data.JoinedUser.UserData.Name + "の準備:" + isReady);
+
+            // 全員が準備完了したかどうかチェック
+            bool isAllUsersReady = false;
+
+            int readyCnt = 0;
+            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.UserState.isReady) readyCnt++;
+            }
+
+            // 最低人数以上かつ全員が準備完了している場合
+            if (roomDataList.Length >= minRequiredUsers && readyCnt == roomDataList.Length) isAllUsersReady = true;
+
+            // 準備完了通知
+            this.Broadcast(room).OnReady(readyCnt, isAllUsersReady);
+        }
+        
+
+        /// <summary>
+        /// ゲーム開始前のカウントダウンが終了
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnCountdownOverAsynk()
+        {
+            // 送信したユーザーのデータを更新
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            var data = roomStorage.Get(this.ConnectionId);
+            data.UserState.isCountdownOver = true;
+            Console.WriteLine(data.JoinedUser.UserData.Name + "：" + "カウントダウンが終了");
+
+            // 全員がカウントダウン終了したかどうかチェック
+            int readyCnt = 0;
+            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.UserState.isCountdownOver) readyCnt++;
+            }
+
+            // ゲーム開始通知を配る
+            if (readyCnt == roomDataList.Length) this.Broadcast(room).OnCountdownOver();
         }
     }
 }

@@ -5,18 +5,33 @@ using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
+    #region 地面判定用
+    [SerializeField] LayerMask groundRayer;
+    const float rayHeight = 0.2f;
+    const float rayWeight = 0.4f;
+    #endregion
+
+    #region コンポーネント
     PlayerAnimatorController animController;
     Rigidbody rb;
+    #endregion
+
+    #region プレイヤーのステータス
     float moveX;
     float moveZ;
-    const float speed = 5;
-    public float jump;
+    float speed;
+    public float Speed { get { return speed; } set { speed = value; } }
+    public float defaultSpeed { get; private set; } = 5;
+    public float jumpPower;
+    #endregion
 
     private void Start()
     {
+        speed = defaultSpeed;
         animController = GetComponent<PlayerAnimatorController>();
         rb = GetComponent<Rigidbody>();
     }
@@ -27,21 +42,25 @@ public class PlayerController : MonoBehaviour
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
 
-        if(moveX != 0 || moveZ != 0)
+        if (IsGround())
         {
-            animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
-        }
-        else
-        {
-            animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
-        }
+            if (moveX != 0 || moveZ != 0)
+            {
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
+            }
+            else
+            {
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
+            }
 
-        // ジャンプ処理
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
-        //    rb.AddForce(transform.up * jump);
-        //}
+            // ジャンプ処理
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.position += Vector3.up * rayHeight;
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
+                rb.AddForce(transform.up * jumpPower);
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -52,10 +71,30 @@ public class PlayerController : MonoBehaviour
 
         // 移動量を設定
         Vector3 setMove = (cameraRight * moveX + cameraRot * moveZ).normalized; // 大きさを１にする
-        rb.velocity = setMove * speed;
+        rb.velocity = new Vector3(setMove.x * speed, rb.velocity.y, setMove.z * speed); // 落下速度をいじらないようにする
 
         // 滑らかに回転
         transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // 回転速度をかける
+    }
+
+    bool IsGround()
+    {
+        Vector3 basePos = transform.position;    // モンスターのピボットが中心にあるため調整する
+        Vector3 leftStartPos= basePos - Vector3.right * rayWeight;      // 左側の始点
+        Vector3 rightStartPos = basePos + Vector3.right * rayWeight;    // 右側の始点
+        Vector3 forwardStartPos = basePos - Vector3.back * rayWeight;   // 前の始点
+        Vector3 backStartPos = basePos + Vector3.back * rayWeight;      // 後ろの始点
+        Vector3 endPosition = basePos - Vector3.up * rayHeight;     // 終点(下)
+
+        Debug.DrawLine(leftStartPos, endPosition, Color.red);
+        Debug.DrawLine(rightStartPos, endPosition, Color.red);
+        Debug.DrawLine(forwardStartPos, endPosition, Color.blue);
+        Debug.DrawLine(backStartPos, endPosition, Color.blue);
+
+        return Physics.Linecast(leftStartPos, endPosition, groundRayer)
+            || Physics.Linecast(rightStartPos, endPosition, groundRayer)
+            || Physics.Linecast(forwardStartPos, endPosition, groundRayer)
+            || Physics.Linecast(backStartPos, endPosition, groundRayer);
     }
 
     public void InitPlayer(Vector3 startPosition)

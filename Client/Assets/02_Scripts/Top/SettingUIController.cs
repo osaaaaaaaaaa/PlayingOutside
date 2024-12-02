@@ -54,7 +54,7 @@ public class SettingUIController : MonoBehaviour
 
     public void OnTitleButton()
     {
-        SceneManager.LoadScene("TitleScene");
+        SceneControler.Instance.StartSceneLoad("TitleScene");
     }
 
     public void OnSliderBGM()

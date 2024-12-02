@@ -6,5 +6,6 @@ namespace Server.StreamingHubs
     {
         public JoinedUser JoinedUser {  get; set; }
         public PlayerState PlayerState { get; set; }
+        public UserState UserState { get; set; }
     }
 }

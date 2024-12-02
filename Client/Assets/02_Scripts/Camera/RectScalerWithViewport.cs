@@ -12,7 +12,8 @@ namespace TedLab
         [SerializeField] private RectTransform refRect = null;
         [SerializeField] private Vector2 referenceResolution = new Vector2(1920, 1080);
         [Range(0, 1)] [SerializeField] private float matchWidthOrHeight = 0;
-        bool isUpdateRect = false;
+        public bool isRoadingPanel;
+        private bool isUpdateRect = false;
 
         private float _width = -1;
         private float _height = -1;
@@ -27,6 +28,11 @@ namespace TedLab
             UpdateRect();
         }
 
+        private void OnEnable()
+        {
+            isUpdateRect = false;
+        }
+
         private void Update()
         {
             UpdateRectWithCheck();
@@ -34,7 +40,7 @@ namespace TedLab
 
         public void UpdateRectWithCheck()
         {
-            if (isUpdateRect) return;
+            if (isRoadingPanel && isUpdateRect) return;
             if (refRect == null)
                 return;
 

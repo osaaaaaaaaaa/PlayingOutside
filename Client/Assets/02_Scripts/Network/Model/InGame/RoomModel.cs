@@ -20,18 +20,27 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     // 接続ID
     public Guid ConnectionId { get; private set; }
-    // 自分のユーザー情報
+    // 接続するルーム名
+    string connectionRoomName;
+    public string ConnectionRoomName {  get { return connectionRoomName; } set { connectionRoomName = value; } }
+    // DBから取得した自分のユーザー情報
     User myUserData;
     public User MyUserData { get { return myUserData; }set { myUserData = value; } }
     // 参加しているユーザーの情報
     public Dictionary<Guid,JoinedUser> JoinedUsers { get; private set; } = new Dictionary<Guid,JoinedUser>();
 
+    #region サーバーから呼ばれるAction関数
     // ユーザー接続通知
     public Action<JoinedUser> OnJoinedUser { get; set; }    // サーバーから通知が届いた際に、Action型に登録されている関数を呼び出す
     // ユーザー切断通知
     public Action<Guid> OnLeavedUser { get; set; }
     // プレイヤー情報更新通知
     public Action<Guid, PlayerState> OnUpdatePlayerStateUser { get; set; }
+    // 準備が完了したかどうかの通信
+    public Action<int,bool> OnReadyUser { get; set; }
+    // 全員がゲーム開始前のカウントダウン終了通知
+    public Action OnCountdownOverAllUsers { get; set; }
+    #endregion
 
     /// <summary>
     /// 自分の状況
@@ -90,7 +99,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <summary>
     /// 破棄する際(アプリ終了時など)にサーバーとの接続を切断
     /// </summary>
-    private async void OnDestroy()
+    private void OnDestroy()
     {
         DisconnectAsync();
     }
@@ -134,6 +143,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask LeaveAsync()
     {
+        if (userState != USER_STATE.joined) return;
         userState = USER_STATE.leave;
         JoinedUsers.Clear();
 
@@ -155,7 +165,11 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         JoinedUsers.Remove(connectionId);
 
         // 自分が退室する場合
-        if (this.ConnectionId == connectionId) userState = USER_STATE.leave_done;
+        if (this.ConnectionId == connectionId)
+        {
+            userState = USER_STATE.leave_done;
+            DisconnectAsync();
+        }
     }
 
     /// <summary>
@@ -177,6 +191,49 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUpdatePlayerState(Guid connectionId, PlayerState playerState)
     {
         // アクション実行
-        if (userState == USER_STATE.joined) OnUpdatePlayerStateUser(connectionId, playerState);
+        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) OnUpdatePlayerStateUser(connectionId, playerState);
+    }
+
+    /// <summary>
+    /// 自分の準備が完了したかどうか
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask OnReadyAsynk(bool isReady)
+    {
+
+        // サーバーに準備が完了したかどうかをリクエスト
+        await roomHub.OnReadyAsynk(isReady);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 準備完了したかどうかの通知
+    /// </summary>
+    public void OnReady(int readyCnt, bool isTransitionGameScene)
+    {
+        if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
+
+        // アクション実行
+        OnReadyUser(readyCnt, isTransitionGameScene);
+    }
+
+    /// <summary>
+    /// 自分のゲーム開始前のカウントダウンが終了
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask OnCountdownOverAsynk()
+    {
+        // サーバーにカウントダウンが終了したことをリクエスト
+        await roomHub.OnCountdownOverAsynk();
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 全員がゲーム開始前のカウントダウン終了通知
+    /// </summary>
+    public void OnCountdownOver()
+    {
+        // アクション実行
+        if (userState == USER_STATE.joined) OnCountdownOverAllUsers();
     }
 }

@@ -10,21 +10,19 @@ public class TitleSceneDirector : MonoBehaviour
     [SerializeField] GameObject panelRegistUser;
     [SerializeField] InputField inputFieldUserName;
 
-    private async void Start()
+    private void Start()
     {
+        SceneControler.Instance.StopSceneLoad();
         panelRegistUser.SetActive(false);
-
-        // サーバー接続処理
-        await RoomModel.Instance.ConnectAsync();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && !panelRegistUser.activeSelf)
         {
             if(RoomModel.Instance.MyUserData == null) panelRegistUser.SetActive(true);
-            //else SceneControler.Instance.StartSceneLoad("TopScene");
+            else SceneControler.Instance.StartSceneLoad("TopScene");
         }
     }
 
@@ -40,7 +38,7 @@ public class TitleSceneDirector : MonoBehaviour
 
         // 一旦ユーザーIDを格納する処理
         RoomModel.Instance.MyUserData = new User { Id = int.Parse(inputFieldUserName.text) };
-
+        // シーン遷移開始
         SceneControler.Instance.StartSceneLoad("TopScene");
     }
 }

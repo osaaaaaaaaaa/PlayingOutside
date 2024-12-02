@@ -7,13 +7,12 @@ public class TargetCameraController : MonoBehaviour
 {
     CinemachineVirtualCamera camera;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         camera = GetComponent<CinemachineVirtualCamera>();
     }
 
-    void InitTarget(Transform target)
+    public void InitTarget(Transform target)
     {
         camera.Follow = target;
         camera.LookAt = target;

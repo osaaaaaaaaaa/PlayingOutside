@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/00_Scenes/TopScene.unity
     guid: 729a669fbd989414da4497faeebb5b41
   - enabled: 1
+    path: Assets/00_Scenes/RoomScene.unity
+    guid: b16b8b842c9aaa94b95f6456fa61ff62
+  - enabled: 1
     path: Assets/00_Scenes/GameScene.unity
     guid: 7aadbf5b14384ef4a8841f9d82da60bb
   m_configObjects: {}

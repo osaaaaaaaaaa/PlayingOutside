@@ -10,7 +10,9 @@ namespace Shared.Interfaces.StreamingHubs
 {
     public interface IRoomHub : IStreamingHub<IRoomHub, IRoomHubReceiver>
     {
+        //*********************************************************
         // クライアント側からサーバー側を呼び出す関数を定義する
+        //*********************************************************
 
         // ユーザー入室
         Task<JoinedUser[]> JoinAsynk(string roomName,int userId);
@@ -20,5 +22,11 @@ namespace Shared.Interfaces.StreamingHubs
 
         // プレイヤー情報更新
         Task UpdatePlayerStateAsynk(PlayerState state);
+
+        // 準備完了したかどうか
+        Task OnReadyAsynk(bool isAllUsersReady);
+
+        // ゲーム開始前のカウントダウンが終了
+        Task OnCountdownOverAsynk();
     }
 }

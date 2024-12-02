@@ -11,11 +11,11 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         IdleA = 1,
         IdleB,
-        Jump = 4,
+        Jump = 3,
         Run = 15
     }
 
-    private void Start()
+    private void Awake()
     {
         animator = GetComponent<Animator>();
     }

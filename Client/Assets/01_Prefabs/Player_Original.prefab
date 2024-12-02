@@ -2261,12 +2261,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4476484651674959718}
   - component: {fileID: 6077318979891077103}
-  - component: {fileID: 333823972235697439}
+  - component: {fileID: 7558526625667999506}
   - component: {fileID: 3557979584870826160}
   - component: {fileID: 5846455389561029037}
   - component: {fileID: 4862314042129052867}
   - component: {fileID: 2042403275086373701}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player_Original
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2314,14 +2314,14 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!65 &333823972235697439
-BoxCollider:
+--- !u!136 &7558526625667999506
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7434985528216296464}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: a1f108c6e14e7074fab81894c561643f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2332,9 +2332,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.6, y: 1.5677217, z: 0.6}
-  m_Center: {x: 0, y: 0.77113897, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.28
+  m_Height: 1.5323582
+  m_Direction: 1
+  m_Center: {x: -0, y: 0.7590749, z: -0}
 --- !u!54 &3557979584870826160
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2374,7 +2376,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f23f8ec57ac1a34ca760712356a9202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jump: 30
+  groundRayer:
+    serializedVersion: 2
+    m_Bits: 64
+  jumpPower: 400
 --- !u!114 &4862314042129052867
 MonoBehaviour:
   m_ObjectHideFlags: 0

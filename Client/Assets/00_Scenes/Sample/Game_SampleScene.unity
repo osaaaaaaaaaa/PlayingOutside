@@ -392,7 +392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 304946995}
-  - component: {fileID: 304946994}
+  - component: {fileID: 304946996}
   m_Layer: 0
   m_Name: GameDirector
   m_TagString: Untagged
@@ -400,27 +400,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &304946994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 304946993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01a329b896efec64da2576ad825f4772, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  userIdField: {fileID: 1111169750}
-  characterStartPoints:
-  - {fileID: 433607258}
-  - {fileID: 1599227227}
-  - {fileID: 617842018}
-  - {fileID: 1853587635}
-  characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
-    type: 3}
-  roomModel: {fileID: 902438158}
 --- !u!4 &304946995
 Transform:
   m_ObjectHideFlags: 0
@@ -436,6 +415,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &304946996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304946993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7048bbf75ee5c34185b30bf0bee333d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userIdField: {fileID: 0}
+  characterStartPoints: []
+  characterPrefab: {fileID: 0}
+  roomModel: {fileID: 0}
 --- !u!1 &332671467
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,7 +514,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 304946994}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameDirector, Assembly-CSharp
         m_MethodName: JoinRoom
         m_Mode: 1
@@ -682,9 +677,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.19410303
+    x: 0.04106787
     y: 0
-    width: 0.61179394
+    width: 0.91786426
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -1288,6 +1283,7 @@ MonoBehaviour:
   refRect: {fileID: 916331053}
   referenceResolution: {x: 1920, y: 1080}
   matchWidthOrHeight: 0
+  isRoadingPanel: 0
 --- !u!114 &916331055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1409,7 +1405,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 304946994}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameDirector, Assembly-CSharp
         m_MethodName: LeaveRoom
         m_Mode: 1

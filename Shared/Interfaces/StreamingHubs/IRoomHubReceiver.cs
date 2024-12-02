@@ -10,7 +10,9 @@ namespace Shared.Interfaces.StreamingHubs
     /// </summary>
     public interface IRoomHubReceiver
     {
-        // [ここにサーバー側からクライアントを呼び出す関数を定義]
+        //*********************************************************
+        // サーバー側からクライアント側を呼び出す関数を定義する
+        //*********************************************************
 
         // ユーザーの入室通知
         void OnJoin(JoinedUser user);
@@ -20,5 +22,11 @@ namespace Shared.Interfaces.StreamingHubs
 
         // プレイヤーの情報更新通知
         void OnUpdatePlayerState(Guid connectionId, PlayerState state);
+
+        // 準備完了したかどうかの通知
+        void OnReady(int readyCnt, bool isTransitionGameScene);
+
+        // ゲーム開始通知
+        void OnCountdownOver();
     }
 }
