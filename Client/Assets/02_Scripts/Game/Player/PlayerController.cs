@@ -5,7 +5,6 @@ using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
@@ -23,7 +22,6 @@ public class PlayerController : MonoBehaviour
     #region プレイヤーのステータス
     float moveX;
     float moveZ;
-    bool isInvincible;  // 無敵状態かどうか
 
 
     #region スピード・ジャンプ
@@ -36,14 +34,8 @@ public class PlayerController : MonoBehaviour
     #endregion
     #endregion
 
-    #region メッシュ関係
-    [SerializeField] List<SkinnedMeshRenderer> skinnedMeshs;
-    [SerializeField] MeshRenderer meshMain;
-    #endregion
-
     private void Start()
     {
-        isInvincible = false;
         speed = defaultSpeed;
         jumpPower = defaultJumpPower;
         animController = GetComponent<PlayerAnimatorController>();
@@ -121,7 +113,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="knockBackVec"></param>
     public void KnockBackAndDown(Vector3 knockBackVec)
     {
-        if (isInvincible) return;
+        if (animController.isInvincible) return;
 
         if (animController.isStandUp)
         {
@@ -131,31 +123,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 点滅処理
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator FlashCoroutine()
+    public void InitPlayer(Transform startPointTf)
     {
-        isInvincible = true;
-
-        float waitSec = 0.125f;
-        for(float i = 0; i < 1; i += waitSec)
-        {
-            yield return new WaitForSeconds(waitSec);
-
-            foreach(var meshs in skinnedMeshs)
-            {
-                meshs.enabled = !meshs.enabled;
-            }
-            meshMain.enabled = !meshMain.enabled;
-        }
-
-        isInvincible = false;
-    }
-
-    public void InitPlayer(Vector3 startPosition)
-    {
-        transform.position = startPosition;
+        transform.position = startPointTf.position;
+        transform.eulerAngles += startPointTf.eulerAngles;
     }
 }

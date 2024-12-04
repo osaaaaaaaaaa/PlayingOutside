@@ -28,10 +28,11 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(3);
+            writer.WriteArrayHeader(4);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.position, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.angle, options);
             writer.Write(value.animationId);
+            writer.Write(value.isActiveSelf);
         }
 
         public global::Shared.Interfaces.Model.Entity.PlayerState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -58,6 +59,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 2:
                         ____result.animationId = reader.ReadInt32();
+                        break;
+                    case 3:
+                        ____result.isActiveSelf = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

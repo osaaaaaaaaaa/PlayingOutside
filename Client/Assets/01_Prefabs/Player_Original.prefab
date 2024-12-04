@@ -2121,7 +2121,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 1.73}
+  m_AnchoredPosition: {x: 0, y: 1.65}
   m_SizeDelta: {x: 410, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3212509246961931617
@@ -2309,7 +2309,9 @@ Animator:
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'root'\n\tFrom animation clip 'Anim_StandUp_02'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -2321,7 +2323,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7434985528216296464}
-  m_Material: {fileID: 13400000, guid: a1f108c6e14e7074fab81894c561643f, type: 2}
+  m_Material: {fileID: 13400000, guid: d7adb4b059df5314084cfef7f2f6f572, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2379,10 +2381,6 @@ MonoBehaviour:
   groundRayer:
     serializedVersion: 2
     m_Bits: 64
-  skinnedMeshs:
-  - {fileID: 8328451626734835085}
-  - {fileID: 7582023821497317957}
-  meshMain: {fileID: 2872953757129261344}
 --- !u!114 &4862314042129052867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2395,6 +2393,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57e1caaf300868f4a983d8d8bf166141, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skinnedMeshs:
+  - {fileID: 8328451626734835085}
+  - {fileID: 7582023821497317957}
+  meshMain: {fileID: 2872953757129261344}
 --- !u!114 &2042403275086373701
 MonoBehaviour:
   m_ObjectHideFlags: 0

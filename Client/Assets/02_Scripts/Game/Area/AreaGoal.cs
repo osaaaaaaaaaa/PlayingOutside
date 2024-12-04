@@ -8,15 +8,12 @@ public class AreaGoal : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.layer == 3)
+        if (other.gameObject.layer == 3)
         {
             other.gameObject.SetActive(false);
 
-
-            // 本当はここでエリアクリア処理をリクエスト
-
             // サーバーなしで通しでやるときのデバック用
-            controller.AreaGoal(true,other.gameObject);
+            StartCoroutine(controller.CurrentAreaClearCoroutine(other.gameObject));
         }
     }
 }

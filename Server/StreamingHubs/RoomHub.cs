@@ -2,10 +2,12 @@
 using Server.Model.Context;
 using Shared.Interfaces.Model.Entity;
 using Shared.Interfaces.StreamingHubs;
+using System.Collections.Generic;
 using System.Runtime.Intrinsics.X86;
 
 namespace Server.StreamingHubs
 {
+
     public class RoomHub : StreamingHubBase<IRoomHub, IRoomHubReceiver>, IRoomHub
     {
         // どのルームに入っているか
@@ -15,6 +17,8 @@ namespace Server.StreamingHubs
         const int maxUsers = 4;
         // ゲーム開始可能人数
         const int minRequiredUsers = 2;
+
+        const int baseAddScore = 100;
 
         /// <summary>
         /// ユーザーの切断処理
@@ -57,8 +61,8 @@ namespace Server.StreamingHubs
             // グループストレージにユーザーデータを格納
             var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
-            var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder　};
-            var roomData = new RoomData() { JoinedUser = joinedUser ,PlayerState = new PlayerState(), UserState = new UserState()};
+            var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder };
+            var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
             roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
 
             // 自分以外のルーム参加者全員に、ユーザーの入室通知を送信(Broodcast:配布する,Except:自分以外)
@@ -131,7 +135,7 @@ namespace Server.StreamingHubs
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
             // ストレージ内のプレイヤー情報を更新する
-            var data =  roomStorage.Get(this.ConnectionId);
+            var data = roomStorage.Get(this.ConnectionId);
             data.PlayerState = state;
 
             // ルーム参加者にプレイヤー情報更新通知を送信
@@ -147,8 +151,7 @@ namespace Server.StreamingHubs
             // 送信したユーザーのデータを更新
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isReady = isReady;
-            Console.WriteLine(data.JoinedUser.UserData.Name + "の準備:" + isReady);
+            data.UserState.isReadyRoom = isReady;
 
             // 全員が準備完了したかどうかチェック
             bool isAllUsersReady = false;
@@ -157,7 +160,7 @@ namespace Server.StreamingHubs
             RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
             foreach (var roomData in roomDataList)
             {
-                if (roomData.UserState.isReady) readyCnt++;
+                if (roomData.UserState.isReadyRoom) readyCnt++;
             }
 
             // 最低人数以上かつ全員が準備完了している場合
@@ -166,10 +169,10 @@ namespace Server.StreamingHubs
             // 準備完了通知
             this.Broadcast(room).OnReady(readyCnt, isAllUsersReady);
         }
-        
+
 
         /// <summary>
-        /// ゲーム開始前のカウントダウンが終了
+        /// ゲーム開始前のカウントダウン終了処理
         /// </summary>
         /// <returns></returns>
         public async Task OnCountdownOverAsynk()
@@ -178,7 +181,6 @@ namespace Server.StreamingHubs
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             var data = roomStorage.Get(this.ConnectionId);
             data.UserState.isCountdownOver = true;
-            Console.WriteLine(data.JoinedUser.UserData.Name + "：" + "カウントダウンが終了");
 
             // 全員がカウントダウン終了したかどうかチェック
             int readyCnt = 0;
@@ -190,6 +192,156 @@ namespace Server.StreamingHubs
 
             // ゲーム開始通知を配る
             if (readyCnt == roomDataList.Length) this.Broadcast(room).OnCountdownOver();
+        }
+
+        /// <summary>
+        /// エリアをクリアした処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnAreaClearedAsynk()
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+
+            // 送信したユーザーのデータを更新
+            var data = roomStorage.Get(this.ConnectionId);
+            data.UserState.isAreaCleared = true;
+            data.UserState.areaGoalRank = GetAreaGoalRank(roomDataList);
+            data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+
+            // エリアのクリア通知を自分以外に配る
+            this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId,data.JoinedUser.UserData.Name);
+        }
+
+        int GetAreaGoalRank(RoomData[] roomData)
+        {
+            int rank = 1;
+            int roopCnt = 0;
+            while (roopCnt < roomData.Length)
+            {
+                roopCnt = 0;
+                for (int i = roomData.Length - 1; i >= 0; i--, roopCnt++)
+                {
+                    if (roomData[i].UserState.areaGoalRank == rank)
+                    {
+                        rank++;
+                        break;
+                    }
+                }
+            }
+            return rank;
+        }
+
+        /// <summary>
+        /// 次のエリアに移動する準備が完了した処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnReadyNextAreaAsynk(bool isLastArea)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+
+            // 送信したユーザーのデータを更新
+            var data = roomStorage.Get(this.ConnectionId);
+            data.UserState.isReadyNextArea = true;
+
+            // 全員次のエリアに移動する準備が完了したかチェック
+            int readyCnt = 0;
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.UserState.isReadyNextArea) readyCnt++;
+            }
+
+            if (readyCnt == roomDataList.Length)
+            {
+                // 現在のエリアが最後のエリアだった場合
+                if (isLastArea)
+                {
+                    Console.WriteLine("最後のエリアでした！");
+
+                    // ↓一旦終了処理へ #######################################################################
+                    // 全ての競技が終了した通知を配る
+                    this.Broadcast(room).OnAfterFinalGame();
+                }
+                // まだ次のエリアが存在する場合
+                else
+                {
+                    const float baseWaitSec = 1f;
+                    foreach (var roomData in roomDataList)
+                    {
+                        float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
+
+                        // ゲーム再開通知を個別に配る
+                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec);
+
+                        // 情報をリセット
+                        roomData.UserState.isAreaCleared = false;
+                        roomData.UserState.areaGoalRank = 0;
+                        roomData.UserState.isReadyNextArea = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 最終結果発表シーンに遷移した通知
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnTransitionFinalResultSceneAsynk()
+        {
+            // 送信したユーザーのデータを更新
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            var data = roomStorage.Get(this.ConnectionId);
+            data.UserState.isTransitionFinalResultScene = true;
+            Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
+
+            // 全員が遷移したかどうかチェック
+            int transitionCnt = 0;
+            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.UserState.isTransitionFinalResultScene) transitionCnt++;
+            }
+
+            if (transitionCnt == roomDataList.Length)
+            {
+                // 全員が遷移できた通知
+                this.Broadcast(room).OnTransitionFinalResultSceneAllUsers(GetResultData(roomDataList));
+            }
+        }
+
+        ResultData[] GetResultData(RoomData[] roomData)
+        {
+            ResultData[] resultData = new ResultData[roomData.Length];
+            for (int i = 0; i < resultData.Length; i++)
+            {
+                resultData[i] = new ResultData() { 
+                    connectionId = roomData[i].JoinedUser.ConnectionId,
+                    rank = 0,
+                    score = roomData[i].UserState.score
+                };
+            }
+
+            // スコアを基準に降順に並び替える
+            var sortList = resultData.OrderByDescending(d => d.score);
+            int roopCnt = 0;
+            foreach (var sortData in sortList) 
+            {
+                roopCnt++;
+                Console.WriteLine(sortData.connectionId + ":"+ roopCnt + "位,score:" + sortData.score);
+
+                for (int i = 0; i < resultData.Length; i++) 
+                {
+                    if (resultData[i].connectionId == sortData.connectionId) 
+                    {
+                        // 順位を取得
+                        resultData[i].rank = roopCnt;
+                        break;
+                    }
+                }
+            }
+
+            return resultData;
         }
     }
 }

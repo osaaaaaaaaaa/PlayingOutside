@@ -9,7 +9,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -36,10 +35,33 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid> OnLeavedUser { get; set; }
     // プレイヤー情報更新通知
     public Action<Guid, PlayerState> OnUpdatePlayerStateUser { get; set; }
+
+    #region ゲーム開始までの処理
     // 準備が完了したかどうかの通信
     public Action<int,bool> OnReadyUser { get; set; }
     // 全員がゲーム開始前のカウントダウン終了通知
-    public Action OnCountdownOverAllUsers { get; set; }
+    public Action OnCountdownOverUser { get; set; }
+    #endregion
+
+    #region 競技『カントリーリレー』の処理
+    // 現在のエリアをクリアした通知
+    public Action<Guid,string> OnAreaClearedUser { get; set; }
+    // 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
+    public Action<float> OnReadyNextAreaUser { get; set; }
+    #endregion
+
+    #region ゲーム終了までの処理(最終結果発表シーンの処理)
+    /// <summary>
+    /// 最終結果発表シーンに遷移した処理
+    /// </summary>
+    public Action OnAfterFinalGameUser { get; set; }
+
+    /// <summary>
+    /// 全員が遷移できた通知
+    /// </summary>
+    public Action<ResultData[]> OnTransitionFinalResultSceneUser { get; set; }
+    #endregion
+
     #endregion
 
     /// <summary>
@@ -179,8 +201,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask UpdatePlayerStateAsync(PlayerState playerState)
     {
-        // サーバーにプレイヤー情報更新処理をリクエスト
-        await roomHub.UpdatePlayerStateAsynk(playerState);
+        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) 
+        {
+            await roomHub.UpdatePlayerStateAsynk(playerState);
+        }
     }
 
     /// <summary>
@@ -191,9 +215,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUpdatePlayerState(Guid connectionId, PlayerState playerState)
     {
         // アクション実行
-        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) OnUpdatePlayerStateUser(connectionId, playerState);
+        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) 
+        {
+            OnUpdatePlayerStateUser(connectionId, playerState); 
+        }
     }
 
+    #region ゲーム開始までの処理
     /// <summary>
     /// 自分の準備が完了したかどうか
     /// </summary>
@@ -234,6 +262,79 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnCountdownOver()
     {
         // アクション実行
-        if (userState == USER_STATE.joined) OnCountdownOverAllUsers();
+        if (userState == USER_STATE.joined) OnCountdownOverUser();
     }
+    #endregion
+
+    #region 競技『カントリーリレー』の処理
+    /// <summary>
+    /// エリアをクリアした処理
+    /// </summary>
+    /// <param name="isLastArea"></param>
+    /// <returns></returns>
+    public async UniTask OnAreaClearedAsynk()
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnAreaClearedAsynk();
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 現在のエリアをクリアした通知
+    /// </summary>
+    public void OnAreaCleared(Guid connectionId, string userName)
+    {
+        if (userState == USER_STATE.joined) OnAreaClearedUser(connectionId,userName);
+    }
+
+    /// <summary>
+    /// 次のエリアに移動する準備が完了した処理
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask OnReadyNextAreaAsynk(bool isLastArea)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnReadyNextAreaAsynk(isLastArea);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
+    /// </summary>
+    /// <param name="restarningWaitSec"></param>
+    public void OnReadyNextAreaAllUsers(float restarningWaitSec)
+    {
+        if (userState == USER_STATE.joined) OnReadyNextAreaUser(restarningWaitSec);
+    }
+    #endregion
+
+
+    #region ゲーム終了までの処理(最終結果発表シーンの処理)
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 最後の競技が終了した通知
+    /// </summary>
+    public void OnAfterFinalGame()
+    {
+        if (userState == USER_STATE.joined) OnAfterFinalGameUser();
+    }
+
+    /// <summary>
+    /// 最終結果発表シーンに遷移した処理
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask OnTransitionFinalResultSceneAsynk()
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnTransitionFinalResultSceneAsynk();
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 全員が遷移できた通知
+    /// </summary>
+    /// <param name="result"></param>
+    public void OnTransitionFinalResultSceneAllUsers(ResultData[] result)
+    {
+        if (userState == USER_STATE.joined) OnTransitionFinalResultSceneUser(result);
+    }
+    #endregion
 }

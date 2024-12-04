@@ -11,21 +11,32 @@ using Server.Model.Entity;
 
 public class GameDirector : MonoBehaviour
 {
+    [SerializeField] AreaController areaController;
     [SerializeField] GameStartCountDown gameStartCountDown;
     [SerializeField] TargetCameraController targetCameraController;
 
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
-    Dictionary<Guid,GameObject> characterList = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
+    public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
 
     const float waitSeconds = 0.1f;
 
+
+    public bool isDebug = false;
+
     private void Start()
     {
+        if (isDebug) return;
+
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
-        RoomModel.Instance.OnCountdownOverAllUsers += this.NotifyStartGame;
+        RoomModel.Instance.OnCountdownOverUser += this.NotifyStartGame;
+        RoomModel.Instance.OnAreaClearedUser += this.NotifyAreaClearedUser;
+        RoomModel.Instance.OnReadyNextAreaUser += this.NotifyRedyNextAreaAllUsers;
+
+        // 一時的
+        RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
 
         SetupGame();
     }
@@ -35,7 +46,12 @@ public class GameDirector : MonoBehaviour
         // シーン遷移時に関数の登録を解除
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
-        RoomModel.Instance.OnCountdownOverAllUsers -= this.NotifyStartGame;
+        RoomModel.Instance.OnCountdownOverUser -= this.NotifyStartGame;
+        RoomModel.Instance.OnAreaClearedUser -= this.NotifyAreaClearedUser;
+        RoomModel.Instance.OnReadyNextAreaUser -= this.NotifyRedyNextAreaAllUsers;
+
+        // 一時的
+        RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -73,8 +89,7 @@ public class GameDirector : MonoBehaviour
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
-            Debug.Log(user.Value.JoinOrder);
-            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1].position);
+            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1]);
 
             // ユーザー名の初期化処理
             Color colorText = isMyCharacter ? Color.white : Color.green;
@@ -89,7 +104,7 @@ public class GameDirector : MonoBehaviour
             if (isMyCharacter)
             {
                 // 自分のモデルにカメラのターゲットを設定
-                targetCameraController.InitCamera(character.transform, 0);
+                targetCameraController.InitCamera(character.transform, 0, user.Key);
             }
         }
     }
@@ -99,6 +114,7 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public async void LeaveRoom()
     {
+        StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.LeaveAsync();
 
         SceneControler.Instance.StartSceneLoad("TopScene");
@@ -131,8 +147,9 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public async void UpdatePlayerState()
     {
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
         var character = characterList[RoomModel.Instance.ConnectionId];
-        if(character.activeSelf && character.GetComponent<PlayerController>().enabled)
+        if(character.GetComponent<PlayerController>().enabled)
         {
             PlayerState playerState = new PlayerState()
             {
@@ -152,7 +169,7 @@ public class GameDirector : MonoBehaviour
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
         // プレイヤーの存在チェック
-        if (!characterList.ContainsKey(connectionId) || characterList[connectionId] == null) return;
+        if (!characterList.ContainsKey(connectionId)) return;
 
         // 移動・回転・アニメーション処理
         characterList[connectionId].SetActive(playerState.isActiveSelf);
@@ -177,5 +194,68 @@ public class GameDirector : MonoBehaviour
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
+    }
+
+    /// <summary>
+    /// 現在のエリアをクリアした処理をリクエスト
+    /// </summary>
+    public async void OnAreaCleared()
+    {
+        await RoomModel.Instance.OnAreaClearedAsynk();
+    }
+
+    /// <summary>
+    /// 現在のエリアをクリアした通知
+    /// </summary>
+    void NotifyAreaClearedUser(Guid connectionId,string userName)
+    {
+        // クリアしたユーザー名を表示する
+        Debug.Log(userName + "が突破");
+
+        // カメラのターゲットが自分の場合は処理を終了
+        if (targetCameraController.currentTargetId == RoomModel.Instance.ConnectionId) return;
+
+        // 現在のカメラのターゲットと同一人物の場合は切り替える
+        if (connectionId == targetCameraController.currentTargetId)
+        {
+            bool isSucsess = targetCameraController.SearchAndChangeTarget();
+
+            // カメラのターゲットの切り替え先が存在しない場合
+            if (!isSucsess) 
+            {
+                // 次のエリアに移動する準備をする
+                StartCoroutine(areaController.ReadyNextAreaCoroutine());
+            }
+        }
+    }
+
+    /// <summary>
+    /// 次のエリアに移動する準備が完了リクエスト
+    /// </summary>
+    public async void OnReadyNextArea(bool isLastArea)
+    {
+        await RoomModel.Instance.OnReadyNextAreaAsynk(isLastArea);
+    }
+
+    /// <summary>
+    /// 全員が次のエリアに移動する準備が完了した通知
+    /// </summary>
+    void NotifyRedyNextAreaAllUsers(float restarningWaitSec)
+    {
+        var myCharacter = characterList[RoomModel.Instance.ConnectionId];
+
+        // ゲーム再開処理
+        StartCoroutine(areaController.RestarningGameCoroutine(myCharacter,restarningWaitSec));
+    }
+
+    // 一旦終了処理 #######################################################################################
+    /// <summary>
+    /// 最後の競技が終了した通知
+    /// </summary>
+    void NotifyAfterFinalGameUser()
+    {
+        // 最終結果発表シーンに遷移
+        StopCoroutine(UpdateCoroutine());
+        SceneControler.Instance.StartSceneLoad("FinalResultsScene");
     }
 }

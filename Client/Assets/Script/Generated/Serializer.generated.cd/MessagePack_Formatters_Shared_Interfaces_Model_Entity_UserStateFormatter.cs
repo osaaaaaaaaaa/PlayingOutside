@@ -27,9 +27,14 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                 return;
             }
 
-            writer.WriteArrayHeader(2);
-            writer.Write(value.isReady);
+            writer.WriteArrayHeader(7);
+            writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
+            writer.Write(value.isAreaCleared);
+            writer.Write(value.areaGoalRank);
+            writer.Write(value.score);
+            writer.Write(value.isReadyNextArea);
+            writer.Write(value.isTransitionFinalResultScene);
         }
 
         public global::Shared.Interfaces.Model.Entity.UserState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -48,10 +53,25 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                 switch (i)
                 {
                     case 0:
-                        ____result.isReady = reader.ReadBoolean();
+                        ____result.isReadyRoom = reader.ReadBoolean();
                         break;
                     case 1:
                         ____result.isCountdownOver = reader.ReadBoolean();
+                        break;
+                    case 2:
+                        ____result.isAreaCleared = reader.ReadBoolean();
+                        break;
+                    case 3:
+                        ____result.areaGoalRank = reader.ReadInt32();
+                        break;
+                    case 4:
+                        ____result.score = reader.ReadInt32();
+                        break;
+                    case 5:
+                        ____result.isReadyNextArea = reader.ReadBoolean();
+                        break;
+                    case 6:
+                        ____result.isTransitionFinalResultScene = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

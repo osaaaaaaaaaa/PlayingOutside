@@ -14,19 +14,65 @@ namespace Shared.Interfaces.StreamingHubs
         // クライアント側からサーバー側を呼び出す関数を定義する
         //*********************************************************
 
-        // ユーザー入室
+        /// <summary>
+        /// ユーザー入室
+        /// </summary>
+        /// <param name="roomName">ルーム名</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <returns></returns>
         Task<JoinedUser[]> JoinAsynk(string roomName,int userId);
 
-        // ユーザー退室
+        /// <summary>
+        /// ユーザー退室
+        /// </summary>
+        /// <returns></returns>
         Task LeaveAsynk();
 
-        // プレイヤー情報更新
+        /// <summary>
+        /// プレイヤー情報更新
+        /// </summary>
+        /// <param name="state">プレイヤー情報</param>
+        /// <returns></returns>
         Task UpdatePlayerStateAsynk(PlayerState state);
 
-        // 準備完了したかどうか
+        #region ゲーム開始までの処理
+        /// <summary>
+        /// 準備完了したかどうか
+        /// </summary>
+        /// <param name="isAllUsersReady">全員が準備完了できたかどうか</param>
+        /// <returns></returns>
         Task OnReadyAsynk(bool isAllUsersReady);
 
-        // ゲーム開始前のカウントダウンが終了
+        /// <summary>
+        /// ゲーム開始前のカウントダウンが終了
+        /// </summary>
+        /// <returns></returns>
         Task OnCountdownOverAsynk();
+        #endregion
+
+        #region 競技『カントリーリレー』の処理
+        /// <summary>
+        /// エリアをクリアした処理
+        /// </summary>
+        /// <returns></returns>
+        Task OnAreaClearedAsynk();
+
+        /// <summary>
+        /// 次のエリア(またはシーン)に移動する準備が完了した処理
+        /// </summary>
+        /// <returns></returns>
+        Task OnReadyNextAreaAsynk(bool isLastArea);
+        #endregion
+
+        #region ゲーム終了までの処理(最終結果発表シーンの処理)
+
+        /// <summary>
+        /// 最終結果発表シーンに遷移した処理
+        /// </summary>
+        /// <returns></returns>
+        Task OnTransitionFinalResultSceneAsynk();
+
+
+        #endregion
     }
 }

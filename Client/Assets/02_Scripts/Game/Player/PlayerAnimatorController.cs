@@ -3,15 +3,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class PlayerAnimatorController : MonoBehaviour
 {
     Animator animator;
+
+    // 立ち上がったかどうか
     public bool isStandUp { get; private set; }
+    // ノックバック中かどうか
     bool isKnockBackAnim;
+    // 無敵状態かどうか
+    public bool isInvincible { get; private set; }
+
+    #region メッシュ関係
+    [SerializeField] List<SkinnedMeshRenderer> skinnedMeshs;
+    [SerializeField] MeshRenderer meshMain;
+    #endregion
 
     public enum ANIM_ID
     {
@@ -21,7 +30,7 @@ public class PlayerAnimatorController : MonoBehaviour
         Die = 11,
         Run = 15,
         RunFast = 18,
-        StandUp = 19,
+        StandUp02 = 20,
     }
 
     private void Awake()
@@ -39,7 +48,7 @@ public class PlayerAnimatorController : MonoBehaviour
             isKnockBackAnim = false;
             var angle = transform.eulerAngles;
             transform.eulerAngles = new Vector3(0, angle.y, angle.z);
-            animator.SetInteger("animation", (int)ANIM_ID.StandUp);
+            animator.SetInteger("animation", (int)ANIM_ID.StandUp02);
         }
     }
 
@@ -68,9 +77,34 @@ public class PlayerAnimatorController : MonoBehaviour
     public void EndStandUpAnim() 
     {
         isStandUp = true;
-        SetInt(ANIM_ID.IdleB);
 
         // 無敵状態のアニメーション
-        StartCoroutine(GetComponent<PlayerController>().FlashCoroutine());
+        StartCoroutine(FlashCoroutine());
+        SetInt(ANIM_ID.IdleB);
+    }
+
+    /// <summary>
+    /// 点滅処理
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator FlashCoroutine()
+    {
+        isInvincible = true;
+        animator.SetBool("is_invincible", true);
+
+        float waitSec = 0.125f;
+        for (float i = 0; i < 1; i += waitSec)
+        {
+            yield return new WaitForSeconds(waitSec);
+
+            foreach (var meshs in skinnedMeshs)
+            {
+                meshs.enabled = !meshs.enabled;
+            }
+            meshMain.enabled = !meshMain.enabled;
+        }
+
+        isInvincible = false;
+        animator.SetBool("is_invincible", false);
     }
 }

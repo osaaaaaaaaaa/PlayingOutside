@@ -80,8 +80,7 @@ public class RoomDirector : MonoBehaviour
 
         // プレイヤーの初期化処理
         bool isMyCharacter = user.ConnectionId == RoomModel.Instance.ConnectionId;
-        Debug.Log(user.JoinOrder);
-        character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1].position);
+        character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1]);
 
         // ユーザー名の初期化処理
         Color colorText = isMyCharacter ? Color.white : Color.green;
@@ -94,7 +93,7 @@ public class RoomDirector : MonoBehaviour
         if (isMyCharacter)
         {
             // 自分のモデルにカメラのターゲットを設定
-            targetCameraController.InitCamera(character.transform,0);
+            targetCameraController.InitCamera(character.transform,0,user.ConnectionId);
 
             // ロード画面を閉じる
             SceneControler.Instance.StopSceneLoad();
@@ -111,6 +110,7 @@ public class RoomDirector : MonoBehaviour
     /// </summary>
     public async void LeaveRoom()
     {
+        StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.LeaveAsync();
 
         SceneControler.Instance.StartSceneLoad("TopScene");
@@ -143,12 +143,14 @@ public class RoomDirector : MonoBehaviour
     /// </summary>
     public async void UpdatePlayerState()
     {
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
         var character = characterList[RoomModel.Instance.ConnectionId];
         PlayerState playerState = new PlayerState()
         {
             position = character.transform.position,
             angle = character.transform.eulerAngles,
             animationId = character.GetComponent<PlayerAnimatorController>().GetAnimId(),
+            isActiveSelf = true,
         };
         await RoomModel.Instance.UpdatePlayerStateAsync(playerState);
     }

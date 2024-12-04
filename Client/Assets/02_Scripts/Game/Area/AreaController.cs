@@ -4,16 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using static AreaController;
+using Unity.VisualScripting;
 
 public class AreaController : MonoBehaviour
 {
-    [SerializeField] List<GameObject> startPoints;    // エリア１を除く、各エリアのスタート地点
+    [SerializeField] GameDirector gameDirector;
     [SerializeField] TargetCameraController targetCameraController;
 
+    [SerializeField] List<GameObject> startPoints;    // 各エリアのスタート地点
+    [SerializeField] List<GameObject> gimmicks;       // エリア毎のギミック
+
+    [SerializeField] GameObject finishUI;
+    [SerializeField] GameObject spectatingUI;
     [SerializeField] GameObject imageBlackObj;
     Image imageBlack;
 
-    [SerializeField] List<GameObject> gimmicks; // エリア毎のギミック
+    const float fadeTime = 0.5f;
 
     public enum AREA_ID
     {
@@ -26,65 +32,115 @@ public class AreaController : MonoBehaviour
     {
         imageBlack = imageBlackObj.GetComponent<Image>();
 
-        foreach(var gimmick in gimmicks)
+        foreach (var gimmick in gimmicks)
         {
             gimmick.SetActive(false);
         }
     }
 
     /// <summary>
-    /// エリアのゴール処理
+    /// 現在のエリアをクリアした処理
     /// </summary>
-    public void AreaGoal(bool isDebug, GameObject player)
+    public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
-        // ゴールしたのが最後のエリアの場合
-        if (areaId == AREA_ID.AREA_2)
+        bool isLastArea = (areaId == AREA_ID.AREA_2);
+        // サーバーなしの場合のみ使用、最終的にisDebugを削除
+        if (gameDirector.isDebug)
         {
-            Debug.Log("ゴール!!");
-        }
-        else if(!isDebug)
-        {
-            HideGameScrean();
+            if (isLastArea)
+            {
+                Debug.Log("ゴール!!");
+            }
+            else
+            {
+                StartCoroutine(RestarningGameCoroutine(player, 1));
+            }
+
+            // このコルーチンを停止
+            yield break;
         }
 
-        // サーバーなしの場合のみ使用、最終的にisDebugを削除
-        else if (isDebug)
+        // エリアクリア処理をリクエスト
+        gameDirector.OnAreaCleared();
+
+        // まだ他にエリアをクリアしていないプレイヤーがいるかチェック
+        if (targetCameraController.IsOtherTarget())
         {
-            HideGameScrean();
-            StartCoroutine(RestarningGame((int)areaId, player, 1));
+            // フェードイン
+            imageBlackObj.SetActive(true);
+            imageBlack.DOFade(1f, fadeTime).SetEase(Ease.Linear).OnComplete(() => {
+                // 観戦用のUIを表示する
+                spectatingUI.GetComponent<SpectatingUI>().InitUI(true);
+            });
+            yield return new WaitForSeconds(fadeTime);
+        }
+
+        // 観戦画面を表示することができた場合
+        if (spectatingUI.activeSelf)
+        {
+            imageBlack.DOFade(0f, fadeTime).SetEase(Ease.Linear).OnComplete(() => { imageBlackObj.SetActive(false); });
+        }
+        else
+        {
+            // 自分が最後にエリアをクリアした場合
+            StartCoroutine(ReadyNextAreaCoroutine());
         }
     }
 
     /// <summary>
-    /// 画面を隠す(フェードイン)
+    /// 次のエリアに移動する準備
     /// </summary>
-    public void HideGameScrean()
+    public IEnumerator ReadyNextAreaCoroutine()
     {
-        areaId++;
+        DOTween.Kill(imageBlack);
+        bool isLastArea = (areaId == AREA_ID.AREA_2);
+        float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
 
+        if (isLastArea)
+        {
+            // 現在のエリアが最後のエリアの場合はゲーム終了時のUIを表示
+            finishUI.SetActive(true);
+            yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // 余韻の時間を加算
+        }
+
+        // フェードイン
         imageBlackObj.SetActive(true);
-        imageBlack.DOFade(1f, 0.5f).SetEase(Ease.Linear).OnComplete(() => {
-            gimmicks[(int)areaId - 1].SetActive(false);
+        imageBlack.DOFade(1f, animSec).SetEase(Ease.Linear).OnComplete(() => {
+
+            // 観戦用のUIを非表示する
+            spectatingUI.GetComponent<SpectatingUI>().InitUI(false);
+
+            // 現在のエリアのギミックを非表示
+            gimmicks[(int)areaId].SetActive(false);
+
+            // 次のエリアに移動する準備が完了したリクエスト
+            gameDirector.OnReadyNextArea(isLastArea);
         });
     }
 
     /// <summary>
     /// フェードアウト後にゲーム再開
     /// </summary>
-    public IEnumerator RestarningGame(int _areaId, GameObject player ,float restarningWaitSec)
+    public IEnumerator RestarningGameCoroutine(GameObject player ,float restarningWaitSec)
     {
-        // 次のエリアに移動する
-        player.transform.position = startPoints[_areaId].transform.position;
-        targetCameraController.InitCamera(null, _areaId);
-        gimmicks[_areaId].SetActive(true);
+        areaId++;
+        Debug.Log("エリアのID："+ (int)areaId);
 
-        imageBlack.DOFade(0f, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
+        // 次のエリアのギミックを表示
+        gimmicks[(int)areaId].SetActive(true);
+
+        // 次のエリアに移動する && カメラをセットアップ
+        player.transform.position = startPoints[(int)areaId].transform.position;
+        targetCameraController.InitCamera(player.transform, (int)areaId,RoomModel.Instance.ConnectionId);
+
+        // フェードアウト
+        imageBlack.DOFade(0f, fadeTime).SetEase(Ease.Linear).OnComplete(() =>
         {
             imageBlackObj.SetActive(false);
         });
 
         // 指定された時間差で動けるようにする
-        yield return new WaitForSeconds(0.5f + restarningWaitSec);
+        yield return new WaitForSeconds(fadeTime + restarningWaitSec);
         player.SetActive(true);
     }
 }

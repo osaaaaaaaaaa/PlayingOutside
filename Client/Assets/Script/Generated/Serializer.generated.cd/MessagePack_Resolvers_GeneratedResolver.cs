@@ -47,13 +47,14 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(5)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(6)
             {
                 { typeof(global::Server.Model.Entity.User), 0 },
                 { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 1 },
                 { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 2 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 3 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 4 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 3 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 4 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 5 },
             };
         }
 
@@ -70,8 +71,9 @@ namespace MessagePack.Resolvers
                 case 0: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
                 case 1: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
                 case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }
