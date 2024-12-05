@@ -54,7 +54,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="userName"></param>
-        void OnAreaCleared(Guid connectionId, string userName);
+        void OnAreaCleared(Guid connectionId, string userName, bool isClearedAllUsers);
 
         /// <summary>
         /// 全員が次のエリアに移動する準備が完了した通知(ゲーム再開通知)

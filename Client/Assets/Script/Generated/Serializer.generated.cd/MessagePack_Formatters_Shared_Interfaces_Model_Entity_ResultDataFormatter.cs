@@ -28,8 +28,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(3);
+            writer.WriteArrayHeader(4);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.connectionId, options);
+            writer.Write(value.joinOrder);
             writer.Write(value.rank);
             writer.Write(value.score);
         }
@@ -54,9 +55,12 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         ____result.connectionId = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     case 1:
-                        ____result.rank = reader.ReadInt32();
+                        ____result.joinOrder = reader.ReadInt32();
                         break;
                     case 2:
+                        ____result.rank = reader.ReadInt32();
+                        break;
+                    case 3:
                         ____result.score = reader.ReadInt32();
                         break;
                     default:

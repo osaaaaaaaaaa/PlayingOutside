@@ -14,19 +14,21 @@ public class GameDirector : MonoBehaviour
     [SerializeField] AreaController areaController;
     [SerializeField] GameStartCountDown gameStartCountDown;
     [SerializeField] TargetCameraController targetCameraController;
+    [SerializeField] SpectatingUI spectatingUI;
 
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
 
     const float waitSeconds = 0.1f;
-
+    bool isCountDownOver;
 
     public bool isDebug = false;
 
     private void Start()
     {
         if (isDebug) return;
+        isCountDownOver = false;
 
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -168,6 +170,8 @@ public class GameDirector : MonoBehaviour
     /// <param name="user"></param>
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
+        if (!isCountDownOver) return;
+
         // プレイヤーの存在チェック
         if (!characterList.ContainsKey(connectionId)) return;
 
@@ -183,6 +187,7 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public async void OnCountdownOver()
     {
+        isCountDownOver = true;
         await RoomModel.Instance.OnCountdownOverAsynk();
     }
 
@@ -207,25 +212,30 @@ public class GameDirector : MonoBehaviour
     /// <summary>
     /// 現在のエリアをクリアした通知
     /// </summary>
-    void NotifyAreaClearedUser(Guid connectionId,string userName)
+    void NotifyAreaClearedUser(Guid connectionId,string userName, bool isClearedAllUsers)
     {
         // クリアしたユーザー名を表示する
         Debug.Log(userName + "が突破");
 
+        if (isClearedAllUsers)
+        {
+            // 全員が現在のエリアをクリアした場合、次のエリアに移動する準備をする
+            StartCoroutine(areaController.ReadyNextAreaCoroutine());
+            return;
+        }
+
         // カメラのターゲットが自分の場合は処理を終了
         if (targetCameraController.currentTargetId == RoomModel.Instance.ConnectionId) return;
 
-        // 現在のカメラのターゲットと同一人物の場合は切り替える
-        if (connectionId == targetCameraController.currentTargetId)
-        {
-            bool isSucsess = targetCameraController.SearchAndChangeTarget();
+        // 他にカメラのターゲットの切り替え先が存在するかチェック
+        bool isTarget = targetCameraController.IsOtherTarget();
+        if (targetCameraController.activeTargetCnt == 1) spectatingUI.SetupButton(false);
 
-            // カメラのターゲットの切り替え先が存在しない場合
-            if (!isSucsess) 
-            {
-                // 次のエリアに移動する準備をする
-                StartCoroutine(areaController.ReadyNextAreaCoroutine());
-            }
+        // 現在のカメラのターゲットとクリアした人が同一人物かどうか
+        if (isTarget && connectionId == targetCameraController.currentTargetId)
+        {
+            // カメラのターゲットの切り替え先が存在する場合は切り替える
+            spectatingUI.OnChangeTargetBtn();
         }
     }
 

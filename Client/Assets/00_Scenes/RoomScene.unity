@@ -6074,6 +6074,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094b410f026f64b4094999bfcd7dab29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotate: []
+  followOffset: []
+  gameDirector: {fileID: 0}
+  debug_areaId: 0
 --- !u!1 &757456018
 GameObject:
   m_ObjectHideFlags: 0
@@ -6351,10 +6355,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.040584773
-    y: 0
-    width: 0.91883045
-    height: 1
+    x: 0
+    y: 0.00013384223
+    width: 1
+    height: 0.9997323
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60.000004
@@ -15481,7 +15485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0.9547169, g: 0.7955526, b: 0.61786395, a: 1}
+  m_EffectColor: {r: 0.21509439, g: 0.13660045, b: 0.048294753, a: 1}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
 --- !u!114 &2114412374

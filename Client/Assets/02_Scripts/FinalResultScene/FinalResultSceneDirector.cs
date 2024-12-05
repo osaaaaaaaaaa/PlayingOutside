@@ -186,12 +186,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     /// <returns></returns>
     IEnumerator ShowResultsCoroutine(ResultData[] result,Guid winnerId)
     {
-        int[] scores = new int[result.Length];
-        for (int i = 0; i < result.Length; i++) 
-        {
-            scores[i] = result[i].score;
-        }
-        totalScoreUIController.Init(characterList.Count, scores);
+        totalScoreUIController.Init(result);
         yield return new WaitForSeconds(1f);
 
         totalScoreUIController.PlayAnim();
@@ -205,7 +200,7 @@ public class FinalResultSceneDirector : MonoBehaviour
         yield return new WaitForSeconds(1f);    // 王冠のアニメーションが終了する時間
 
         particleController.GenerateParticles(characterList[winnerId].transform);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);  // パーティクルの生存時間
 
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;

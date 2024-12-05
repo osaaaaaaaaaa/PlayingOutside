@@ -36,6 +36,7 @@ public class AreaController : MonoBehaviour
         {
             gimmick.SetActive(false);
         }
+        gimmicks[(int)areaId].SetActive(true);
     }
 
     /// <summary>

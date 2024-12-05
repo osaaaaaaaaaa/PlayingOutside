@@ -17,16 +17,11 @@ public class HayController : MonoBehaviour
 
     IEnumerator GenerateCoroutine()
     {
-        yield return new WaitForSeconds(waitSeconds);
-
-        while (true) 
+        while (true)
         {
-            yield return new WaitForSeconds(1f);
-            if (hayObj == null)
-            {
-                hayObj = Instantiate(hayPrefab, transform);
-                hayObj.GetComponent<Hay>().Init(addForse);
-            }
+            yield return new WaitForSeconds(waitSeconds);
+            hayObj = Instantiate(hayPrefab, transform);
+            hayObj.GetComponent<Hay>().Init(addForse);
         }
     }
 }

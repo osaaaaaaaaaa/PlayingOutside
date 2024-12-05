@@ -3,44 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Shared.Interfaces.Model.Entity;
 
 public class TotalScoreUIController : MonoBehaviour
 {
     [SerializeField] List<GameObject> textParents;
     [SerializeField] List<Text> textScores;
-    int[] scores;
+    ResultData[] resultData;
 
-    private void Start()
+    private void Awake()
     {
-        PlayAnim();
+        for (int i = 0; i < textParents.Count; i++)
+        {
+            textParents[i].SetActive(false);
+        }
     }
 
-    public void Init(int activeSelfNum, int[] _scores)
+    public void Init(ResultData[] resultData)
     {
-        scores = new int[_scores.Length];
-        scores = _scores;
-        for (int i = 0; i < textParents.Count; i++) 
+        this.resultData = new ResultData[resultData.Length];
+        this.resultData = resultData;
+
+        var currentUsers = RoomModel.Instance.JoinedUsers;
+        foreach (var result in resultData) 
         {
-            // 指定された数のUIを表示する
-            textParents[i].SetActive(i < activeSelfNum);
+            textParents[result.joinOrder - 1].SetActive(true);
         }
     }
 
     public void PlayAnim()
     {
-        foreach (var text in textScores)
+        for (int i = 0; i < textParents.Count; i++)
         {
-            // 4桁でランダムな数字をアニメーション
-            text.DOText("0000", 9999, true,ScrambleMode.Numerals).SetEase(Ease.Linear);
+            if (textParents[i].activeSelf)
+            {
+                // 4桁でランダムな数字をアニメーション
+                textScores[i].DOText("0000", 9999, true, ScrambleMode.Numerals).SetEase(Ease.Linear); 
+            }
         }
     }
 
     public void StopAnim()
     {
-        for (int i = 0; i < scores.Length; i++)
+        foreach (var result in resultData)
         {
-            DOTween.Kill(textScores[i]);
-            textScores[i].text = scores[i].ToString();
+            DOTween.Kill(textParents[result.joinOrder - 1]);
+            textScores[result.joinOrder - 1].text = result.score.ToString();
         }
     }
 }

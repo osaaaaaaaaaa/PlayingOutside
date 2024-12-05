@@ -13,8 +13,10 @@ namespace Shared.Interfaces.Model.Entity
         [Key(0)]
         public Guid connectionId { get; set; }
         [Key(1)]
-        public int rank { get; set; }
+        public int joinOrder { get; set; }
         [Key(2)]
+        public int rank { get; set; }
+        [Key(3)]
         public int score { get; set; }
     }
 }

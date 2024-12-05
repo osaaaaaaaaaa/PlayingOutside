@@ -45,7 +45,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #region 競技『カントリーリレー』の処理
     // 現在のエリアをクリアした通知
-    public Action<Guid,string> OnAreaClearedUser { get; set; }
+    public Action<Guid,string,bool> OnAreaClearedUser { get; set; }
     // 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
     public Action<float> OnReadyNextAreaUser { get; set; }
     #endregion
@@ -281,9 +281,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// [IRoomHubReceiverのインターフェイス]
     /// 現在のエリアをクリアした通知
     /// </summary>
-    public void OnAreaCleared(Guid connectionId, string userName)
+    public void OnAreaCleared(Guid connectionId, string userName, bool isClearedAllUsers)
     {
-        if (userState == USER_STATE.joined) OnAreaClearedUser(connectionId,userName);
+        if (userState == USER_STATE.joined) OnAreaClearedUser(connectionId, userName, isClearedAllUsers);
     }
 
     /// <summary>

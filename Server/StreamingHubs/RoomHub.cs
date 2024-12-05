@@ -17,7 +17,7 @@ namespace Server.StreamingHubs
         const int maxUsers = 4;
         // ゲーム開始可能人数
         const int minRequiredUsers = 2;
-
+        // 加算するスコアのベース
         const int baseAddScore = 100;
 
         /// <summary>
@@ -209,8 +209,15 @@ namespace Server.StreamingHubs
             data.UserState.areaGoalRank = GetAreaGoalRank(roomDataList);
             data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
 
+            // 全員が現在のエリアをクリアしたかチェック
+            int readyCnt = 0;
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.UserState.isAreaCleared) readyCnt++;
+            }
+
             // エリアのクリア通知を自分以外に配る
-            this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId,data.JoinedUser.UserData.Name);
+            this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId,data.JoinedUser.UserData.Name,(readyCnt == roomDataList.Length));
         }
 
         int GetAreaGoalRank(RoomData[] roomData)
@@ -266,7 +273,7 @@ namespace Server.StreamingHubs
                 // まだ次のエリアが存在する場合
                 else
                 {
-                    const float baseWaitSec = 1f;
+                    const float baseWaitSec = 0.8f;
                     foreach (var roomData in roomDataList)
                     {
                         float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
@@ -317,6 +324,7 @@ namespace Server.StreamingHubs
             {
                 resultData[i] = new ResultData() { 
                     connectionId = roomData[i].JoinedUser.ConnectionId,
+                    joinOrder = roomData[i].JoinedUser.JoinOrder,
                     rank = 0,
                     score = roomData[i].UserState.score
                 };

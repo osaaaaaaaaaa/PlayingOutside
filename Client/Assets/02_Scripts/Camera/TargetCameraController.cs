@@ -35,6 +35,12 @@ public class TargetCameraController : MonoBehaviour
     {
         if (target != null)
         {
+            // 一瞬でターゲットの視点に入れ替える
+            camera.Follow = null;
+            camera.LookAt = null;
+            transform.position = target.position + cameraTransposer.m_FollowOffset;
+
+            // ターゲットの設定
             camera.Follow = target;
             camera.LookAt = target;
             currentTargetId = targetId;

@@ -36,17 +36,16 @@ public class SpectatingUI : MonoBehaviour
 
             // 名前取得＆テキスト変更
             var name = RoomModel.Instance.JoinedUsers[camera.currentTargetId].UserData.Name;
-            textTargetName.GetComponent<Text>().text = name;
-        }
-        // カメラのターゲットの切り替え先が存在しない場合
-        else
-        {
-            this.gameObject.SetActive(false);
-            textTargetName.SetActive(false);
-            btnChangeTarget.SetActive(false);
+            textTargetName.GetComponent<Text>().text = name + "を観戦中";
+            SetupButton(true);
         }
 
-        // カメラのターゲットの対象が１人しかいない場合
-        if (camera.activeTargetCnt == 1) btnChangeTarget.GetComponent<Button>().interactable = false;
+        // カメラのターゲットの対象が１人しかいない(これ以上切り替えられない)場合
+        if (camera.activeTargetCnt == 1) SetupButton(false);
+    }
+
+    public void SetupButton(bool interactable)
+    {
+        btnChangeTarget.GetComponent<Button>().interactable = interactable;
     }
 }
