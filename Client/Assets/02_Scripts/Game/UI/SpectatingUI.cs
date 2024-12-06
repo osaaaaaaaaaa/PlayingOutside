@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class SpectatingUI : MonoBehaviour
 {
+    [SerializeField] TargetCameraController camera;
+
     [SerializeField] GameObject textTargetName;
     [SerializeField] GameObject btnChangeTarget;
-
-    [SerializeField] TargetCameraController camera;
 
     public void InitUI(bool isActiveSelf)
     {

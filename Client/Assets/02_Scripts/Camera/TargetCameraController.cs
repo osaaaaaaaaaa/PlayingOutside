@@ -2,7 +2,10 @@ using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.Universal.Internal;
+using UnityEngine.TextCore.Text;
 
 public class TargetCameraController : MonoBehaviour
 {
@@ -12,18 +15,25 @@ public class TargetCameraController : MonoBehaviour
     #endregion
 
     [SerializeField] GameDirector gameDirector;
-    CinemachineVirtualCamera camera;
+    CinemachineVirtualCamera cameraVirtual;
     CinemachineTransposer cameraTransposer;
 
-    public Guid currentTargetId { get; private set; }   // 現在追っているターゲット
+    public int targetIndex;  // 現在追っているターゲットのインデックス番号
+    public Guid currentTargetId { get; private set; }   // 現在追っているターゲットのKey
     public int activeTargetCnt { get; private set; }    // 切り替えることができるターゲットの対象の数
 
     [SerializeField] int debug_areaId = 0;
 
+
+
+    [SerializeField] List<GameObject> testObjs;
+
+
     private void Awake()
     {
-        camera = GetComponent<CinemachineVirtualCamera>();
-        cameraTransposer = camera.GetCinemachineComponent<CinemachineTransposer>(); ;
+        targetIndex = 0;
+        cameraVirtual = GetComponent<CinemachineVirtualCamera>();
+        cameraTransposer = cameraVirtual.GetCinemachineComponent<CinemachineTransposer>();
 
         if(debug_areaId > 0)
         {
@@ -31,19 +41,40 @@ public class TargetCameraController : MonoBehaviour
         }
     }
 
+    IEnumerator ResetDamping(float defDampingX,float defDampingY, float defDampingZ)
+    {
+        yield return null;
+        cameraTransposer.m_XDamping = defDampingX;
+        cameraTransposer.m_YDamping = defDampingY;
+        cameraTransposer.m_ZDamping = defDampingZ;
+    }
+
     public void InitCamera(Transform target,int areaId, Guid targetId)
     {
         if (target != null)
         {
-            // 一瞬でターゲットの視点に入れ替える
-            camera.Follow = null;
-            camera.LookAt = null;
+            // 元のDampingを保持
+            float defDampingX = cameraTransposer.m_XDamping;
+            float defDampingY = cameraTransposer.m_YDamping;
+            float defDampingZ = cameraTransposer.m_ZDamping;
+
+            // Dampingを一時的にリセット
+            cameraTransposer.m_XDamping = 0;
+            cameraTransposer.m_YDamping = 0;
+            cameraTransposer.m_ZDamping = 0;
+
+            // ターゲットを一旦解除して瞬時に移動
+            cameraVirtual.Follow = null;
+            cameraVirtual.LookAt = null;
             transform.position = target.position + cameraTransposer.m_FollowOffset;
 
-            // ターゲットの設定
-            camera.Follow = target;
-            camera.LookAt = target;
+            // ターゲットを再設定
+            cameraVirtual.Follow = target;
+            cameraVirtual.LookAt = target;
             currentTargetId = targetId;
+
+            // 遅延実行でDampingを元に戻す
+            StartCoroutine(ResetDamping(defDampingX, defDampingY, defDampingZ));
         }
 
         if (rotate.Count == 0 || followOffset.Count == 0 || areaId == 0) return;
@@ -61,18 +92,30 @@ public class TargetCameraController : MonoBehaviour
     {
         bool isSucsess = false;
         activeTargetCnt = 0;
-        foreach (var character in gameDirector.characterList)
+
+        // キャラクターのKeyを取得
+        Guid[] guidCharacters = new Guid[gameDirector.characterList.Count];
+        guidCharacters = gameDirector.characterList.Keys.ToArray();
+
+        // ターゲットの検索開始
+        int tmpTargetIndex = targetIndex;
+        for (int i = 0; i < guidCharacters.Length; i++)
         {
-            if (!isSucsess && character.Key != RoomModel.Instance.ConnectionId
-                && currentTargetId != character.Key && character.Value.activeSelf)
+            // keyを取得
+            tmpTargetIndex++;
+            tmpTargetIndex = tmpTargetIndex < guidCharacters.Length ? tmpTargetIndex : 0;
+            Guid key = guidCharacters[tmpTargetIndex];
+
+            if (!isSucsess && key != RoomModel.Instance.ConnectionId
+                && currentTargetId != key && gameDirector.characterList[key].activeSelf)
             {
                 // カメラのターゲット切り替え
-                InitCamera(character.Value.transform, 0, character.Key);
-
+                InitCamera(gameDirector.characterList[key].transform, 0, key);
                 isSucsess = true;
+                targetIndex = tmpTargetIndex;
             }
 
-            if (character.Value.activeSelf) activeTargetCnt++;
+            if (gameDirector.characterList[key].activeSelf) activeTargetCnt++;
         }
 
         return isSucsess;

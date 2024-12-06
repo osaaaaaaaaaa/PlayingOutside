@@ -47,7 +47,7 @@ public class TotalScoreUIController : MonoBehaviour
     {
         foreach (var result in resultData)
         {
-            DOTween.Kill(textParents[result.joinOrder - 1]);
+            DOTween.Kill(textScores[result.joinOrder - 1]);
             textScores[result.joinOrder - 1].text = result.score.ToString();
         }
     }

@@ -125,7 +125,8 @@ public class FinalResultSceneDirector : MonoBehaviour
     /// </summary>
     public async void UpdatePlayerState()
     {
-        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // 自分の存在チェック
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId) 
+            || characterList[RoomModel.Instance.ConnectionId] == null) return;   // 自分の存在チェック
         var character = characterList[RoomModel.Instance.ConnectionId];
         PlayerState playerState = new PlayerState()
         {
@@ -166,8 +167,6 @@ public class FinalResultSceneDirector : MonoBehaviour
     /// <param name="playerState"></param>
     void NotifyTransitionFinalResultSceneAllUsers(ResultData[] result)
     {
-        StartCoroutine(UpdateCoroutine());
-
         Guid winnerId = new Guid();
         foreach (ResultData resultData in result)
         {
@@ -201,6 +200,8 @@ public class FinalResultSceneDirector : MonoBehaviour
 
         particleController.GenerateParticles(characterList[winnerId].transform);
         yield return new WaitForSeconds(2f);  // パーティクルの生存時間
+
+        StartCoroutine(UpdateCoroutine());
 
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;

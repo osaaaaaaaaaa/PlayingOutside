@@ -226,6 +226,7 @@ public class GameDirector : MonoBehaviour
 
         // カメラのターゲットが自分の場合は処理を終了
         if (targetCameraController.currentTargetId == RoomModel.Instance.ConnectionId) return;
+        characterList[connectionId].SetActive(false);   // 非表示になっていない場合があるため
 
         // 他にカメラのターゲットの切り替え先が存在するかチェック
         bool isTarget = targetCameraController.IsOtherTarget();

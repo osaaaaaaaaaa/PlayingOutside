@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class HS_CameraHolder : MonoBehaviour
 {
-    //camera holder
+    //cameraVirtual holder
     public Transform Holder;
     public Vector3 cameraPos = new Vector3(0, 0, 0);
     public float currDistance = 5.0f;
