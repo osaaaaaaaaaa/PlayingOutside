@@ -31,6 +31,11 @@ namespace Server.StreamingHubs
             // 入室した状態で切断した場合
             if (this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
             {
+                // マスタークライアントの場合は、新しく指名する
+                var roomStorage = room.GetInMemoryStorage<RoomData>();
+                var user = roomStorage.Get(this.ConnectionId).JoinedUser;
+                if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
+
                 // ルームデータを削除
                 this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
 
@@ -61,7 +66,7 @@ namespace Server.StreamingHubs
             // グループストレージにユーザーデータを格納
             var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
-            var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder };
+            var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder , IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0) };
             var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
             roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
 
@@ -115,7 +120,10 @@ namespace Server.StreamingHubs
         public async Task LeaveAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
-            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "が退室しました");
+            var user = roomStorage.Get(this.ConnectionId).JoinedUser;
+            Console.WriteLine(user.UserData.Name + "が退室しました");
+
+            if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
 
             // ルーム参加者にユーザーの退室通知を送信
             this.Broadcast(room).OnLeave(this.ConnectionId);
@@ -124,6 +132,24 @@ namespace Server.StreamingHubs
             this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
             // ルーム内のメンバーから自分を削除
             await room.RemoveAsync(this.Context);
+        }
+
+        /// <summary>
+        /// 新しくマスタークライアントを任命する
+        /// </summary>
+        void AssignNewMasterClient(RoomData[] roomDatas, Guid exclusionId)
+        {
+            foreach (RoomData roomData in roomDatas)
+            {
+                if (roomData.JoinedUser.ConnectionId == exclusionId)
+                {
+                    roomData.JoinedUser.IsMasterClient = false;
+                }
+                else if (!roomData.JoinedUser.IsMasterClient)
+                {
+                    roomData.JoinedUser.IsMasterClient = true;
+                }
+            }
         }
 
         /// <summary>
@@ -209,6 +235,17 @@ namespace Server.StreamingHubs
             data.UserState.areaGoalRank = GetAreaGoalRank(roomDataList);
             data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
 
+            foreach (var roomData in roomDataList)
+            {
+                if(roomData.JoinedUser.IsMasterClient && !roomData.JoinedUser.IsStartCountDown)
+                {
+                    roomData.JoinedUser.IsStartCountDown = true;
+
+                    // マスタークライアントにカウントダウン開始通知を配る
+                    this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnStartCountDown();
+                }
+            }
+
             // 全員が現在のエリアをクリアしたかチェック
             int readyCnt = 0;
             foreach (var roomData in roomDataList)
@@ -251,6 +288,7 @@ namespace Server.StreamingHubs
             // 送信したユーザーのデータを更新
             var data = roomStorage.Get(this.ConnectionId);
             data.UserState.isReadyNextArea = true;
+            Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
 
             // 全員次のエリアに移動する準備が完了したかチェック
             int readyCnt = 0;
@@ -261,6 +299,11 @@ namespace Server.StreamingHubs
 
             if (readyCnt == roomDataList.Length)
             {
+                foreach (var roomData in roomDataList)
+                {
+                    roomData.JoinedUser.IsStartCountDown = false;
+                }
+
                 // 現在のエリアが最後のエリアだった場合
                 if (isLastArea)
                 {
@@ -273,6 +316,7 @@ namespace Server.StreamingHubs
                 // まだ次のエリアが存在する場合
                 else
                 {
+                    Console.WriteLine("再開通知");
                     const float baseWaitSec = 0.8f;
                     foreach (var roomData in roomDataList)
                     {
@@ -288,6 +332,17 @@ namespace Server.StreamingHubs
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// カウントダウン処理
+        /// (マスタークライアントが繰り返し呼び出し)
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
+        public async Task OnCountDownAsynk(int currentTime)
+        {
+            this.Broadcast(room).OnCountDown(currentTime);
         }
 
         /// <summary>

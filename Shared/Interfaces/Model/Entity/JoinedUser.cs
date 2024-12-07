@@ -15,5 +15,9 @@ namespace Shared.Interfaces.Model.Entity
         public User UserData { get; set; }
         [Key(2)]
         public int JoinOrder { get; set; }
+        [Key(3)]
+        public bool IsMasterClient { get; set; }
+        [Key(4)]
+        public bool IsStartCountDown { get; set; }
     }
 }

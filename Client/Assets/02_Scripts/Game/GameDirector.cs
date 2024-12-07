@@ -15,20 +15,25 @@ public class GameDirector : MonoBehaviour
     [SerializeField] GameStartCountDown gameStartCountDown;
     [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] SpectatingUI spectatingUI;
+    [SerializeField] GameObject countDownUIParent;
+    [SerializeField] Text textCountDown;
 
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
 
+    Coroutine coroutineCountDown;
+    int currentTime;
+    bool isGameStartCountDownOver;
+
     const float waitSeconds = 0.1f;
-    bool isCountDownOver;
 
     public bool isDebug = false;
 
     private void Start()
     {
         if (isDebug) return;
-        isCountDownOver = false;
+        isGameStartCountDownOver = false;
 
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -36,6 +41,8 @@ public class GameDirector : MonoBehaviour
         RoomModel.Instance.OnCountdownOverUser += this.NotifyStartGame;
         RoomModel.Instance.OnAreaClearedUser += this.NotifyAreaClearedUser;
         RoomModel.Instance.OnReadyNextAreaUser += this.NotifyRedyNextAreaAllUsers;
+        RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
+        RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
 
         // 一時的
         RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
@@ -51,6 +58,8 @@ public class GameDirector : MonoBehaviour
         RoomModel.Instance.OnCountdownOverUser -= this.NotifyStartGame;
         RoomModel.Instance.OnAreaClearedUser -= this.NotifyAreaClearedUser;
         RoomModel.Instance.OnReadyNextAreaUser -= this.NotifyRedyNextAreaAllUsers;
+        RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
+        RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
 
         // 一時的
         RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
@@ -62,6 +71,17 @@ public class GameDirector : MonoBehaviour
         {
             UpdatePlayerState();
             yield return new WaitForSeconds(waitSeconds);
+        }
+    }
+
+    IEnumerator CountDownCoroutine()
+    {
+        if (currentTime == 0) currentTime = 11;
+        while (currentTime > 0)
+        {
+            currentTime--;
+            OnCountDown();
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -170,7 +190,7 @@ public class GameDirector : MonoBehaviour
     /// <param name="user"></param>
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
-        if (!isCountDownOver) return;
+        if (!isGameStartCountDownOver) return;
 
         // プレイヤーの存在チェック
         if (!characterList.ContainsKey(connectionId)) return;
@@ -187,7 +207,7 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public async void OnCountdownOver()
     {
-        isCountDownOver = true;
+        isGameStartCountDownOver = true;
         await RoomModel.Instance.OnCountdownOverAsynk();
     }
 
@@ -219,6 +239,9 @@ public class GameDirector : MonoBehaviour
 
         if (isClearedAllUsers)
         {
+            // カウントダウンのコルーチンを停止する
+            coroutineCountDown = null;
+
             // 全員が現在のエリアをクリアした場合、次のエリアに移動する準備をする
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
             return;
@@ -253,10 +276,49 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     void NotifyRedyNextAreaAllUsers(float restarningWaitSec)
     {
+        countDownUIParent.SetActive(false);
+        coroutineCountDown = null;
+        currentTime = 0;
+
         var myCharacter = characterList[RoomModel.Instance.ConnectionId];
+        myCharacter.SetActive(false);
 
         // ゲーム再開処理
         StartCoroutine(areaController.RestarningGameCoroutine(myCharacter,restarningWaitSec));
+    }
+
+    /// <summary>
+    /// カウントダウン開始通知
+    /// </summary>
+    void NotifyStartCountDown()
+    {
+        if (coroutineCountDown == null) coroutineCountDown = StartCoroutine(CountDownCoroutine());
+    }
+
+    /// <summary>
+    /// カウントダウン処理
+    /// (マスタークライアントが処理)
+    /// </summary>
+    public async void OnCountDown()
+    {
+        if (currentTime >= 0) await RoomModel.Instance.OnCountDownAsynk(currentTime);
+    }
+
+    /// <summary>
+    /// カウントダウン通知
+    /// </summary>
+    /// <param name="currentTime"></param>
+    void NotifyCountDownUser(int currentTime)
+    {
+        if(coroutineCountDown == null) this.currentTime = currentTime;
+        countDownUIParent.SetActive(true);
+        textCountDown.text = currentTime.ToString();
+
+        // まだクリアしていない && カウントダウンが0以下になったら、次のエリアへ強制移動
+        if (!areaController.isClearedArea && currentTime == 0)
+        {
+            StartCoroutine(areaController.ReadyNextAreaCoroutine());
+        }
     }
 
     // 一旦終了処理 #######################################################################################

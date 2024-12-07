@@ -28,10 +28,12 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(3);
+            writer.WriteArrayHeader(5);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.ConnectionId, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Serialize(ref writer, value.UserData, options);
             writer.Write(value.JoinOrder);
+            writer.Write(value.IsMasterClient);
+            writer.Write(value.IsStartCountDown);
         }
 
         public global::Shared.Interfaces.Model.Entity.JoinedUser Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -58,6 +60,12 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 2:
                         ____result.JoinOrder = reader.ReadInt32();
+                        break;
+                    case 3:
+                        ____result.IsMasterClient = reader.ReadBoolean();
+                        break;
+                    case 4:
+                        ____result.IsStartCountDown = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

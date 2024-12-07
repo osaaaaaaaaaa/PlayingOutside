@@ -61,6 +61,17 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="restarningWaitSec">ゲーム再開までの待機時間(順位によって変動)</param>
         void OnReadyNextAreaAllUsers(float restarningWaitSec);
+
+        /// <summary>
+        /// カウントダウン開始通知
+        /// </summary>
+        void OnStartCountDown();
+
+        /// <summary>
+        /// カウントダウン通知
+        /// </summary>
+        /// <param name="currentTime"></param>
+        void OnCountDown(int currentTime);
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

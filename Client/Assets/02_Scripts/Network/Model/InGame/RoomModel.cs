@@ -48,6 +48,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid,string,bool> OnAreaClearedUser { get; set; }
     // 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
     public Action<float> OnReadyNextAreaUser { get; set; }
+    // カウントダウン開始通知
+    public Action OnStartCountDownUser { get; set; }
+    // カウントダウン通知
+    public Action<int> OnCountDownUser { get; set; }
     #endregion
 
     #region ゲーム終了までの処理(最終結果発表シーンの処理)
@@ -303,6 +307,37 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnReadyNextAreaAllUsers(float restarningWaitSec)
     {
         if (userState == USER_STATE.joined) OnReadyNextAreaUser(restarningWaitSec);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// カウントダウン開始通知
+    /// </summary>
+    /// <param name="restarningWaitSec"></param>
+    public void OnStartCountDown()
+    {
+        if (userState == USER_STATE.joined) OnStartCountDownUser();
+    }
+
+    /// <summary>
+    /// カウントダウン処理
+    /// (マスタークライアントが処理)
+    /// </summary>
+    /// <param name="currentTime"></param>
+    /// <returns></returns>
+    public async UniTask OnCountDownAsynk(int currentTime)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnCountDownAsynk(currentTime);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// カウントダウン通知
+    /// </summary>
+    /// <param name="restarningWaitSec"></param>
+    public void OnCountDown(int currentTime)
+    {
+        if (userState == USER_STATE.joined) OnCountDownUser(currentTime);
     }
     #endregion
 

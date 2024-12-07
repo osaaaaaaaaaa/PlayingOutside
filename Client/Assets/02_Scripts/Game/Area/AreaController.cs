@@ -20,6 +20,7 @@ public class AreaController : MonoBehaviour
     Image imageBlack;
 
     const float fadeTime = 0.5f;
+    public bool isClearedArea { get; private set; }
 
     public enum AREA_ID
     {
@@ -31,6 +32,7 @@ public class AreaController : MonoBehaviour
     private void Awake()
     {
         imageBlack = imageBlackObj.GetComponent<Image>();
+        isClearedArea = false;
 
         foreach (var gimmick in gimmicks)
         {
@@ -44,6 +46,8 @@ public class AreaController : MonoBehaviour
     /// </summary>
     public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
+        if (isClearedArea) yield break;
+
         bool isLastArea = (areaId == AREA_ID.AREA_2);
         // サーバーなしの場合のみ使用、最終的にisDebugを削除
         if (gameDirector.isDebug)
@@ -93,14 +97,22 @@ public class AreaController : MonoBehaviour
     /// </summary>
     public IEnumerator ReadyNextAreaCoroutine()
     {
+        if(isClearedArea) yield break;
+        isClearedArea = true;
+        Debug.Log("クリア!");
+
         DOTween.Kill(imageBlack);
         bool isLastArea = (areaId == AREA_ID.AREA_2);
         float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
+
+        // 操作を無効化する
+        gameDirector.characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = false;
 
         if (isLastArea)
         {
             // 現在のエリアが最後のエリアの場合はゲーム終了時のUIを表示
             finishUI.SetActive(true);
+
             yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // 余韻の時間を加算
         }
 
@@ -124,6 +136,8 @@ public class AreaController : MonoBehaviour
     /// </summary>
     public IEnumerator RestarningGameCoroutine(GameObject player ,float restarningWaitSec)
     {
+        if (!isClearedArea) yield break;
+        isClearedArea = false;
         areaId++;
         Debug.Log("エリアのID："+ (int)areaId);
 
@@ -142,6 +156,7 @@ public class AreaController : MonoBehaviour
 
         // 指定された時間差で動けるようにする
         yield return new WaitForSeconds(fadeTime + restarningWaitSec);
+        gameDirector.characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         player.SetActive(true);
     }
 }
