@@ -127,5 +127,7 @@ public class PlayerController : MonoBehaviour
     {
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
+        speed = defaultSpeed;
+
     }
 }

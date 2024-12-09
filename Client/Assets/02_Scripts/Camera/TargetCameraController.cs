@@ -18,15 +18,11 @@ public class TargetCameraController : MonoBehaviour
     CinemachineVirtualCamera cameraVirtual;
     CinemachineTransposer cameraTransposer;
 
-    public int targetIndex;  // 現在追っているターゲットのインデックス番号
+    int targetIndex;  // 現在追っているターゲットのインデックス番号
     public Guid currentTargetId { get; private set; }   // 現在追っているターゲットのKey
     public int activeTargetCnt { get; private set; }    // 切り替えることができるターゲットの対象の数
 
     [SerializeField] int debug_areaId = 0;
-
-
-
-    [SerializeField] List<GameObject> testObjs;
 
 
     private void Awake()

@@ -36,6 +36,7 @@ public class RoomDirector : MonoBehaviour
 
         // 接続処理
         await RoomModel.Instance.ConnectAsync();
+        Debug.Log("接続完了");
         // 入室処理をリクエスト
         JoinRoom();
     }

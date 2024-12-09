@@ -58,6 +58,7 @@ public class AreaController : MonoBehaviour
             }
             else
             {
+                isClearedArea = true;
                 StartCoroutine(RestarningGameCoroutine(player, 1));
             }
 
@@ -99,7 +100,6 @@ public class AreaController : MonoBehaviour
     {
         if(isClearedArea) yield break;
         isClearedArea = true;
-        Debug.Log("クリア!");
 
         DOTween.Kill(imageBlack);
         bool isLastArea = (areaId == AREA_ID.AREA_2);
@@ -137,6 +137,7 @@ public class AreaController : MonoBehaviour
     public IEnumerator RestarningGameCoroutine(GameObject player ,float restarningWaitSec)
     {
         if (!isClearedArea) yield break;
+        player.SetActive(false);
         isClearedArea = false;
         areaId++;
         Debug.Log("エリアのID："+ (int)areaId);
@@ -145,7 +146,7 @@ public class AreaController : MonoBehaviour
         gimmicks[(int)areaId].SetActive(true);
 
         // 次のエリアに移動する && カメラをセットアップ
-        player.transform.position = startPoints[(int)areaId].transform.position;
+        player.GetComponent<PlayerController>().InitPlayer(startPoints[(int)areaId].transform);
         targetCameraController.InitCamera(player.transform, (int)areaId,RoomModel.Instance.ConnectionId);
 
         // フェードアウト
@@ -156,7 +157,7 @@ public class AreaController : MonoBehaviour
 
         // 指定された時間差で動けるようにする
         yield return new WaitForSeconds(fadeTime + restarningWaitSec);
-        gameDirector.characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
+        player.GetComponent<PlayerController>().enabled = true;
         player.SetActive(true);
     }
 }

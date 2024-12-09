@@ -6,7 +6,7 @@ public class Mud : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<PlayerController>())
+        if (other.GetComponent<PlayerController>())
         {
             other.GetComponent<PlayerController>().Speed = 2f;
             //other.GetComponent<PlayerController>().JumpPower = 250;

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class HayController : MonoBehaviour
 {
+    [SerializeField] GameDirector gameDirector;
     [SerializeField] GameObject hayPrefab;
     GameObject hayObj;
     public float waitSeconds;

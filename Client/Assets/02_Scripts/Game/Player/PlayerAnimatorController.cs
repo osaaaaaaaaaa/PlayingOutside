@@ -29,7 +29,6 @@ public class PlayerAnimatorController : MonoBehaviour
         Jump = 3,
         Die = 11,
         Run = 15,
-        RunFast = 18,
         StandUp02 = 20,
     }
 

@@ -31,20 +31,24 @@ namespace Server.StreamingHubs
             // 入室した状態で切断した場合
             if (this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
             {
-                // マスタークライアントの場合は、新しく指名する
                 var roomStorage = room.GetInMemoryStorage<RoomData>();
-                var user = roomStorage.Get(this.ConnectionId).JoinedUser;
-                if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
-
-                // ルームデータを削除
-                this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
+                lock (roomStorage)
+                {
+                    var user = roomStorage.Get(this.ConnectionId).JoinedUser;
+                    // マスタークライアントの場合は、新しく指名する
+                    if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
+                }
 
                 // 退室したことを全メンバーに通知
                 this.Broadcast(room).OnLeave(this.ConnectionId);
             }
 
+            // 自分のデータを グループデータから削除する
+            this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
+
             // ルーム内のメンバーから削除
             room.RemoveAsync(this.Context);
+
             return CompletedTask;
         }
 
@@ -59,16 +63,31 @@ namespace Server.StreamingHubs
             // 指定したルームに参加、ルームを保持
             this.room = await this.Group.AddAsync(roomName);
 
+            // 人数制限チェック
+            if (this.room.GetInMemoryStorage<RoomData>().AllValues.ToArray<RoomData>().Length >= maxUsers)
+            {
+                // ルーム内のメンバーから削除
+                room.RemoveAsync(this.Context);
+                Console.WriteLine("人数制限のためnullを返す");
+                return null;
+            }
+
             // DBからユーザー情報取得
             GameDbContext context = new GameDbContext();
             var user = context.Users.Where(user => user.Id == userId).FirstOrDefault();
 
-            // グループストレージにユーザーデータを格納
-            var roomStorage = this.room.GetInMemoryStorage<RoomData>(); // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
-            int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
-            var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder , IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0) };
-            var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
-            roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
+            // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
+            var roomStorage = this.room.GetInMemoryStorage<RoomData>();
+            JoinedUser joinedUser;
+            RoomData roomData;
+            lock (roomStorage)
+            {
+                // グループストレージにユーザーデータを格納
+                int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
+                joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = user, JoinOrder = joinOrder, IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0) };
+                roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
+                roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
+            }
 
             // 自分以外のルーム参加者全員に、ユーザーの入室通知を送信(Broodcast:配布する,Except:自分以外)
             // ※Broadcast(room) で自身も含めて関数を実行できる
@@ -174,23 +193,26 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task OnReadyAsynk(bool isReady)
         {
-            // 送信したユーザーのデータを更新
-            var roomStorage = room.GetInMemoryStorage<RoomData>();
-            var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isReadyRoom = isReady;
-
-            // 全員が準備完了したかどうかチェック
             bool isAllUsersReady = false;
-
             int readyCnt = 0;
-            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-            foreach (var roomData in roomDataList)
-            {
-                if (roomData.UserState.isReadyRoom) readyCnt++;
-            }
 
-            // 最低人数以上かつ全員が準備完了している場合
-            if (roomDataList.Length >= minRequiredUsers && readyCnt == roomDataList.Length) isAllUsersReady = true;
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                // 送信したユーザーのデータを更新
+                var data = roomStorage.Get(this.ConnectionId);
+                data.UserState.isReadyRoom = isReady;
+
+                // 全員が準備完了したかどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.UserState.isReadyRoom) readyCnt++;
+                }
+
+                // 最低人数以上かつ全員が準備完了している場合
+                if (roomDataList.Length >= minRequiredUsers && readyCnt == roomDataList.Length) isAllUsersReady = true;
+            }
 
             // 準備完了通知
             this.Broadcast(room).OnReady(readyCnt, isAllUsersReady);
@@ -203,17 +225,22 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task OnCountdownOverAsynk()
         {
+            int readyCnt = 0;
+            RoomData[] roomDataList;
+
             // 送信したユーザーのデータを更新
             var roomStorage = room.GetInMemoryStorage<RoomData>();
-            var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isCountdownOver = true;
-
-            // 全員がカウントダウン終了したかどうかチェック
-            int readyCnt = 0;
-            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-            foreach (var roomData in roomDataList)
+            lock (roomStorage)
             {
-                if (roomData.UserState.isCountdownOver) readyCnt++;
+                var data = roomStorage.Get(this.ConnectionId);
+                data.UserState.isCountdownOver = true;
+
+                // 全員がカウントダウン終了したかどうかチェック
+                roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.UserState.isCountdownOver) readyCnt++;
+                }
             }
 
             // ゲーム開始通知を配る
@@ -228,29 +255,31 @@ namespace Server.StreamingHubs
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-
-            // 送信したユーザーのデータを更新
             var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isAreaCleared = true;
-            data.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
-            data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
-
-            foreach (var roomData in roomDataList)
-            {
-                if(roomData.JoinedUser.IsMasterClient && !roomData.JoinedUser.IsStartCountDown)
-                {
-                    roomData.JoinedUser.IsStartCountDown = true;
-
-                    // マスタークライアントにカウントダウン開始通知を配る
-                    this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnStartCountDown();
-                }
-            }
-
-            // 全員が現在のエリアをクリアしたかチェック
             int readyCnt = 0;
-            foreach (var roomData in roomDataList)
+            lock (roomStorage)
             {
-                if (roomData.UserState.isAreaCleared) readyCnt++;
+                // 送信したユーザーのデータを更新
+                data.UserState.isAreaCleared = true;
+                data.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
+                data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.JoinedUser.IsMasterClient && !roomData.JoinedUser.IsStartCountDown)
+                    {
+                        roomData.JoinedUser.IsStartCountDown = true;
+
+                        // マスタークライアントにカウントダウン開始通知を配る
+                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnStartCountDown();
+                    }
+                }
+
+                // 全員が現在のエリアをクリアしたかチェック
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.UserState.isAreaCleared) readyCnt++;
+                }
             }
 
             // エリアのクリア通知を自分以外に配る
@@ -305,26 +334,31 @@ namespace Server.StreamingHubs
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
 
-            // 送信したユーザーのデータを更新
-            var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isReadyNextArea = true;
-            Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
-
-            // 送信したユーザーがエリアをクリアできなかった場合
-            if (!data.UserState.isAreaCleared)
+            bool isRedyAllUsers = false;
+            lock (roomStorage)
             {
-                data.UserState.areaGoalRank = GetAreaClearedUsersCount(roomDataList) + 1;
-                data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+                // 送信したユーザーのデータを更新
+                var data = roomStorage.Get(this.ConnectionId);
+                data.UserState.isReadyNextArea = true;
+                Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
+
+                // 送信したユーザーがエリアをクリアできなかった場合
+                if (!data.UserState.isAreaCleared)
+                {
+                    data.UserState.areaGoalRank = GetAreaClearedUsersCount(roomDataList) + 1;
+                    data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+                }
+
+                // 全員次のエリアに移動する準備が完了したかチェック
+                int readyCnt = 0;
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.UserState.isReadyNextArea) readyCnt++;
+                }
+                if(readyCnt == roomDataList.Length) isRedyAllUsers = true;
             }
 
-            // 全員次のエリアに移動する準備が完了したかチェック
-            int readyCnt = 0;
-            foreach (var roomData in roomDataList)
-            {
-                if (roomData.UserState.isReadyNextArea) readyCnt++;
-            }
-
-            if (readyCnt == roomDataList.Length)
+            if (isRedyAllUsers)
             {
                 foreach (var roomData in roomDataList)
                 {
@@ -378,18 +412,22 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task OnTransitionFinalResultSceneAsynk()
         {
-            // 送信したユーザーのデータを更新
-            var roomStorage = room.GetInMemoryStorage<RoomData>();
-            var data = roomStorage.Get(this.ConnectionId);
-            data.UserState.isTransitionFinalResultScene = true;
-            Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
-
-            // 全員が遷移したかどうかチェック
             int transitionCnt = 0;
-            RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-            foreach (var roomData in roomDataList)
+            RoomData[] roomDataList;
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
             {
-                if (roomData.UserState.isTransitionFinalResultScene) transitionCnt++;
+                // 送信したユーザーのデータを更新
+                var data = roomStorage.Get(this.ConnectionId);
+                data.UserState.isTransitionFinalResultScene = true;
+                Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
+
+                // 全員が遷移したかどうかチェック
+                roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.UserState.isTransitionFinalResultScene) transitionCnt++;
+                }
             }
 
             if (transitionCnt == roomDataList.Length)

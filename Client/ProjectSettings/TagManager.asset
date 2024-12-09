@@ -7,6 +7,9 @@ TagManager:
   - ImageEggAnim
   - DeathArea
   - Gimmick
+  - FxTemporaire
+  - Mud
+  - GoalArea
   layers:
   - Default
   - TransparentFX

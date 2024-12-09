@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class RoomModel : BaseModel, IRoomHubReceiver
 {
@@ -125,9 +126,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <summary>
     /// 破棄する際(アプリ終了時など)にサーバーとの接続を切断
     /// </summary>
-    private void OnDestroy()
+    private async void OnDestroy()
     {
-        DisconnectAsync();
+        await DisconnectAsync();
     }
 
     /// <summary>
@@ -139,14 +140,24 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public async UniTask JoinAsync(string roomName, int userId)
     {
         JoinedUser[] users = await roomHub.JoinAsynk(roomName, userId);
-        foreach (JoinedUser user in users)
+        Debug.Log("入室のレスポンスきた");
+        if (users == null)
         {
-            JoinedUsers.Add(user.ConnectionId, user);
-            if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
-            OnJoinedUser(user); // アクションでモデルを使うクラスに通知
+            await DisconnectAsync();
+            // 入室に失敗した場合はTopSceneに戻る
+            SceneManager.LoadScene("TopScene");
         }
+        else
+        {
+            foreach (JoinedUser user in users)
+            {
+                JoinedUsers.Add(user.ConnectionId, user);
+                if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
+                OnJoinedUser(user); // アクションでモデルを使うクラスに通知
+            }
 
-        userState = USER_STATE.joined;
+            userState = USER_STATE.joined;
+        }
     }
 
     /// <summary>
@@ -185,7 +196,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnLeave(Guid connectionId)
     {
         if (userState == USER_STATE.leave_done) return;
-
+        Debug.Log("失敗");
         // アクション実行
         OnLeavedUser(connectionId);
         JoinedUsers.Remove(connectionId);
@@ -194,7 +205,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         if (this.ConnectionId == connectionId)
         {
             userState = USER_STATE.leave_done;
-            DisconnectAsync();
+            // 切断する
+            OnDestroy();
         }
     }
 
