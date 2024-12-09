@@ -6,6 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Admin/app/src/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/Admin/app/src/storage/debugbar" />
       <excludeFolder url="file://$MODULE_DIR$/Admin/app/src/storage/framework" />
+      <excludeFolder url="file://$MODULE_DIR$/Admin/app/src/vendor/_laravel_idea" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -176,6 +176,7 @@ public class FinalResultSceneDirector : MonoBehaviour
                 break;
             }
         }
+        Debug.Log("リザルトシーンです");
         StartCoroutine(ShowResultsCoroutine(result, winnerId));
     }
 

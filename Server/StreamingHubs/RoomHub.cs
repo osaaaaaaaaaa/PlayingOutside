@@ -232,7 +232,7 @@ namespace Server.StreamingHubs
             // 送信したユーザーのデータを更新
             var data = roomStorage.Get(this.ConnectionId);
             data.UserState.isAreaCleared = true;
-            data.UserState.areaGoalRank = GetAreaGoalRank(roomDataList);
+            data.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
             data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
 
             foreach (var roomData in roomDataList)
@@ -257,7 +257,12 @@ namespace Server.StreamingHubs
             this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId,data.JoinedUser.UserData.Name,(readyCnt == roomDataList.Length));
         }
 
-        int GetAreaGoalRank(RoomData[] roomData)
+        /// <summary>
+        /// エリアをクリアしたときの順位を取得
+        /// </summary>
+        /// <param name="roomData"></param>
+        /// <returns></returns>
+        int GetAreaClearRank(RoomData[] roomData)
         {
             int rank = 1;
             int roopCnt = 0;
@@ -277,6 +282,21 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// エリアをクリアした人数を取得
+        /// </summary>
+        /// <param name="roomData"></param>
+        /// <returns></returns>
+        int GetAreaClearedUsersCount(RoomData[] roomData)
+        {
+            int count = 0;
+            foreach (var data in roomData) 
+            {
+                if(data.UserState.isAreaCleared) count++;
+            }
+            return count;
+        }
+
+        /// <summary>
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
@@ -289,6 +309,13 @@ namespace Server.StreamingHubs
             var data = roomStorage.Get(this.ConnectionId);
             data.UserState.isReadyNextArea = true;
             Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
+
+            // 送信したユーザーがエリアをクリアできなかった場合
+            if (!data.UserState.isAreaCleared)
+            {
+                data.UserState.areaGoalRank = GetAreaClearedUsersCount(roomDataList) + 1;
+                data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+            }
 
             // 全員次のエリアに移動する準備が完了したかチェック
             int readyCnt = 0;
