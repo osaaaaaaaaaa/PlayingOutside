@@ -1,41 +1,30 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
-using Shared.Interfaces.Model.Entity;
-using Server.Model.Entity;
 
-public class PrivateMatchUIController : MonoBehaviour
+public class QuickGameUIController : MonoBehaviour
 {
     #region TweenアニメーションするUIの親
     [SerializeField] List<GameObject> uiList;
     #endregion
 
-    #region 初めに表示されるメニュー
-    [SerializeField] GameObject menu;
-    [SerializeField] InputField inputFieldRoomName;
-    [SerializeField] GameObject buttonJoinRoom;
-    #endregion
+    [SerializeField] List<Image> icons;
+    [SerializeField] List<Text> texts;
+    [SerializeField] List<GameObject> loadingObjs;
 
-    [SerializeField] TopSceneDirector topSceneDirector;
     TopSceneUIManager topSceneUIManager;
 
     private void Start()
     {
-        InitUI();
-
+        InitAllUserFrame();
         foreach (var ui in uiList)
         {
             ui.transform.localScale = Vector3.zero;
         }
         topSceneUIManager = GetComponent<TopSceneUIManager>();
-    }
-
-    public void InitUI()
-    {
-        menu.SetActive(true);
-        inputFieldRoomName.text = "";
     }
 
     void ToggleUIVisibility(bool isVisibility)
@@ -49,31 +38,44 @@ public class PrivateMatchUIController : MonoBehaviour
         }
     }
 
+    public void SetupUserFrame(int index,string userName,int characterId)
+    {
+        icons[index].sprite = GetComponent<TopSceneUIManager>().SpriteIcons[characterId];
+        icons[index].enabled = true;
+        texts[index].text = userName;
+        loadingObjs[index].SetActive(false);
+    }
+
+    public void InitUserFrame(int index)
+    {
+        icons[index].enabled = false;
+        texts[index].text = "受付中...";
+        loadingObjs[index].SetActive(true);
+    }
+
+    public void InitAllUserFrame()
+    {
+        for (int i = 0; i < icons.Count; i++) 
+        {
+            InitUserFrame(i);
+        }
+    }
+
     /// <summary>
-    /// プライベートマッチUIを表示するボタン
+    /// クイックゲームUIを表示するボタン
     /// </summary>
     public void OnSelectButton()
     {
-        InitUI();
         topSceneUIManager.OnSelectButton();
         ToggleUIVisibility(true);
     }
 
     /// <summary>
-    /// プライベートマッチUIを閉じるボタン
+    /// クイックゲームUIを非表示するボタン
     /// </summary>
     public void OnBackButton()
     {
         ToggleUIVisibility(false);
         topSceneUIManager.OnBackButton();
-    }
-
-    /// <summary>
-    /// 参加するボタン
-    /// </summary>
-    public void OnJoinButton()
-    {
-        if (inputFieldRoomName.text == "") return;
-        topSceneDirector.OnJoinRoomButton(inputFieldRoomName.text);
     }
 }

@@ -11,14 +11,17 @@ public class SceneControler : MonoBehaviour
     [SerializeField] GameObject canvas;
     [SerializeField] List<GameObject> images;
     [SerializeField] List<GameObject> eggAnimSets;
-    Coroutine coroutineLoad;
+
     string sceneName;
     public static SceneControler Instance;
+    bool isLoading;
 
     private void Awake()
     {
         if (Instance == null)
         {
+            isLoading = false;
+
             // トップ画面の状態を保持する
             Instance = this;
 
@@ -56,7 +59,7 @@ public class SceneControler : MonoBehaviour
         }
 
         // シーン遷移開始
-        coroutineLoad = StartCoroutine(Load());
+        StartCoroutine(Load());
     }
 
     IEnumerator Load()
@@ -73,6 +76,8 @@ public class SceneControler : MonoBehaviour
 
     public void StartSceneLoad(string sceneName)
     {
+        if (isLoading) return;
+        isLoading = true;
         InitUI(true);
 
         this.sceneName = sceneName;
@@ -91,8 +96,8 @@ public class SceneControler : MonoBehaviour
 
     public void StopSceneLoad()
     {
-        if (coroutineLoad == null) return;
-        coroutineLoad = null;
+        if(!isLoading) return;
+        isLoading = false;
 
         // 徐々にαを下げるアニメーション
         var sequence = DOTween.Sequence();

@@ -15,6 +15,12 @@ namespace Shared.Interfaces.StreamingHubs
         //*********************************************************
 
         /// <summary>
+        /// マッチング完了通知
+        /// </summary>
+        /// <param name="roomName">ルーム名</param>
+        void OnMatching(string roomName);
+
+        /// <summary>
         /// ユーザーの入室通知
         /// </summary>
         /// <param name="user">入室したユーザー情報</param>

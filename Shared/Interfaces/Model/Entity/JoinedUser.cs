@@ -14,10 +14,12 @@ namespace Shared.Interfaces.Model.Entity
         [Key(1)]
         public User UserData { get; set; }
         [Key(2)]
-        public int JoinOrder { get; set; }
+        public int JoinOrder { get; set; }  // 入室順
         [Key(3)]
-        public bool IsMasterClient { get; set; }
+        public bool IsMasterClient { get; set; }    // マスタークライアントかどうか
         [Key(4)]
-        public bool IsStartCountDown { get; set; }
+        public bool IsStartMasterCountDown { get; set; }    // マスタークライアントがカウントダウンを開始しているかどうか
+        [Key(5)]
+        public bool IsGameRunning {  get; set; }    // ゲーム中かどうか
     }
 }

@@ -7,11 +7,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class RoomDirector : MonoBehaviour
 {
     [SerializeField] Text textReadyCnt;
     [SerializeField] Text textUserCnt;
+    [SerializeField] GameObject roomNameObj;
     [SerializeField] Text textRoomName;
     [SerializeField] Button btnLeave;
     [SerializeField] TargetCameraController targetCameraController;
@@ -26,6 +28,7 @@ public class RoomDirector : MonoBehaviour
 
     private async void Start()
     {
+        if (RoomModel.Instance.IsMatchingRunning) roomNameObj.SetActive(false);
         textRoomName.text = RoomModel.Instance.ConnectionRoomName;
 
         // 関数を登録する
@@ -36,7 +39,6 @@ public class RoomDirector : MonoBehaviour
 
         // 接続処理
         await RoomModel.Instance.ConnectAsync();
-        Debug.Log("接続完了");
         // 入室処理をリクエスト
         JoinRoom();
     }
@@ -75,12 +77,13 @@ public class RoomDirector : MonoBehaviour
     /// <param name="user"></param>
     void NotifyJoinedUser(JoinedUser user)
     {
+        bool isMyCharacter = user.ConnectionId == RoomModel.Instance.ConnectionId;
+
         // キャラクター生成,
         GameObject character = Instantiate(characterPrefab);
         characterList[user.ConnectionId] = character;
 
         // プレイヤーの初期化処理
-        bool isMyCharacter = user.ConnectionId == RoomModel.Instance.ConnectionId;
         character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1]);
 
         // ユーザー名の初期化処理
@@ -133,9 +136,12 @@ public class RoomDirector : MonoBehaviour
         }
         else
         {
-            // 該当のキャラクター削除&リストから削除
-            Destroy(characterList[connectionId]);
-            characterList.Remove(connectionId);
+            if (characterList.ContainsKey(connectionId))
+            {
+                // 該当のキャラクター削除&リストから削除
+                Destroy(characterList[connectionId]);
+                characterList.Remove(connectionId);
+            }
         }
     }
 
@@ -187,8 +193,10 @@ public class RoomDirector : MonoBehaviour
         textReadyCnt.text = readyCnt.ToString();
         if (isTransitionGameScene)
         {
+            // クイックゲームから参加した場合
+            if (RoomModel.Instance.IsMatchingRunning) RoomModel.Instance.IsMatchingRunning = false;
+
             StopCoroutine(UpdateCoroutine());
-            characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>();
             SceneControler.Instance.StartSceneLoad("GameScene");
         }
     }

@@ -6356,9 +6356,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00013384223
+    y: 0.00006747246
     width: 1
-    height: 0.9997323
+    height: 0.99986506
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60.000004
@@ -13471,6 +13471,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textReadyCnt: {fileID: 1289725249}
   textUserCnt: {fileID: 515884495}
+  roomNameObj: {fileID: 1540079723}
   textRoomName: {fileID: 1498245803}
   btnLeave: {fileID: 36583477}
   targetCameraController: {fileID: 737439418}

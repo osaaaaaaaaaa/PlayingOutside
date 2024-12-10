@@ -11,18 +11,18 @@ namespace Shared.Interfaces.Model.Entity
     public class UserState
     {
         [Key(0)]
-        public bool isReadyRoom { get; set; }
+        public bool isReadyRoom { get; set; }   // ルームシーンで準備完了をしたかどうか
         [Key(1)]
-        public bool isCountdownOver { get; set; }
+        public bool isCountdownOver { get; set; }   // ゲーム開始前のカウントダウンが終了したかどうか
         [Key(2)]
-        public bool isAreaCleared { get; set; }
+        public bool isAreaCleared { get; set; } // [競技：カントリーリレー]現在のエリアをクリアしたかどうか
         [Key(3)]
-        public int areaGoalRank {  get; set; }
+        public int areaGoalRank {  get; set; }  // [競技：カントリーリレー]現在のエリアをクリアしたときの順位
         [Key(4)]
-        public int score { get; set; }
+        public int score { get; set; }  // 現在のトータルスコア
         [Key(5)]
-        public bool isReadyNextArea { get; set; }
+        public bool isReadyNextArea { get; set; }   // [競技：カントリーリレー]次のエリアに進む準備完了したかどうか
         [Key(6)]
-        public bool isTransitionFinalResultScene { get; set; }
+        public bool isTransitionFinalResultScene { get; set; }  // 最終結果発表シーンに遷移したかどうか
     }
 }
