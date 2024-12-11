@@ -38,7 +38,7 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnReadyUser += this.NotifyReadyUser;
 
         // 接続処理
-        await RoomModel.Instance.ConnectAsync();
+        if(!RoomModel.Instance.IsMatchingRunning) await RoomModel.Instance.ConnectAsync();
         // 入室処理をリクエスト
         JoinRoom();
     }
@@ -77,6 +77,7 @@ public class RoomDirector : MonoBehaviour
     /// <param name="user"></param>
     void NotifyJoinedUser(JoinedUser user)
     {
+        if (RoomModel.Instance.IsMatchingRunning) return;
         bool isMyCharacter = user.ConnectionId == RoomModel.Instance.ConnectionId;
 
         // キャラクター生成,
@@ -127,7 +128,7 @@ public class RoomDirector : MonoBehaviour
     {
         if (connectionId == RoomModel.Instance.ConnectionId)
         {
-            // 自分が退出する場合は全て削除
+            // 自分が退室する場合は全て削除
             foreach (var character in characterList.Values)
             {
                 Destroy(character);
@@ -193,11 +194,13 @@ public class RoomDirector : MonoBehaviour
         textReadyCnt.text = readyCnt.ToString();
         if (isTransitionGameScene)
         {
-            // クイックゲームから参加した場合
-            if (RoomModel.Instance.IsMatchingRunning) RoomModel.Instance.IsMatchingRunning = false;
+            Debug.Log("ゲーム開始通知");
 
             StopCoroutine(UpdateCoroutine());
-            SceneControler.Instance.StartSceneLoad("GameScene");
+            RoomModel.Instance.IsMatchingRunning = false;
+
+            if (SceneControler.Instance.isLoading) SceneManager.LoadScene("GameScene");
+            else SceneControler.Instance.StartSceneLoad("GameScene");
         }
     }
 }

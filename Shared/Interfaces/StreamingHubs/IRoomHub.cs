@@ -22,12 +22,6 @@ namespace Shared.Interfaces.StreamingHubs
         Task<JoinedUser[]> JoinLobbyAsynk(int userId);
 
         /// <summary>
-        /// ロビーに入室できた処理
-        /// </summary>
-        /// <returns></returns>
-        Task ReadyLobbyAsynk();
-
-        /// <summary>
         /// ユーザー入室
         /// </summary>
         /// <param name="roomName">ルーム名</param>

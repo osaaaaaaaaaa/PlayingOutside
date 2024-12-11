@@ -29,7 +29,9 @@ namespace Server.StreamingHubs
             Console.WriteLine("切断検知");
 
             // 入室した状態で切断した場合
-            if (this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
+            if (this.room != null 
+                && this.room.GetInMemoryStorage<RoomData>() != null
+                && this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
             {
                 var roomStorage = room.GetInMemoryStorage<RoomData>();
                 lock (roomStorage)
@@ -63,68 +65,38 @@ namespace Server.StreamingHubs
             JoinedUser[] joinedUsers = await JoinAsynk("Lobby", userId);
             if (joinedUsers == null) return null;
 
-           return joinedUsers;
-
-            //var roomStorage = this.room.GetInMemoryStorage<RoomData>();
-            //lock (roomStorage)
-            //{
-            //    // 自分以外のユーザーがゲーム中かどうかチェック
-            //    foreach (var user in joinedUsers)
-            //    {
-            //        // ルームを退室する
-            //        if (user.IsGameRunning)
-            //        {
-            //            Console.WriteLine("Lobby => nullを返す");
-
-            //            // 自分のデータを グループデータから削除する
-            //            roomStorage.Remove(this.ConnectionId);
-            //            // ルーム内のメンバーから削除
-            //            room.RemoveAsync(this.Context);
-            //            return null;
-            //        }
-            //    }
-
-            //    // 人数が集まったかチェック
-            //    if (joinedUsers.Length == maxUsers)
-            //    {
-            //        // フラグを立て、データの整合性を保つ
-            //        foreach (var user in joinedUsers)
-            //        {
-            //            user.IsGameRunning = true;
-            //        }
-
-            //        var guid = Guid.NewGuid();
-            //        this.Broadcast(room).OnMatching(guid.ToString());
-            //    }
-
-            //    return joinedUsers;
-            //}
-        }
-
-        /// <summary>
-        /// ロビーに入室完了処理
-        /// </summary>
-        /// <returns></returns>
-        public async Task ReadyLobbyAsynk()
-        {
-            var roomStorage = room.GetInMemoryStorage<RoomData>();
-
+            var roomStorage = this.room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
             {
-                // 送信したユーザーのデータを更新
-                var data = roomStorage.Get(this.ConnectionId);
-                data.JoinedUser.IsGameRunning = true;
-
-                // 全員が準備完了したかどうかチェック
-                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-                foreach (var roomData in roomDataList)
+                // 自分以外のユーザーがゲーム中かどうかチェック
+                foreach (var user in joinedUsers)
                 {
-                    if (!roomData.JoinedUser.IsGameRunning) return;
+                    // ルームを退室する
+                    if (user.IsGameRunning)
+                    {
+                        Console.WriteLine("Lobby => nullを返す");
+
+                        // 自分のデータを グループデータから削除する
+                        roomStorage.Remove(this.ConnectionId);
+                        // ルーム内のメンバーから削除
+                        room.RemoveAsync(this.Context);
+                        return null;
+                    }
                 }
 
-                // マッチング完了通知
-                var guid = Guid.NewGuid();
-                this.Broadcast(room).OnMatching(guid.ToString());
+                // 人数が集まったかチェック
+                if (joinedUsers.Length == maxUsers)
+                {
+                    foreach (var user in joinedUsers)
+                    {
+                        user.IsGameRunning = true;
+                    }
+
+                    var guid = Guid.NewGuid();
+                    this.Broadcast(room).OnMatching(guid.ToString());
+                }
+
+                return joinedUsers;
             }
         }
 
@@ -292,6 +264,7 @@ namespace Server.StreamingHubs
 
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
+            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(lockの手前)");
             // [排他制御] 準備完了チェックが複数同時に処理すると、データの整合性に異常がでるため
             lock (roomStorage)
             {
@@ -305,26 +278,18 @@ namespace Server.StreamingHubs
                 {
                     if (roomData.UserState.isReadyRoom) readyCnt++;
                 }
-
+                Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(" + readyCnt + ")");
                 // 最低人数以上かつ全員が準備完了している場合
-                if (roomDataList.Length >= minRequiredUsers && readyCnt == roomDataList.Length)
+                if (roomDataList.Length >= minRequiredUsers && readyCnt == 4)   // とりあえず４人 ########################
                 {
                     isAllUsersReady = true;
-
-                    // フラグを立て、データの整合性を保つ
-                    foreach (var user in roomDataList)
-                    {
-                        user.JoinedUser.IsGameRunning = true;
-
-                        Console.WriteLine(user.JoinedUser.UserData.Name + "のフラグ：" + roomStorage.Get(user.JoinedUser.ConnectionId).JoinedUser.IsGameRunning);
-                    }
+                    Console.WriteLine("全員が準備完了した(" + readyCnt + ")");
                 }
 
                 // 準備完了通知
                 this.Broadcast(room).OnReady(readyCnt, isAllUsersReady);
             }
         }
-
 
         /// <summary>
         /// ゲーム開始前のカウントダウン終了処理

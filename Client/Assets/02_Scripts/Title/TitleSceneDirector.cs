@@ -12,6 +12,8 @@ public class TitleSceneDirector : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 60;
+
         SceneControler.Instance.StopSceneLoad();
         panelRegistUser.SetActive(false);
     }

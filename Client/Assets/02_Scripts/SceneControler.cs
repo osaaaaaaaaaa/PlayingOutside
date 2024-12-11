@@ -14,7 +14,7 @@ public class SceneControler : MonoBehaviour
 
     string sceneName;
     public static SceneControler Instance;
-    bool isLoading;
+    public bool isLoading { get; private set; }
 
     private void Awake()
     {

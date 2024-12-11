@@ -39,6 +39,7 @@ public class FinalResultSceneDirector : MonoBehaviour
         // シーン遷移時に関数の登録を解除
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
+        RoomModel.Instance.OnTransitionFinalResultSceneUser -= this.NotifyTransitionFinalResultSceneAllUsers;
     }
 
     IEnumerator UpdateCoroutine()
@@ -93,6 +94,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     public async void LeaveRoom()
     {
         StopCoroutine(UpdateCoroutine());
+        StopCoroutine("ShowResultsCoroutine");
         await RoomModel.Instance.LeaveAsync();
 
         SceneControler.Instance.StartSceneLoad("TopScene");
@@ -203,9 +205,9 @@ public class FinalResultSceneDirector : MonoBehaviour
         yield return new WaitForSeconds(2f);  // パーティクルの生存時間
 
         StartCoroutine(UpdateCoroutine());
-
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
+
         // 退室ができるようにする
         btnLeave.SetActive(true);
     }

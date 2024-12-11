@@ -54,6 +54,9 @@ public class PrivateGameUIController : MonoBehaviour
     /// </summary>
     public void OnSelectButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         InitUI();
         topSceneUIManager.OnSelectButton();
         ToggleUIVisibility(true);
@@ -64,6 +67,9 @@ public class PrivateGameUIController : MonoBehaviour
     /// </summary>
     public void OnBackButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         ToggleUIVisibility(false);
         topSceneUIManager.OnBackButton();
     }
@@ -74,6 +80,7 @@ public class PrivateGameUIController : MonoBehaviour
     public void OnJoinButton()
     {
         if (inputFieldRoomName.text == "") return;
+        buttonJoinRoom.GetComponent<Button>().interactable = false;
         topSceneDirector.OnJoinRoomButton(inputFieldRoomName.text);
     }
 }

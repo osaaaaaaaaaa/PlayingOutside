@@ -36,6 +36,9 @@ public class RankingUIController : MonoBehaviour
     /// </summary>
     public void OnSelectButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         topSceneUIManager.OnSelectButton();
         ToggleUIVisibility(true);
     }
@@ -45,6 +48,9 @@ public class RankingUIController : MonoBehaviour
     /// </summary>
     public void OnBackButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         ToggleUIVisibility(false);
         topSceneUIManager.OnBackButton();
     }

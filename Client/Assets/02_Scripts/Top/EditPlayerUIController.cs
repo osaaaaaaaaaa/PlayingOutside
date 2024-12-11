@@ -41,6 +41,9 @@ public class EditPlayerUIController : MonoBehaviour
     /// </summary>
     public void OnSelectButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         topSceneUIManager.OnSelectButton();
         ToggleUIVisibility(true);
         characterManager.DOMoveCharacter();
@@ -51,6 +54,9 @@ public class EditPlayerUIController : MonoBehaviour
     /// </summary>
     public void OnBackButton()
     {
+        if (topSceneUIManager.IsTaskRunning) return;
+        topSceneUIManager.IsTaskRunning = true;
+
         ToggleUIVisibility(false);
         topSceneUIManager.OnBackButton();
         characterManager.DOResetCharacter();

@@ -33,9 +33,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     bool isMatchingRunning = false;
     public bool IsMatchingRunning { get { return isMatchingRunning; }  set { isMatchingRunning = value; } }
 
-    #region サーバーから呼ばれるAction関数
+    #region サーバーから通知が届いた際に呼ばれるAction関数
+    public Action OnmatchingUser { get; set; }
     // ユーザー接続通知
-    public Action<JoinedUser> OnJoinedUser { get; set; }    // サーバーから通知が届いた際に、Action型に登録されている関数を呼び出す
+    public Action<JoinedUser> OnJoinedUser { get; set; }
     // ユーザー切断通知
     public Action<Guid> OnLeavedUser { get; set; }
     // プレイヤー情報更新通知
@@ -143,13 +144,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask JoinLobbyAsynk(int userId)
     {
+        JoinedUsers.Clear();
         JoinedUser[] users = await roomHub.JoinLobbyAsynk(userId);
         Debug.Log("ユーザー数" + users.Length);
-        if (userState == USER_STATE.joined)
-        {
-            JoinedUsers.Clear();
-            return; // 自動マッチングでマッチング完了通知が来ている場合
-        }
 
         if (users == null)
         {
@@ -161,23 +158,25 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         {
             foreach (JoinedUser user in users)
             {
-                JoinedUsers.Add(user.ConnectionId, user);
                 if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
-                OnJoinedUser(user); // アクションでモデルを使うクラスに通知
+
+                // 存在しなければ追加(複数のユーザーが同時に入室した際の対策)
+                if (!JoinedUsers.ContainsKey(user.ConnectionId))
+                {
+                    JoinedUsers.Add(user.ConnectionId, user);
+                    OnJoinedUser(user);
+                }
             }
 
             userState = USER_STATE.joined;
-            await ReadyLobbyAsynk();
-        }
-    }
 
-    /// <summary>
-    /// ロビーに入室できた処理
-    /// </summary>
-    /// <returns></returns>
-    public async UniTask ReadyLobbyAsynk()
-    {
-        await roomHub.ReadyLobbyAsynk();
+            // マッチングが完了している場合
+            if (JoinedUsers[this.ConnectionId].IsGameRunning)
+            {
+                Debug.Log("最後の人がマッチング完了");
+                await LeaveAsync();
+            }
+        }
     }
 
     /// <summary>
@@ -187,10 +186,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="user"></param>
     public async void OnMatching(string roomName)
     {
-        Debug.Log("マッチング完了");
+        Debug.Log("マッチング完了通知");
+        OnmatchingUser();
         ConnectionRoomName = roomName;
-        userState = USER_STATE.joined;  // 最後に入ったユーザーのstateが更新されていない場合があるため
-        await LeaveAsync();
+        if(userState == USER_STATE.joined) await LeaveAsync();  // 4番目のユーザー以外が処理するはず
     }
 
     /// <summary>
@@ -201,6 +200,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask JoinAsync(string roomName, int userId)
     {
+        JoinedUsers.Clear();
         JoinedUser[] users = await roomHub.JoinAsynk(roomName, userId);
 
         if (users == null)
@@ -208,17 +208,29 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             await DisconnectAsync();
             // 入室に失敗した場合はTopSceneに戻る
             SceneManager.LoadScene("TopScene");
+            return;
         }
         else
         {
             foreach (JoinedUser user in users)
             {
-                JoinedUsers.Add(user.ConnectionId, user);
                 if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
-                OnJoinedUser(user); // アクションでモデルを使うクラスに通知
+
+                // 存在しなければ追加(複数のユーザーが同時に入室した際の対策)
+                if (!JoinedUsers.ContainsKey(user.ConnectionId))
+                {
+                    JoinedUsers.Add(user.ConnectionId, user);
+                    OnJoinedUser(user);
+                }
             }
 
             userState = USER_STATE.joined;
+
+            // 自動マッチング時は入室できたら準備完了リクエストを送信
+            if (IsMatchingRunning)
+            {
+                await OnReadyAsynk(true);
+            }
         }
     }
 
@@ -230,7 +242,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnJoin(JoinedUser user)
     {
         // アクション実行
-        JoinedUsers.Add(user.ConnectionId, user);
+        if (!JoinedUsers.ContainsKey(user.ConnectionId)) JoinedUsers.Add(user.ConnectionId, user);  // 存在しなければ追加
         if (userState == USER_STATE.joined) OnJoinedUser(user);
     }
 
@@ -244,7 +256,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         if (userState != USER_STATE.joined) return;
         userState = USER_STATE.leave;
-        JoinedUsers.Clear();
 
         // サーバーに退室処理をリクエスト
         await roomHub.LeaveAsynk();
@@ -259,32 +270,15 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         if (userState == USER_STATE.leave_done) return;
 
-        // マッチング完了通知が来ている場合
-        if (IsMatchingRunning)
-        {
-            // 自分が退室する場合
-            if (this.ConnectionId == connectionId)
-            {
-                JoinedUsers.Clear();
-                Debug.Log("マッチング退室完了");
-                userState = USER_STATE.leave_done;
-                SceneControler.Instance.StartSceneLoad("RoomScene");
-            }
-        }
-        else
-        {
-            // アクション実行
-            OnLeavedUser(connectionId);
-            JoinedUsers.Remove(connectionId);
+        // アクション実行
+        OnLeavedUser(connectionId);
+        JoinedUsers.Remove(connectionId);
 
-            // 自分が退室する場合
-            if (this.ConnectionId == connectionId)
-            {
-                JoinedUsers.Clear();
-                Debug.Log("退室完了");
-                userState = USER_STATE.leave_done;
-                OnDestroy();    // 切断処理
-            }
+        // 自分が退室する場合
+        if (this.ConnectionId == connectionId)
+        {
+            userState = USER_STATE.leave_done;
+            if (!IsMatchingRunning) OnDestroy();    // 自動マッチング中以外であれば切断処理
         }
     }
 
@@ -322,7 +316,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask OnReadyAsynk(bool isReady)
     {
-
+        Debug.Log("準備完了リクエストを送信");
         // サーバーに準備が完了したかどうかをリクエスト
         await roomHub.OnReadyAsynk(isReady);
     }
@@ -333,6 +327,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     public void OnReady(int readyCnt, bool isTransitionGameScene)
     {
+        Debug.Log(userState.ToString());
         if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
 
         // アクション実行

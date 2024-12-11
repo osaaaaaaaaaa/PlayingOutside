@@ -27,6 +27,8 @@ public class PlayerAnimatorController : MonoBehaviour
         IdleA = 1,
         IdleB,
         Jump = 3,
+        Kick = 5,
+        Damage = 10,
         Die = 11,
         Run = 15,
         StandUp02 = 20,
@@ -53,6 +55,11 @@ public class PlayerAnimatorController : MonoBehaviour
 
     public void SetInt(ANIM_ID id)
     {
+        if(id == ANIM_ID.Kick || id == ANIM_ID.Damage)
+        {
+            animator.SetBool("is_anim_running", true);
+        }
+
         animator.SetInteger("animation", (int)id);
     }
 
@@ -66,8 +73,21 @@ public class PlayerAnimatorController : MonoBehaviour
         return animator.GetInteger("animation");
     }
 
+    public bool IsAnimRunning()
+    {
+        return animator.GetBool("is_anim_running");
+    }
+
+    public void EndRunningAnim()
+    {
+        SetInt(ANIM_ID.IdleB);
+        animator.SetBool("is_anim_running", false);
+    }
+
     public void PlayKnockBackAnim()
     {
+        EndRunningAnim();
+
         isStandUp = false;
         isKnockBackAnim = true;
         animator.SetInteger("animation", (int)ANIM_ID.Die);
