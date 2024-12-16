@@ -24,12 +24,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     // 接続するルーム名
     string connectionRoomName;
     public string ConnectionRoomName {  get { return connectionRoomName; } set { connectionRoomName = value; } }
-    // DBから取得した自分のユーザー情報
-    User myUserData;
-    public User MyUserData { get { return myUserData; }set { myUserData = value; } }
     // 参加しているユーザーの情報
     public Dictionary<Guid,JoinedUser> JoinedUsers { get; private set; } = new Dictionary<Guid,JoinedUser>();
-    // マッチング中かどうか
+    // マッチング中(マッチング完了)かどうか
     bool isMatchingRunning = false;
     public bool IsMatchingRunning { get { return isMatchingRunning; }  set { isMatchingRunning = value; } }
 
@@ -171,7 +168,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             userState = USER_STATE.joined;
 
             // マッチングが完了している場合
-            if (JoinedUsers[this.ConnectionId].IsGameRunning)
+            if (JoinedUsers[this.ConnectionId].IsMatching)
             {
                 Debug.Log("最後の人がマッチング完了");
                 await LeaveAsync();
@@ -201,7 +198,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public async UniTask JoinAsync(string roomName, int userId)
     {
         JoinedUsers.Clear();
-        JoinedUser[] users = await roomHub.JoinAsynk(roomName, userId);
+        JoinedUser[] users = await roomHub.JoinAsynk(roomName, userId, IsMatchingRunning);
 
         if (users == null)
         {

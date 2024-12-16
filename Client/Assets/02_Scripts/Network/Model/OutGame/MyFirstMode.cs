@@ -4,9 +4,6 @@ using Grpc.Net.Client;
 using MagicOnion.Client;
 using Shared.Interfaces.Services;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MyFirstMode : MonoBehaviour

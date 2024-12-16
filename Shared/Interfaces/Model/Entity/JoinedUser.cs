@@ -20,6 +20,8 @@ namespace Shared.Interfaces.Model.Entity
         [Key(4)]
         public bool IsStartMasterCountDown { get; set; }    // マスタークライアントがカウントダウンを開始しているかどうか
         [Key(5)]
-        public bool IsGameRunning {  get; set; }    // ゲーム中かどうか
+        public bool IsGameRunning { get; set; }    // ゲーム中かどうか
+        [Key(6)]
+        public bool IsMatching { get; set; }    // 自動マッチングかが完了しているかどうか
     }
 }

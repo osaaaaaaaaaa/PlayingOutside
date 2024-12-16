@@ -62,17 +62,16 @@ namespace Server.StreamingHubs
         public async Task<JoinedUser[]> JoinLobbyAsynk(int userId)
         {
             // ロビーに参加
-            JoinedUser[] joinedUsers = await JoinAsynk("Lobby", userId);
+            JoinedUser[] joinedUsers = await JoinAsynk("Lobby", userId, false);
             if (joinedUsers == null) return null;
 
             var roomStorage = this.room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
             {
-                // 自分以外のユーザーがゲーム中かどうかチェック
                 foreach (var user in joinedUsers)
                 {
-                    // ルームを退室する
-                    if (user.IsGameRunning)
+                    // ルーム参加者がマッチング完了済みの場合は退室する
+                    if (user.IsMatching)
                     {
                         Console.WriteLine("Lobby => nullを返す");
 
@@ -89,7 +88,7 @@ namespace Server.StreamingHubs
                 {
                     foreach (var user in joinedUsers)
                     {
-                        user.IsGameRunning = true;
+                        user.IsMatching = true;
                     }
 
                     var guid = Guid.NewGuid();
@@ -106,7 +105,7 @@ namespace Server.StreamingHubs
         /// <param name="roomName"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<JoinedUser[]> JoinAsynk(string roomName, int userId)
+        public async Task<JoinedUser[]> JoinAsynk(string roomName, int userId, bool isMatching)
         {
             // 指定したルームに参加、ルームを保持
             this.room = await this.Group.AddAsync(roomName);
@@ -117,7 +116,7 @@ namespace Server.StreamingHubs
             // [排他制御] 同時に入室した際に、人数制限のチェックや入室順の取得時におかしくなる可能性があるため
             lock (roomStorage)
             {
-                // そのルームではゲーム中なのかどうかチェック
+                // そのルームではゲーム中かどうかチェック
                 bool isFailed = false;
                 foreach(var storageData in roomStorage.AllValues.ToArray<RoomData>())
                 {
@@ -146,9 +145,13 @@ namespace Server.StreamingHubs
                 int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
                 var joinedUser = new JoinedUser() 
                 { 
-                    ConnectionId = this.ConnectionId, UserData = user, 
-                    JoinOrder = joinOrder, IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0), 
-                    IsStartMasterCountDown = false, IsGameRunning = false 
+                    ConnectionId = this.ConnectionId, 
+                    UserData = user, 
+                    JoinOrder = joinOrder, 
+                    IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0), 
+                    IsStartMasterCountDown = false, 
+                    IsGameRunning = false,
+                    IsMatching = isMatching,
                 };
                 var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
                 roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
@@ -272,16 +275,29 @@ namespace Server.StreamingHubs
                 var data = roomStorage.Get(this.ConnectionId);
                 data.UserState.isReadyRoom = isReady;
 
+                if (data.JoinedUser.IsGameRunning) return;
+
                 // 全員が準備完了したかどうかチェック
+                bool isMatching = false;
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 foreach (var roomData in roomDataList)
                 {
                     if (roomData.UserState.isReadyRoom) readyCnt++;
+                    if (roomData.JoinedUser.IsMatching) isMatching = true;
                 }
                 Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(" + readyCnt + ")");
+
+                // ゲームに参加する人数を取得 [マッチングからゲームに参加している場合:maxUsers]
+                int maxRequiredUsers = isMatching ? maxUsers : roomDataList.Length;
+
                 // 最低人数以上かつ全員が準備完了している場合
-                if (roomDataList.Length >= minRequiredUsers && readyCnt == 4)   // とりあえず４人 ########################
+                if (roomDataList.Length >= minRequiredUsers && readyCnt == maxRequiredUsers)
                 {
+                    foreach (var roomData in roomDataList)
+                    {
+                        roomData.JoinedUser.IsGameRunning = true;
+                    }
+
                     isAllUsersReady = true;
                     Console.WriteLine("全員が準備完了した(" + readyCnt + ")");
                 }

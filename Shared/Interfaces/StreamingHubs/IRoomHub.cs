@@ -26,8 +26,9 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="roomName">ルーム名</param>
         /// <param name="userId">ユーザーID</param>
+        /// <param name="isMatching">自動マッチング済みかどうか</param>
         /// <returns></returns>
-        Task<JoinedUser[]> JoinAsynk(string roomName,int userId);
+        Task<JoinedUser[]> JoinAsynk(string roomName,int userId,bool isMatching);
 
         /// <summary>
         /// ユーザー退室

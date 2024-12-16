@@ -2,29 +2,81 @@ using Server.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TitleSceneDirector : MonoBehaviour
 {
     [SerializeField] GameObject panelRegistUser;
+    [SerializeField] Button btnRegist;
     [SerializeField] InputField inputFieldUserName;
+    [SerializeField] InputField inputFieldDebugId;
+    [SerializeField] Text textError;
+    bool isDebug;
+    bool isLocalData;
 
     private void Start()
     {
         Application.targetFrameRate = 60;
 
+        isDebug = false;
+        isLocalData = false;
         SceneControler.Instance.StopSceneLoad();
         panelRegistUser.SetActive(false);
     }
 
     // Update is called once per frame
-    void Update()
+    async void Update()
     {
-        if (Input.GetMouseButtonUp(0) && !panelRegistUser.activeSelf)
+        if (!isDebug && !isLocalData && Input.GetMouseButtonUp(0) && !panelRegistUser.activeSelf)
         {
-            if(RoomModel.Instance.MyUserData == null) panelRegistUser.SetActive(true);
-            else SceneControler.Instance.StartSceneLoad("TopScene");
+            isLocalData = UserModel.Instance.LoadUserData();
+
+            // ローカルにあるユーザー情報を取得する
+            if (isLocalData)
+            {
+                // ユーザー情報取得処理
+                var error = await UserModel.Instance.ShowUserAsync(UserModel.Instance.UserId);
+
+                if (error != null) 
+                {
+                    ErrorUIController.Instance.ShowErrorUI(error);
+                    return;
+                }
+                SceneControler.Instance.StartSceneLoad("TopScene");
+            }
+            else
+            {
+                // ユーザー登録用のUIを表示する
+                panelRegistUser.SetActive(true);
+            }
+        }
+    }
+
+    public void OnEnterDebugUI()
+    {
+        isDebug = true;
+    }
+
+    /// <summary>
+    /// [デバッグ用] 指定したユーザーIDを元にログイン
+    /// </summary>
+    public async void OnDebugButtonAsync()
+    {
+        int userId;
+        if(int.TryParse(inputFieldDebugId.text, out userId))
+        {
+            // ユーザー情報取得処理
+            var error = await UserModel.Instance.ShowUserAsync(userId);
+            if (error != null)
+            {
+                ErrorUIController.Instance.ShowErrorUI(error);
+                return;
+            }
+
+            // シーン遷移開始
+            SceneControler.Instance.StartSceneLoad("TopScene");
         }
     }
 
@@ -33,13 +85,16 @@ public class TitleSceneDirector : MonoBehaviour
     /// </summary>
     public async void OnRegistUserButton()
     {
-        /*        var model = new UserModel();
-                var result = await model.RegistUserAsync(inputFieldUserName.text);
+        btnRegist.interactable = false;
+        var result = await UserModel.Instance.RegistUserAsync(inputFieldUserName.text);
 
-                if (!result) inputFieldUserName.text = "";*/
+        if (result != null)
+        {
+            textError.text = result;
+            btnRegist.interactable= true;
+            return;
+        }
 
-        // 一旦ユーザーIDを格納する処理
-        RoomModel.Instance.MyUserData = new User { Id = int.Parse(inputFieldUserName.text) };
         // シーン遷移開始
         SceneControler.Instance.StartSceneLoad("TopScene");
     }

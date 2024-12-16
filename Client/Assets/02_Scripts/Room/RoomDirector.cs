@@ -68,7 +68,7 @@ public class RoomDirector : MonoBehaviour
     public async void JoinRoom()
     {
         // 入室処理[ルーム名,ユーザーID(最終的にはローカルに保存してあるユーザーID)]
-        await RoomModel.Instance.JoinAsync(RoomModel.Instance.ConnectionRoomName, RoomModel.Instance.MyUserData.Id);
+        await RoomModel.Instance.JoinAsync(RoomModel.Instance.ConnectionRoomName, UserModel.Instance.UserId);
     }
 
     /// <summary>

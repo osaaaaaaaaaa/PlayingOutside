@@ -15,7 +15,7 @@ namespace Server.Services
         /// <param name="name">ユーザー名</param>
         /// <returns></returns>
         /// <exception cref="ReturnStatusException"></exception>
-        public async UnaryResult<int> RegistUserAsync(string name)
+        public async UnaryResult<User> RegistUserAsync(string name)
         {
             Console.WriteLine("Received(RegistUserAsync):" + name);
             using var context = new GameDbContext();
@@ -23,22 +23,23 @@ namespace Server.Services
             // バリデーションチェック
             if (context.Users.Where(user => user.Name == name).Count() > 0)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument,"既に使われている名前");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument,"※ 既に使用されている名前です");
             }
             else if(name == "")
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "正しい名前を入力してください");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "※ 正しい名前を入力してください");
             }
 
             // テーブルにレコード追加
             User user = new User();
             user.Name = name;
             user.Token = "";
+            user.Character_Id = 1;
             user.Created_at = DateTime.Now;
             user.Updated_at = DateTime.Now;
             context.Users.Add(user);
             await context.SaveChangesAsync();
-            return user.Id;
+            return user;
         }
 
         /// <summary>

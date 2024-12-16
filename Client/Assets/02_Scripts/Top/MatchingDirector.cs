@@ -59,7 +59,7 @@ public class MatchingDirector : MonoBehaviour
     {
         RoomModel.Instance.IsMatchingRunning = true;
 
-        await RoomModel.Instance.JoinLobbyAsynk(RoomModel.Instance.MyUserData.Id);
+        await RoomModel.Instance.JoinLobbyAsynk(UserModel.Instance.UserId);
     }
 
     /// <summary>

@@ -28,13 +28,14 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(6);
+            writer.WriteArrayHeader(7);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.ConnectionId, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Serialize(ref writer, value.UserData, options);
             writer.Write(value.JoinOrder);
             writer.Write(value.IsMasterClient);
             writer.Write(value.IsStartMasterCountDown);
             writer.Write(value.IsGameRunning);
+            writer.Write(value.IsMatching);
         }
 
         public global::Shared.Interfaces.Model.Entity.JoinedUser Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -70,6 +71,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 5:
                         ____result.IsGameRunning = reader.ReadBoolean();
+                        break;
+                    case 6:
+                        ____result.IsMatching = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

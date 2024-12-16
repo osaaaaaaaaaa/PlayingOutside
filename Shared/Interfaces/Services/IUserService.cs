@@ -13,7 +13,7 @@ namespace Shared.Interfaces.Services
         /// </summary>
         /// <param name="name">ユーザー名</param>
         /// <returns></returns>
-        UnaryResult<int> RegistUserAsync(string name);
+        UnaryResult<User> RegistUserAsync(string name);
 
         /// <summary>
         /// ユーザー取得API
