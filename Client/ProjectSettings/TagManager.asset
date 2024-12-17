@@ -10,7 +10,6 @@ TagManager:
   - FxTemporaire
   - Mud
   - GoalArea
-  - Attack
   layers:
   - Default
   - TransparentFX
@@ -20,7 +19,7 @@ TagManager:
   - UI
   - Ground
   - NPC
-  - 
+  - Damage
   - 
   - 
   - 

@@ -39,7 +39,10 @@ public class PlayerEffectController : MonoBehaviour
                 break;
             case EFFECT_ID.Landing:
                 if (!isTouchedMud)
+                {
                     Instantiate(effectPrefabs[(int)efectId], this.transform.position, Quaternion.identity);
+                }
+                    
                 break;
             case EFFECT_ID.AreaCleared:
                 Instantiate(effectPrefabs[(int)efectId], this.transform.position + Vector3.up, Quaternion.identity);

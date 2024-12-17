@@ -120,6 +120,9 @@ public class UserModel : BaseModel
         {
             // æ“¾¬Œ÷
             var user = await client.ShowUserAsync(userId);
+            AuthToken = user.Token;
+            UserId = user.Id;
+            UserName = user.Name;
             CharacterId = user.Character_Id;
 
             return null;

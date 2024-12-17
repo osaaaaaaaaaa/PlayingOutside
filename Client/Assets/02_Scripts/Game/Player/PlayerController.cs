@@ -9,12 +9,6 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
 {
-    #region 地面判定用
-    [SerializeField] LayerMask groundRayer;
-    const float rayHeight = 0.2f;
-    const float rayWeight = 0.4f;
-    #endregion
-
     #region コンポーネント
     PlayerAnimatorController animController;
     Rigidbody rb;
@@ -51,42 +45,51 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // キック処理
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("飛ぶように");
+            rb.AddForce(new Vector3(0, testB, testB), ForceMode.Impulse);
+        }
+
         if (!animController.isStandUp) return;
 
         // キー入力で移動方向を更新
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
 
-        if (IsGround() && !animController.IsAnimRunning())
+        if (!GetComponent<PlayerIsGroundController>().IsGround() || !animController.isStandUp || !animController.isControlEnabled) return;
+
+        if (moveX != 0 || moveZ != 0)
         {
-            if (moveX != 0 || moveZ != 0)
-            {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
-            }
-            else
-            {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
-            }
-
-            // ジャンプ処理
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                transform.position += Vector3.up * rayHeight;
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
-                rb.AddForce(transform.up * jumpPower);
-            }
-
-            // キック処理
-            if (Input.GetMouseButtonDown(0)) 
-            {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-            }
+            animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
         }
+        else
+        {
+            animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
+        }
+
+        // ジャンプ処理
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+            animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
+            rb.AddForce(transform.up * jumpPower);
+        }
+
+        //// キック処理
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    Debug.Log("飛ぶように");
+        //    //transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+        //    rb.AddForce(new Vector3(0,testB,testB), ForceMode.Impulse);
+        //    //animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+        //}
     }
 
     private void FixedUpdate()
     {
-        if (!animController.isStandUp || animController.IsAnimRunning()) return;
+        if (!animController.isStandUp || !animController.isControlEnabled) return;
 
         // カメラの向きと右方向の大きさを取得する
         Vector3 cameraRot = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
@@ -102,10 +105,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Attack")
+        if (other.gameObject.layer == 8)
         {
-            Debug.Log("a");
-            Hit(other.GetComponent<AttackCollider>().damage,other.transform);
+            Hit(other.GetComponent<DamageCollider>().damage,other.transform);
         }
     }
 
@@ -114,53 +116,41 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void Hit(int damage, Transform tf)
     {
-        if (hp <= 0 || !animController.isStandUp
-            || animController.isInvincible) return;
+        if (hp <= 0 || !animController.isStandUp || animController.isInvincible) return;
 
         hp -= damage;
+        LookAtPlayer(tf);
         Vector3 knockBackVec = (this.transform.position - tf.position).normalized;
+        rb.velocity = Vector3.zero;
 
         if (hp <= 0)
         {
             knockBackVec *= testA;
-            knockBackVec = new Vector3(knockBackVec.x * testA / 2, testA, knockBackVec.z * testA / 2);
-            Debug.Log(knockBackVec.ToString());
+            knockBackVec = new Vector3(knockBackVec.x * testA, testA, knockBackVec.z * testA);
             KnockBackAndDown(knockBackVec);
         }
         else
         {
-            // 連続してダメージを受けないように、少しだけノックバックする
-            transform.position += new Vector3(knockBackVec.x * rayHeight, 0, knockBackVec.z * rayHeight);
-
-            knockBackVec = new Vector3(knockBackVec.x * testB, testB, knockBackVec.z * testB);
-            rb.AddForce(knockBackVec, ForceMode.VelocityChange);
+            // 少しノックバックする
+            knockBackVec = new Vector3(knockBackVec.x * testB, 1f, knockBackVec.z * testB);
+            rb.AddForce(knockBackVec,ForceMode.Impulse);
 
             animController.SetInt(PlayerAnimatorController.ANIM_ID.Damage);
         }
     }
 
-    /// <summary>
-    /// 地面判定用
-    /// </summary>
-    /// <returns></returns>
-    public bool IsGround()
+    void LookAtPlayer(Transform target)
     {
-        Vector3 basePos = transform.position;    // モンスターのピボットが中心にあるため調整する
-        Vector3 leftStartPos= basePos - Vector3.right * rayWeight;      // 左側の始点
-        Vector3 rightStartPos = basePos + Vector3.right * rayWeight;    // 右側の始点
-        Vector3 forwardStartPos = basePos - Vector3.back * rayWeight;   // 前の始点
-        Vector3 backStartPos = basePos + Vector3.back * rayWeight;      // 後ろの始点
-        Vector3 endPosition = basePos - Vector3.up * rayHeight;     // 終点(下)
+        // ターゲットへの向きベクトル計算
+        var dir = target.position - transform.position;
 
-        Debug.DrawLine(leftStartPos, endPosition, Color.red);
-        Debug.DrawLine(rightStartPos, endPosition, Color.red);
-        Debug.DrawLine(forwardStartPos, endPosition, Color.blue);
-        Debug.DrawLine(backStartPos, endPosition, Color.blue);
+        // ターゲットの方向への回転
+        var lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
+        // 回転補正
+        var angles = Vector3.Scale(lookAtRotation.eulerAngles, Vector3.up); // プレイヤーのピボットが足元のためY以外は0にする
 
-        return Physics.Linecast(leftStartPos, endPosition, groundRayer)
-            || Physics.Linecast(rightStartPos, endPosition, groundRayer)
-            || Physics.Linecast(forwardStartPos, endPosition, groundRayer)
-            || Physics.Linecast(backStartPos, endPosition, groundRayer);
+        // ターゲットの方向を向く
+        transform.eulerAngles = angles;
     }
 
     /// <summary>
@@ -169,15 +159,11 @@ public class PlayerController : MonoBehaviour
     /// <param name="knockBackVec"></param>
     public void KnockBackAndDown(Vector3 knockBackVec)
     {
-        if (animController.isInvincible) return;
-
-        if (animController.isStandUp && hp <= 0)
-        {
-            hp = hpMax;
-            transform.position += Vector3.up * rayHeight;
-            animController.PlayKnockBackAnim();
-            rb.AddForce(knockBackVec, ForceMode.VelocityChange);
-        }
+        if (!animController.isStandUp || animController.isInvincible) return;
+        hp = hpMax;
+        transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+        animController.PlayKnockBackAnim();
+        rb.AddForce(knockBackVec, ForceMode.Impulse);
     }
 
     public void InitPlayer(Transform startPointTf)

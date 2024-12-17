@@ -16,6 +16,8 @@ public class PlayerAnimatorController : MonoBehaviour
     bool isKnockBackAnim;
     // 無敵状態かどうか
     public bool isInvincible { get; private set; }
+    // 操作が可能かどうか
+    public bool isControlEnabled { get; private set; }
 
     #region メッシュ関係
     [SerializeField] List<SkinnedMeshRenderer> skinnedMeshs;
@@ -39,11 +41,12 @@ public class PlayerAnimatorController : MonoBehaviour
         animator = GetComponent<Animator>();
         isStandUp = true;
         isKnockBackAnim = false;
+        isControlEnabled = true;
     }
 
     private void Update()
     {
-        if (isKnockBackAnim && GetComponent<PlayerController>().IsGround())
+        if (isKnockBackAnim && GetComponent<PlayerController>().GetComponent<PlayerIsGroundController>().IsGround())
         {
             // ノックバックを終了し、アニメーション再生
             isKnockBackAnim = false;
@@ -53,16 +56,31 @@ public class PlayerAnimatorController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// プレイヤー用
+    /// </summary>
+    /// <param name="id"></param>
     public void SetInt(ANIM_ID id)
     {
+        if (isControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
+
+        if(id == ANIM_ID.Damage)
+        {
+            isInvincible = true;
+            animator.Play("Damage");
+        }
         if(id == ANIM_ID.Kick || id == ANIM_ID.Damage)
         {
-            animator.SetBool("is_anim_running", true);
+            isControlEnabled = false;
         }
 
         animator.SetInteger("animation", (int)id);
     }
 
+    /// <summary>
+    /// NPC用
+    /// </summary>
+    /// <param name="id"></param>
     public void SetInt(int id)
     {
         animator.SetInteger("animation", id);
@@ -73,26 +91,31 @@ public class PlayerAnimatorController : MonoBehaviour
         return animator.GetInteger("animation");
     }
 
-    public bool IsAnimRunning()
+    /// <summary>
+    /// アニメーションが終了した
+    /// </summary>
+    public void OnEndAnim()
     {
-        return animator.GetBool("is_anim_running");
-    }
-
-    public void EndRunningAnim()
-    {
+        if (GetAnimId() != (int)ANIM_ID.Kick) isInvincible = false;
+        isControlEnabled = true;
         SetInt(ANIM_ID.IdleB);
-        animator.SetBool("is_anim_running", false);
     }
 
+    /// <summary>
+    /// ノックバック演出
+    /// </summary>
     public void PlayKnockBackAnim()
     {
-        EndRunningAnim();
+        OnEndAnim();
 
         isStandUp = false;
         isKnockBackAnim = true;
         animator.SetInteger("animation", (int)ANIM_ID.Die);
     }
 
+    /// <summary>
+    /// 立ち上がるアニメーションが終了した
+    /// </summary>
     public void EndStandUpAnim() 
     {
         isStandUp = true;
