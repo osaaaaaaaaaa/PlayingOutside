@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4229297983796975020}
   - component: {fileID: 2494411023539670174}
   m_Layer: 0
-  m_Name: EffectPlayer01_RunSmoke
+  m_Name: 01_RunSmoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

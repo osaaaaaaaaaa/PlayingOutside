@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 6581719487118061478}
   - component: {fileID: 4434589332058621673}
   m_Layer: 0
-  m_Name: PlayerEffect06_Down
+  m_Name: 06_Down
   m_TagString: FxTemporaire
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

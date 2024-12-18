@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3680150920125289642}
   - component: {fileID: 7880899515544624744}
   m_Layer: 0
-  m_Name: EffectPlayer02_LandingSmoke
+  m_Name: 02_LandingSmoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

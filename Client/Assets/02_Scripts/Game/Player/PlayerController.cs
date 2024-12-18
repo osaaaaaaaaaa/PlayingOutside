@@ -1,3 +1,4 @@
+using Cinemachine;
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System.Collections;
@@ -11,7 +12,14 @@ public class PlayerController : MonoBehaviour
 {
     #region コンポーネント
     PlayerAnimatorController animController;
+    PlayerSkillController skillController;
     Rigidbody rb;
+    CinemachineImpulseSource impulseSource;
+    #endregion
+
+    #region カメラ関係
+    const float minShakeVecCamera = 0.5f;
+    const float maxShakeVecCamera = 2f;
     #endregion
 
     #region プレイヤーのステータス
@@ -20,76 +28,100 @@ public class PlayerController : MonoBehaviour
 
     public int hpMax;
     public int hp;
-    public float testA;
-    public float testB;
+
+    public float rangeKick;
+
+    #region ノックバックする力
+    public float addKnockBackPower = 5;
+    public float correctionKnockBackPowerY = 2f;
+    public float defaultKnockBackPower1 = 5;
+    public float defaultKnockBackPower2 = 15;
+    #endregion
 
     #region スピード・ジャンプ
-    float speed;
+    public float speed;
     public float Speed { get { return speed; } set { speed = value; } }
     public float defaultSpeed { get; private set; } = 5;
     float jumpPower;
-    public float JumpPower { get { return speed; } set { speed = value; } }
-    public float defaultJumpPower { get; private set; } = 500;
     #endregion
     #endregion
 
-    private void Start()
+    // 他のプレイヤーのTransform
+    [SerializeField] List<GameObject> objOtherPlayers = new List<GameObject>();
+
+    // 無敵状態かどうか
+    bool isInvincible;
+    public bool IsInvincible { get { return isInvincible; }set { isInvincible = value; } }
+
+    // 操作が可能かどうか
+    bool isControlEnabled = true;
+    public bool IsControlEnabled { get { return isControlEnabled; }set { isControlEnabled = value; } }
+
+    private void Awake()
     {
-        speed = defaultSpeed;
-        jumpPower = defaultJumpPower;
+        skillController = GetComponent<PlayerSkillController>();
         animController = GetComponent<PlayerAnimatorController>();
         rb = GetComponent<Rigidbody>();
+        impulseSource = GetComponent<CinemachineImpulseSource>();
 
+        speed = defaultSpeed;
+        jumpPower = 500;
         hp = hpMax;
     }
 
     void Update()
     {
-        // キック処理
-        if (Input.GetMouseButtonDown(0))
+        if (!animController.isStandUp || !isControlEnabled)
         {
-            Debug.Log("飛ぶように");
-            rb.AddForce(new Vector3(0, testB, testB), ForceMode.Impulse);
+            moveX = 0;
+            moveZ = 0;
+            return;
         }
-
-        if (!animController.isStandUp) return;
 
         // キー入力で移動方向を更新
         moveX = Input.GetAxisRaw("Horizontal");
         moveZ = Input.GetAxisRaw("Vertical");
 
-        if (!GetComponent<PlayerIsGroundController>().IsGround() || !animController.isStandUp || !animController.isControlEnabled) return;
-
-        if (moveX != 0 || moveZ != 0)
+        if (GetComponent<PlayerIsGroundController>().IsGround() && !skillController.isUsedSkill)
         {
-            animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
-        }
-        else
-        {
-            animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
-        }
+            if (moveX != 0 || moveZ != 0)
+            {
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
+            }
+            else
+            {
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
+            }
 
-        // ジャンプ処理
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
-            animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
-            rb.AddForce(transform.up * jumpPower);
-        }
+            // ジャンプ処理
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
+                rb.AddForce(transform.up * jumpPower);
+            }
 
-        //// キック処理
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Debug.Log("飛ぶように");
-        //    //transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
-        //    rb.AddForce(new Vector3(0,testB,testB), ForceMode.Impulse);
-        //    //animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-        //}
+            // キック処理
+            if (Input.GetMouseButtonDown(0))
+            {
+                var target = SerchNearTarget();
+                if(target != null) LookAtPlayer(target);
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+            }
+
+            // スキル発動処理
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                var target = SerchNearTarget();
+                if (target != null) LookAtPlayer(target);
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
+            }
+        }
     }
 
     private void FixedUpdate()
     {
-        if (!animController.isStandUp || !animController.isControlEnabled) return;
+        if (moveX == 0 && moveZ == 0 || !animController.isStandUp || !isControlEnabled) return;
 
         // カメラの向きと右方向の大きさを取得する
         Vector3 cameraRot = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
@@ -103,11 +135,11 @@ public class PlayerController : MonoBehaviour
         transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // 回転速度をかける
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.layer == 8)
+        if (other.GetComponent<DamageCollider>())
         {
-            Hit(other.GetComponent<DamageCollider>().damage,other.transform);
+            Hit(other.GetComponent<DamageCollider>().damage, other.transform);
         }
     }
 
@@ -116,7 +148,12 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void Hit(int damage, Transform tf)
     {
-        if (hp <= 0 || !animController.isStandUp || animController.isInvincible) return;
+        Debug.Log("私は：" + this.gameObject.name + "," + this.gameObject.layer);
+        if (animController == null) return;
+        if (hp <= 0 || !animController.isStandUp || isInvincible) return;
+
+        // ダメージに乱数を加える
+        damage += Random.Range(0, 10);
 
         hp -= damage;
         LookAtPlayer(tf);
@@ -125,20 +162,47 @@ public class PlayerController : MonoBehaviour
 
         if (hp <= 0)
         {
-            knockBackVec *= testA;
-            knockBackVec = new Vector3(knockBackVec.x * testA, testA, knockBackVec.z * testA);
+            // ダメージ量に応じてノックバックする力が変化
+            float addPower = (float)damage / hpMax * addKnockBackPower;
+            float resultPower = defaultKnockBackPower2 + addPower;
+            if (resultPower > defaultKnockBackPower2 + addKnockBackPower) resultPower = defaultKnockBackPower2 + addKnockBackPower;
+            if (resultPower < defaultKnockBackPower2) resultPower = defaultKnockBackPower2;
+
+            // 大きくノックバックする
+            knockBackVec *= resultPower;
+            knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
             KnockBackAndDown(knockBackVec);
+
+            // カメラをダメージ量に応じて揺らす
+            float shakePower = (float)damage / hpMax * (maxShakeVecCamera - minShakeVecCamera);
+            shakePower += minShakeVecCamera;
+            if(shakePower > maxShakeVecCamera) shakePower = maxShakeVecCamera;
+            if(shakePower < minShakeVecCamera) shakePower = minShakeVecCamera;
+
+            impulseSource.m_DefaultVelocity = Vector3.one * shakePower;
+            impulseSource.GenerateImpulse();
         }
         else
         {
-            // 少しノックバックする
-            knockBackVec = new Vector3(knockBackVec.x * testB, 1f, knockBackVec.z * testB);
+            // ダメージ量に応じてノックバックする力が変化
+            float addPower = (float)damage / hpMax * addKnockBackPower;
+            float resultPower = defaultKnockBackPower1 + addPower;
+            if (resultPower > defaultKnockBackPower1 + addKnockBackPower) resultPower = defaultKnockBackPower1 + addKnockBackPower;
+            if (resultPower < defaultKnockBackPower1) resultPower = defaultKnockBackPower1;
+
+            // 軽くノックバックする
+            knockBackVec *= resultPower;
+            knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
             rb.AddForce(knockBackVec,ForceMode.Impulse);
 
             animController.SetInt(PlayerAnimatorController.ANIM_ID.Damage);
         }
     }
 
+    /// <summary>
+    /// ターゲットの方向を向く 
+    /// </summary>
+    /// <param name="target"></param>
     void LookAtPlayer(Transform target)
     {
         // ターゲットへの向きベクトル計算
@@ -159,11 +223,41 @@ public class PlayerController : MonoBehaviour
     /// <param name="knockBackVec"></param>
     public void KnockBackAndDown(Vector3 knockBackVec)
     {
-        if (!animController.isStandUp || animController.isInvincible) return;
+        if (!animController.isStandUp || isInvincible) return;
         hp = hpMax;
         transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
         animController.PlayKnockBackAnim();
         rb.AddForce(knockBackVec, ForceMode.Impulse);
+    }
+
+    /// <summary>
+    /// 一番近いターゲットを取得
+    /// </summary>
+    Transform SerchNearTarget()
+    {
+        if(objOtherPlayers.Count == 0)
+        {
+            // まだ他のプレイヤーを取得していない場合は取得する
+            var otherPlayers = GameObject.FindGameObjectsWithTag("Character");
+            objOtherPlayers = new List<GameObject>(otherPlayers);
+            objOtherPlayers.Remove(this.gameObject);
+        }
+
+        Transform target = null;
+        float minDis = rangeKick;
+        foreach (GameObject player in objOtherPlayers) 
+        {
+            if(player == null) continue;
+
+            float dis = Mathf.Abs(Vector3.Distance(this.transform.position, player.transform.position));
+            if (dis < minDis)
+            {
+                minDis = dis;
+                target = player.transform;
+            }
+        }
+
+        return target;
     }
 
     public void InitPlayer(Transform startPointTf)
@@ -171,5 +265,11 @@ public class PlayerController : MonoBehaviour
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
         speed = defaultSpeed;
+    }
+
+    public void InitPlayer()
+    {
+        speed = defaultSpeed;
+        isControlEnabled = true;
     }
 }

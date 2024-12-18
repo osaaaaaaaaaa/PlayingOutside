@@ -7,13 +7,16 @@ public class PlayerEffectController : MonoBehaviour
 {
     [SerializeField] List<GameObject> effectPrefabs;
     [SerializeField] GameObject effectMudRipples;
+
     public enum EFFECT_ID
     {
-        Run = 0,    // アニメーションからの呼び出し
-        Landing,    // アニメーションからの呼び出し
+        Run = 0,        // アニメーションからの呼び出し
+        Landing,        // アニメーションからの呼び出し
         AreaCleared,
         MudSplash,
-        Down,       // アニメーションからの呼び出し
+        MudRipples,
+        Down,           // アニメーションからの呼び出し
+        KnockBackSmoke, // アニメーションからの呼び出し
     }
 
     bool isTouchedMud;
@@ -31,6 +34,7 @@ public class PlayerEffectController : MonoBehaviour
 
     public void SetEffect(EFFECT_ID efectId)
     {
+        GameObject effect;
         switch (efectId)
         {
             case EFFECT_ID.Run:
@@ -41,8 +45,7 @@ public class PlayerEffectController : MonoBehaviour
                 if (!isTouchedMud)
                 {
                     Instantiate(effectPrefabs[(int)efectId], this.transform.position, Quaternion.identity);
-                }
-                    
+                }             
                 break;
             case EFFECT_ID.AreaCleared:
                 Instantiate(effectPrefabs[(int)efectId], this.transform.position + Vector3.up, Quaternion.identity);
@@ -52,6 +55,10 @@ public class PlayerEffectController : MonoBehaviour
                 break;
             case EFFECT_ID.Down:
                 Instantiate(effectPrefabs[(int)efectId], this.transform.position + Vector3.up, Quaternion.identity);
+                break;
+            case EFFECT_ID.KnockBackSmoke:
+                effect = Instantiate(effectPrefabs[(int)efectId]);
+                effect.transform.position += this.transform.position;
                 break;
         }
     }

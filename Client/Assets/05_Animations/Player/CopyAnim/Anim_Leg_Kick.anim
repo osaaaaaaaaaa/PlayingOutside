@@ -23293,7 +23293,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.7083333
-    functionName: OnEndAnim
+    functionName: OnTriggerAnimEvent
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
