@@ -27,10 +27,6 @@ public class Hay : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 3)
-        {
-            other.GetComponent<PlayerController>().KnockBackAndDown(new Vector3(0f, 20f, 0f));
-        }
         if (other.gameObject.tag == "DeathArea")
         {
             Destroy(this.gameObject);

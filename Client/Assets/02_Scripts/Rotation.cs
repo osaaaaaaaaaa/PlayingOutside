@@ -10,6 +10,6 @@ public class Rotation : MonoBehaviour
 
     private void Start()
     {
-        this.transform.DORotate(angles, animSec).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
+        this.transform.DOLocalRotate(angles, animSec).SetEase(Ease.Linear).SetLoops(-1, LoopType.Incremental);
     }
 }

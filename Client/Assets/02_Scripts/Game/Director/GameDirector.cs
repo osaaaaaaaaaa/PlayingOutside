@@ -15,8 +15,7 @@ public class GameDirector : MonoBehaviour
     [SerializeField] GameStartCountDown gameStartCountDown;
     [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] SpectatingUI spectatingUI;
-    [SerializeField] GameObject countDownUIParent;
-    [SerializeField] Text textCountDown;
+    [SerializeField] GameObject countDownUI;
 
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
@@ -276,7 +275,7 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     void NotifyRedyNextAreaAllUsers(float restarningWaitSec)
     {
-        countDownUIParent.SetActive(false);
+        countDownUI.SetActive(false);
         coroutineCountDown = null;
         currentTime = 0;
 
@@ -311,8 +310,8 @@ public class GameDirector : MonoBehaviour
     void NotifyCountDownUser(int currentTime)
     {
         if(coroutineCountDown == null) this.currentTime = currentTime;
-        countDownUIParent.SetActive(true);
-        textCountDown.text = currentTime.ToString();
+        countDownUI.SetActive(true);
+        countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);
 
         // まだクリアしていない && カウントダウンが0以下になったら、次のエリアへ強制移動
         if (!areaController.isClearedArea && currentTime == 0)

@@ -10059,6 +10059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 20
+  specifiedKnockback: {x: 0, y: 0, z: 0}
 --- !u!1 &998493816748261169
 GameObject:
   m_ObjectHideFlags: 0
@@ -10189,6 +10190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 30
+  specifiedKnockback: {x: 0, y: 0, z: 0}
 --- !u!1 &1593908178423728144
 GameObject:
   m_ObjectHideFlags: 0
@@ -12178,7 +12180,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0

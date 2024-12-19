@@ -112,8 +112,6 @@ public class PlayerController : MonoBehaviour
             // スキル発動処理
             if (Input.GetKeyDown(KeyCode.E))
             {
-                var target = SerchNearTarget();
-                if (target != null) LookAtPlayer(target);
                 animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
             }
         }
@@ -139,17 +137,16 @@ public class PlayerController : MonoBehaviour
     {
         if (other.GetComponent<DamageCollider>())
         {
-            Hit(other.GetComponent<DamageCollider>().damage, other.transform);
+            var damageCollider = other.GetComponent<DamageCollider>();
+            Hit(damageCollider.Damage, damageCollider.SpecifiedKnockback, other.transform);
         }
     }
 
     /// <summary>
     /// ダメージを受ける処理
     /// </summary>
-    public void Hit(int damage, Transform tf)
+    public void Hit(int damage, Vector3 specifiedKnockback, Transform tf)
     {
-        Debug.Log("私は：" + this.gameObject.name + "," + this.gameObject.layer);
-        if (animController == null) return;
         if (hp <= 0 || !animController.isStandUp || isInvincible) return;
 
         // ダメージに乱数を加える
@@ -158,19 +155,28 @@ public class PlayerController : MonoBehaviour
         hp -= damage;
         LookAtPlayer(tf);
         Vector3 knockBackVec = (this.transform.position - tf.position).normalized;
-        rb.velocity = Vector3.zero;
+         rb.velocity = Vector3.zero;
 
-        if (hp <= 0)
+        if (hp <= 0 || specifiedKnockback != Vector3.zero)
         {
-            // ダメージ量に応じてノックバックする力が変化
-            float addPower = (float)damage / hpMax * addKnockBackPower;
-            float resultPower = defaultKnockBackPower2 + addPower;
-            if (resultPower > defaultKnockBackPower2 + addKnockBackPower) resultPower = defaultKnockBackPower2 + addKnockBackPower;
-            if (resultPower < defaultKnockBackPower2) resultPower = defaultKnockBackPower2;
+            // ノックバックするベクトルが指定されていない場合
+            if(specifiedKnockback == Vector3.zero)
+            {
+                // ダメージ量に応じてノックバックする力が変化
+                float addPower = (float)damage / hpMax * addKnockBackPower;
+                float resultPower = defaultKnockBackPower2 + addPower;
+                if (resultPower > defaultKnockBackPower2 + addKnockBackPower) resultPower = defaultKnockBackPower2 + addKnockBackPower;
+                if (resultPower < defaultKnockBackPower2) resultPower = defaultKnockBackPower2;
 
-            // 大きくノックバックする
-            knockBackVec *= resultPower;
-            knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
+                // 大きくノックバックする
+                knockBackVec *= resultPower;
+                knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
+            }
+            else
+            {
+                knockBackVec = specifiedKnockback;
+            }
+
             KnockBackAndDown(knockBackVec);
 
             // カメラをダメージ量に応じて揺らす
