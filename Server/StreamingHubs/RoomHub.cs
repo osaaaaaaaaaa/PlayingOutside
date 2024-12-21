@@ -19,6 +19,8 @@ namespace Server.StreamingHubs
         const int minRequiredUsers = 2;
         // 加算するスコアのベース
         const int baseAddScore = 100;
+        // 最大ゲーム数
+        const int maxGameCnt = 2;
 
         /// <summary>
         /// ユーザーの切断処理
@@ -241,6 +243,26 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// マスタークライアント取得処理
+        /// </summary>
+        /// <returns></returns>
+        RoomData GetMasterClient(RoomData[] roomDataList)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            RoomData master = null;
+
+            foreach (var roomData in roomDataList)
+            {
+                if (roomData.JoinedUser.IsMasterClient)
+                {
+                    master = roomData;
+                    break;
+                }
+            }
+            return master;
+        }
+
+        /// <summary>
         /// プレイヤー情報更新
         /// </summary>
         /// <returns></returns>
@@ -334,6 +356,76 @@ namespace Server.StreamingHubs
 
                 // ゲーム開始通知を配る
                 if (readyCnt == roomDataList.Length) this.Broadcast(room).OnCountdownOver();
+
+                // マスタークライアント##############################################################################
+                
+                // 最終競技が始まる場合
+                if(data.UserState.FinishGameCnt == maxGameCnt - 1)
+                {
+                    // マスタークライアントにカウントダウン開始通知
+                    var master = GetMasterClient(roomDataList);
+                    if (master != null && !master.JoinedUser.IsStartMasterCountDown)
+                    {
+                        master.JoinedUser.IsStartMasterCountDown = true;
+                        this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
+                        Console.WriteLine("最終競技でカウントダウン開始通知");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 各自の画面でゲームが終了
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnFinishGameAsynk()
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                dataSelf.UserState.isFinishGame = true;
+
+                // 全員がゲーム終了したかどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var roomData in roomDataList)
+                {
+                    if (!roomData.UserState.isFinishGame) return;
+                }
+
+                foreach (var roomData in roomDataList)
+                {
+                    roomData.JoinedUser.IsStartMasterCountDown = false;
+                    roomData.UserState.isCountdownOver = false;
+                    roomData.UserState.isFinishGame = false;
+                    roomData.UserState.FinishGameCnt++;
+                }
+
+                Console.WriteLine("現在の終了したゲーム数：" + dataSelf.UserState.FinishGameCnt);
+
+                // 現在の競技が最終競技だった場合
+                if (dataSelf.UserState.FinishGameCnt == maxGameCnt)
+                {
+                    // 全ての競技が終了した通知を配る
+                    this.Broadcast(room).OnAfterFinalGame();
+                    Console.WriteLine("最終結果発表シーン");
+                }
+                else
+                {
+                    GameScene gameScene = new GameScene();
+                    // 次の競技が最終競技になる場合
+                    if (dataSelf.UserState.FinishGameCnt == maxGameCnt - 1)
+                    {
+                        gameScene.GameSceneId = GameScene.SCENE_ID.FinalGame;
+                    }
+                    else
+                    {
+                        // 次の競技を抽選する
+                    }
+
+                    // 全員がゲーム終了処理を完了した通知を配る
+                    this.Broadcast(room).OnFinishGame(gameScene);
+                }
             }
         }
 
@@ -348,22 +440,22 @@ namespace Server.StreamingHubs
             // [排他制御] カウントダウンの終了チェックが複数同時に処理すると、データの整合性に異常がでるため
             lock (roomStorage)
             {
-                // 送信したユーザーのデータを更新
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 var data = roomStorage.Get(this.ConnectionId);
+                if (data.UserState.isAreaCleared) return;
+
+                // 送信したユーザーのデータを更新
                 data.UserState.isAreaCleared = true;
                 data.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
                 data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
 
-                foreach (var roomData in roomDataList)
+                RoomData master = GetMasterClient(roomDataList);
+                if (master != null && !master.JoinedUser.IsStartMasterCountDown) 
                 {
-                    if (roomData.JoinedUser.IsMasterClient && !roomData.JoinedUser.IsStartMasterCountDown)
-                    {
-                        roomData.JoinedUser.IsStartMasterCountDown = true;
+                    master.JoinedUser.IsStartMasterCountDown = true;
 
-                        // マスタークライアントにカウントダウン開始通知を配る
-                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnStartCountDown();
-                    }
+                    // マスタークライアントにカウントダウン開始通知を配る
+                    this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
                 }
 
                 // 全員が現在のエリアをクリアしたかチェック
@@ -421,7 +513,7 @@ namespace Server.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        public async Task OnReadyNextAreaAsynk(bool isLastArea)
+        public async Task OnReadyNextAreaAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
@@ -457,32 +549,20 @@ namespace Server.StreamingHubs
                         roomData.JoinedUser.IsStartMasterCountDown = false;
                     }
 
-                    // 現在のエリアが最後のエリアだった場合
-                    if (isLastArea)
+                    // 次のエリアに移動させる準備
+                    Console.WriteLine("再開通知");
+                    const float baseWaitSec = 0.8f;
+                    foreach (var roomData in roomDataList)
                     {
-                        Console.WriteLine("最後のエリアでした！");
+                        float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
 
-                        // ↓一旦終了処理へ #######################################################################
-                        // 全ての競技が終了した通知を配る
-                        this.Broadcast(room).OnAfterFinalGame();
-                    }
-                    // まだ次のエリアが存在する場合
-                    else
-                    {
-                        Console.WriteLine("再開通知");
-                        const float baseWaitSec = 0.8f;
-                        foreach (var roomData in roomDataList)
-                        {
-                            float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
+                        // ゲーム再開通知を個別に配る
+                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec);
 
-                            // ゲーム再開通知を個別に配る
-                            this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec);
-
-                            // 情報をリセット
-                            roomData.UserState.isAreaCleared = false;
-                            roomData.UserState.areaGoalRank = 0;
-                            roomData.UserState.isReadyNextArea = false;
-                        }
+                        // 情報をリセット
+                        roomData.UserState.isAreaCleared = false;
+                        roomData.UserState.areaGoalRank = 0;
+                        roomData.UserState.isReadyNextArea = false;
                     }
                 }
             }

@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class GameStartCountDown : MonoBehaviour
 {
-    [SerializeField] GameDirector gameDirector;
+    [SerializeField] RelayGameDirector relayGameDirector;
+    [SerializeField] FinalGameDirector finalGameDirector;
     Animator animator;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+    }
+
+    public void PlayCountDownOverAnim()
+    {
+        animator.Play("CountDownOverAnimation");
     }
 
     public void CallPlayAnim()
@@ -24,6 +30,7 @@ public class GameStartCountDown : MonoBehaviour
 
     public void OnEndAnim()
     {
-        gameDirector.OnCountdownOver();
+        if(relayGameDirector != null) relayGameDirector.OnCountdownOver();
+        if(finalGameDirector != null) finalGameDirector.OnCountdownOver();
     }
 }

@@ -194,13 +194,11 @@ public class RoomDirector : MonoBehaviour
         textReadyCnt.text = readyCnt.ToString();
         if (isTransitionGameScene)
         {
-            Debug.Log("ゲーム開始通知");
-
             StopCoroutine(UpdateCoroutine());
             RoomModel.Instance.IsMatchingRunning = false;
 
-            if (SceneControler.Instance.isLoading) SceneManager.LoadScene("GameScene");
-            else SceneControler.Instance.StartSceneLoad("GameScene");
+            if (SceneControler.Instance.isLoading) SceneManager.LoadScene("RelayGameScene");
+            else SceneControler.Instance.StartSceneLoad("RelayGameScene");
         }
     }
 }

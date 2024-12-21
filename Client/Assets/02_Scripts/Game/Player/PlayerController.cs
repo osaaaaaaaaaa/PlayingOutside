@@ -275,6 +275,7 @@ public class PlayerController : MonoBehaviour
 
     public void InitPlayer()
     {
+        this.gameObject.layer = 3;
         speed = defaultSpeed;
         isControlEnabled = true;
     }

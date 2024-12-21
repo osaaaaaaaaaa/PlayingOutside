@@ -46,6 +46,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action OnCountdownOverUser { get; set; }
     #endregion
 
+    #region ゲーム共通の処理
+    // カウントダウン通知
+    public Action<int> OnCountDownUser { get; set; }
+    // 全員のゲーム終了処理が完了した通知
+    public Action<string> OnFinishGameUser { get; set; }
+    #endregion
+
     #region 競技『カントリーリレー』の処理
     // 現在のエリアをクリアした通知
     public Action<Guid,string,bool> OnAreaClearedUser { get; set; }
@@ -53,8 +60,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<float> OnReadyNextAreaUser { get; set; }
     // カウントダウン開始通知
     public Action OnStartCountDownUser { get; set; }
-    // カウントダウン通知
-    public Action<int> OnCountDownUser { get; set; }
     #endregion
 
     #region ゲーム終了までの処理(最終結果発表シーンの処理)
@@ -352,6 +357,62 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
     #endregion
 
+    #region ゲーム共通処理
+    /// <summary>
+    /// カウントダウン処理
+    /// (マスタークライアントが処理)
+    /// </summary>
+    /// <param name="currentTime"></param>
+    /// <returns></returns>
+    public async UniTask OnCountDownAsynk(int currentTime)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnCountDownAsynk(currentTime);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// カウントダウン通知
+    /// </summary>
+    /// <param name="restarningWaitSec"></param>
+    public void OnCountDown(int currentTime)
+    {
+        if (userState == USER_STATE.joined) OnCountDownUser(currentTime);
+    }
+
+    /// <summary>
+    /// ゲーム終了が完了したリクエスト
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask OnFinishGameAsynk()
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnFinishGameAsynk();
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 全員がゲーム終了処理を完了した通知
+    /// </summary>
+    /// <param name="scene"></param>
+    public void OnFinishGame(GameScene scene)
+    {
+        if (userState == USER_STATE.joined)
+        {
+            string sceneName = "";
+            switch (scene.GameSceneId)
+            {
+                case GameScene.SCENE_ID.RelayGame:
+                    sceneName = "RelayGameScene";
+                    break;
+                case GameScene.SCENE_ID.FinalGame:
+                    sceneName = "FinalGameScene";
+                    break;
+            }
+            Debug.Log("次のゲーム：" + sceneName);
+            OnFinishGameUser(sceneName);
+        }
+    }
+    #endregion
+
     #region 競技『カントリーリレー』の処理
     /// <summary>
     /// エリアをクリアした処理
@@ -376,9 +437,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 次のエリアに移動する準備が完了した処理
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnReadyNextAreaAsynk(bool isLastArea)
+    public async UniTask OnReadyNextAreaAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.OnReadyNextAreaAsynk(isLastArea);
+        if (userState == USER_STATE.joined) await roomHub.OnReadyNextAreaAsynk();
     }
 
     /// <summary>
@@ -393,33 +454,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// [IRoomHubReceiverのインターフェイス]
-    /// カウントダウン開始通知
+    /// (エリアクリア時などにマスタークライアントが受信)カウントダウン開始通知
     /// </summary>
     /// <param name="restarningWaitSec"></param>
     public void OnStartCountDown()
     {
         if (userState == USER_STATE.joined) OnStartCountDownUser();
-    }
-
-    /// <summary>
-    /// カウントダウン処理
-    /// (マスタークライアントが処理)
-    /// </summary>
-    /// <param name="currentTime"></param>
-    /// <returns></returns>
-    public async UniTask OnCountDownAsynk(int currentTime)
-    {
-        if (userState == USER_STATE.joined) await roomHub.OnCountDownAsynk(currentTime);
-    }
-
-    /// <summary>
-    /// [IRoomHubReceiverのインターフェイス]
-    /// カウントダウン通知
-    /// </summary>
-    /// <param name="restarningWaitSec"></param>
-    public void OnCountDown(int currentTime)
-    {
-        if (userState == USER_STATE.joined) OnCountDownUser(currentTime);
     }
     #endregion
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Shared.Interfaces.StreamingHubs
 {
@@ -53,6 +54,25 @@ namespace Shared.Interfaces.StreamingHubs
         void OnCountdownOver();
         #endregion
 
+        #region ゲーム共通処理
+        /// <summary>
+        /// カウントダウン開始通知
+        /// (マスタークライアントが受信)
+        /// </summary>
+        void OnStartCountDown();
+
+        /// <summary>
+        /// カウントダウン通知
+        /// </summary>
+        /// <param name="currentTime"></param>
+        void OnCountDown(int currentTime);
+
+        /// <summary>
+        /// 全員がゲーム終了処理を完了した通知
+        /// </summary>
+        void OnFinishGame(GameScene scene);
+        #endregion
+
         #region 競技『カントリーリレー』の処理
 
         /// <summary>
@@ -67,17 +87,6 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="restarningWaitSec">ゲーム再開までの待機時間(順位によって変動)</param>
         void OnReadyNextAreaAllUsers(float restarningWaitSec);
-
-        /// <summary>
-        /// カウントダウン開始通知
-        /// </summary>
-        void OnStartCountDown();
-
-        /// <summary>
-        /// カウントダウン通知
-        /// </summary>
-        /// <param name="currentTime"></param>
-        void OnCountDown(int currentTime);
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

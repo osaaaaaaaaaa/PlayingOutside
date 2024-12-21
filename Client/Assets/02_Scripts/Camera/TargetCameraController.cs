@@ -14,7 +14,7 @@ public class TargetCameraController : MonoBehaviour
     [SerializeField] List<Vector3> followOffset;
     #endregion
 
-    [SerializeField] GameDirector gameDirector;
+    [SerializeField] RelayGameDirector gameDirector;
     CinemachineVirtualCamera cameraVirtual;
     CinemachineTransposer cameraTransposer;
 

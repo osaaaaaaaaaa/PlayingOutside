@@ -5,7 +5,7 @@ using UnityEngine;
 public class WarpController : MonoBehaviour
 {
     [SerializeField] AreaController areaController;
-    [SerializeField] GameDirector gameDirector;
+    [SerializeField] RelayGameDirector gameDirector;
     [SerializeField] List<Transform> points;
 
     // Update is called once per frame

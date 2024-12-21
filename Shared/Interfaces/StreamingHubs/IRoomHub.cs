@@ -52,7 +52,7 @@ namespace Shared.Interfaces.StreamingHubs
         Task OnReadyAsynk(bool isAllUsersReady);
 
         /// <summary>
-        /// ゲーム開始前のカウントダウンが終了
+        /// ゲーム開始前のカウントダウン終了
         /// </summary>
         /// <returns></returns>
         Task OnCountdownOverAsynk();
@@ -61,11 +61,17 @@ namespace Shared.Interfaces.StreamingHubs
         #region ゲーム共通処理
         /// <summary>
         /// カウントダウン処理
-        /// (マスタークライアントが繰り返し呼び出し)
+        /// (マスタークライアントが繰り返し呼び出す)
         /// </summary>
         /// <param name="currentTime"></param>
         /// <returns></returns>
         Task OnCountDownAsynk(int currentTime);
+
+        /// <summary>
+        /// 各自の画面でゲームが終了した
+        /// </summary>
+        /// <returns></returns>
+        Task OnFinishGameAsynk();
         #endregion
 
         #region 競技『カントリーリレー』の処理
@@ -76,10 +82,10 @@ namespace Shared.Interfaces.StreamingHubs
         Task OnAreaClearedAsynk();
 
         /// <summary>
-        /// 次のエリア(またはシーン)に移動する準備が完了した処理
+        /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        Task OnReadyNextAreaAsynk(bool isLastArea);
+        Task OnReadyNextAreaAsynk();
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

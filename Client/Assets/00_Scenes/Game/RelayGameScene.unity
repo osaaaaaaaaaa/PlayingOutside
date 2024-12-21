@@ -487,7 +487,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 4
@@ -619,7 +619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 3
@@ -1080,7 +1080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 3
@@ -1856,39 +1856,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 304946995}
-  - component: {fileID: 304946994}
+  - component: {fileID: 304946996}
   m_Layer: 0
-  m_Name: GameDirector
+  m_Name: RelayGameDirector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &304946994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 304946993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01a329b896efec64da2576ad825f4772, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  areaController: {fileID: 386103175}
-  gameStartCountDown: {fileID: 855527452}
-  targetCameraController: {fileID: 1197241892}
-  spectatingUI: {fileID: 1290801997}
-  countDownUI: {fileID: 971672500}
-  characterStartPoints:
-  - {fileID: 433607258}
-  - {fileID: 1599227227}
-  - {fileID: 617842018}
-  - {fileID: 1853587635}
-  characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
-    type: 3}
-  isDebug: 1
 --- !u!4 &304946995
 Transform:
   m_ObjectHideFlags: 0
@@ -1904,6 +1879,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &304946996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 304946993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96d6675fcc1016d4392c905ba0d85b3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  areaController: {fileID: 386103175}
+  gameStartCountDown: {fileID: 855527452}
+  targetCameraController: {fileID: 1197241892}
+  spectatingUI: {fileID: 1290801997}
+  countDownUI: {fileID: 971672500}
+  characterStartPoints:
+  - {fileID: 433607258}
+  - {fileID: 1599227227}
+  - {fileID: 617842018}
+  - {fileID: 1853587635}
+  characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
+    type: 3}
+  isDebug: 0
 --- !u!1 &321335390
 GameObject:
   m_ObjectHideFlags: 0
@@ -2152,7 +2152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 490152d2a58f61349b477bdc22212adb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 304946996}
   targetCameraController: {fileID: 1197241892}
   startPoints:
   - {fileID: 433607257}
@@ -3109,7 +3109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   areaController: {fileID: 386103175}
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 304946996}
   points:
   - {fileID: 487610924}
   - {fileID: 1629649372}
@@ -5654,7 +5654,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fe062ff76740ab45a4ab7a579c2a60d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  relayGameDirector: {fileID: 304946996}
+  finalGameDirector: {fileID: 0}
 --- !u!1 &868496291
 GameObject:
   m_ObjectHideFlags: 0
@@ -6214,7 +6215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 2
@@ -6360,7 +6361,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 382, y: 215}
+  m_AnchoredPosition: {x: 7, y: 415}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &971672502
@@ -6507,7 +6508,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 465}
+  m_AnchoredPosition: {x: 50, y: 0}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &987128090
@@ -7366,7 +7367,7 @@ MonoBehaviour:
   followOffset:
   - {x: 0, y: 3, z: -3.5}
   - {x: 1.5, y: 1.5, z: -5}
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 304946996}
   debug_areaId: 0
 --- !u!114 &1197241893
 MonoBehaviour:
@@ -7732,7 +7733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 2
@@ -9805,7 +9806,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: 461}
+  m_AnchoredPosition: {x: 55, y: -5}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1648299961
@@ -10558,7 +10559,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -168.9, y: 465}
+  m_AnchoredPosition: {x: -135, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1710091261
@@ -11069,7 +11070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 3.5
@@ -17772,7 +17773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bd8964bba3a22e47b6056035bebe042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDirector: {fileID: 304946994}
+  gameDirector: {fileID: 0}
   hayPrefab: {fileID: 2768829093330981785, guid: bf54b2877186c1b47b9c5cc6bf97eaee,
     type: 3}
   waitSeconds: 3

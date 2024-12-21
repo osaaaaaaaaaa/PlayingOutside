@@ -1,3 +1,4 @@
+using Cinemachine;
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System;
@@ -15,9 +16,14 @@ public class FinalGameDirector : MonoBehaviour
     [SerializeField] GameObject finishUI;
     #endregion
 
+    #region キャラクター情報
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     public Dictionary<Guid, GameObject> characterList { get; private set; } = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
+    #endregion
+
+    [SerializeField] CinemachineTargetGroup targetGroup;
+    [SerializeField] GameObject gimmick;
 
     Coroutine coroutineCountDown;
     int currentTime;
@@ -79,7 +85,18 @@ public class FinalGameDirector : MonoBehaviour
         GenerateCharacters();
 
         // カメラのターゲットグループを設定する
-
+        targetGroup.m_Targets = new CinemachineTargetGroup.Target[characterList.Count];
+        int i = 0;
+        foreach(var target in characterList.Values)
+        {
+            targetGroup.m_Targets[i] = new CinemachineTargetGroup.Target()
+            {
+                target = target.transform,
+                weight = 1,
+                radius = 1,
+            };
+            i++;
+        }
 
         // ロード画面を閉じる
         SceneControler.Instance.StopSceneLoad();
@@ -202,13 +219,20 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     void NotifyStartGame()
     {
+        // ゲーム開始前のカウントダウンを非表示にする
+        gameStartCountDown.PlayCountDownOverAnim();
+
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
+
+        // ギミックを起動
+        gimmick.SetActive(true);
     }
 
     /// <summary>
     /// カウントダウン開始通知
+    /// (マスタークライアントが受信)
     /// </summary>
     void NotifyStartCountDown()
     {
@@ -234,11 +258,19 @@ public class FinalGameDirector : MonoBehaviour
         countDownUI.SetActive(true);
         countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);
 
-        // カウントダウンが0以下になった場合
+        // カウントダウンが0になった場合
         if (currentTime == 0)
         {
             StartCoroutine(FinishGameCoroutine());
         }
+    }
+
+    /// <summary>
+    /// ゲーム終了が完了したリクエスト
+    /// </summary>
+    public async void OnFinishGame()
+    {
+        await RoomModel.Instance.OnFinishGameAsynk();
     }
 
     /// <summary>
@@ -258,12 +290,13 @@ public class FinalGameDirector : MonoBehaviour
     {
         // 操作を無効化する
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = false;
+        characterList[RoomModel.Instance.ConnectionId].layer = 8;   // ギミックなどの当たり判定を無くす
 
         // ゲーム終了時のUIを表示
         finishUI.SetActive(true);
         yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // 余韻の時間を加算
 
-        // 最終競技が終了したリクエスト
-        //gameDirector.OnReadyNextArea(isLastArea);
+        // ゲーム終了リクエスト
+        OnFinishGame();
     }
 }

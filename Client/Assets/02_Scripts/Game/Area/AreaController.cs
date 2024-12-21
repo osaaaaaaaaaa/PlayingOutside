@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 
 public class AreaController : MonoBehaviour
 {
-    [SerializeField] GameDirector gameDirector;
+    [SerializeField] RelayGameDirector gameDirector;
     [SerializeField] TargetCameraController targetCameraController;
 
     [SerializeField] List<GameObject> startPoints;    // 各エリアのスタート地点
@@ -159,5 +159,6 @@ public class AreaController : MonoBehaviour
         yield return new WaitForSeconds(fadeTime + restarningWaitSec);
         player.GetComponent<PlayerController>().enabled = true;
         player.SetActive(true);
+        player.GetComponent<PlayerController>().InitPlayer();
     }
 }

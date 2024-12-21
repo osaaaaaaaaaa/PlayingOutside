@@ -9,7 +9,7 @@ using UnityEngine.Windows;
 using DG.Tweening;
 using Server.Model.Entity;
 
-public class GameDirector : MonoBehaviour
+public class RelayGameDirector : MonoBehaviour
 {
     [SerializeField] AreaController areaController;
     [SerializeField] GameStartCountDown gameStartCountDown;
@@ -33,6 +33,7 @@ public class GameDirector : MonoBehaviour
     {
         if (isDebug) return;
         isGameStartCountDownOver = false;
+        currentTime = 0;
 
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -42,9 +43,7 @@ public class GameDirector : MonoBehaviour
         RoomModel.Instance.OnReadyNextAreaUser += this.NotifyRedyNextAreaAllUsers;
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
-
-        // 一時的
-        RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
+        RoomModel.Instance.OnFinishGameUser += this.NotifyFinishGameUser;
 
         SetupGame();
     }
@@ -59,9 +58,7 @@ public class GameDirector : MonoBehaviour
         RoomModel.Instance.OnReadyNextAreaUser -= this.NotifyRedyNextAreaAllUsers;
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
-
-        // 一時的
-        RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
+        RoomModel.Instance.OnFinishGameUser -= this.NotifyFinishGameUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -215,6 +212,9 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     void NotifyStartGame()
     {
+        // ゲーム開始前のカウントダウンを非表示にする
+        gameStartCountDown.PlayCountDownOverAnim();
+
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
@@ -239,7 +239,11 @@ public class GameDirector : MonoBehaviour
         if (isClearedAllUsers)
         {
             // カウントダウンのコルーチンを停止する
-            coroutineCountDown = null;
+            if(coroutineCountDown != null)
+            {
+                StopCoroutine(coroutineCountDown);
+                coroutineCountDown = null;
+            }
 
             // 全員が現在のエリアをクリアした場合、次のエリアに移動する準備をする
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
@@ -267,7 +271,16 @@ public class GameDirector : MonoBehaviour
     /// </summary>
     public async void OnReadyNextArea(bool isLastArea)
     {
-        await RoomModel.Instance.OnReadyNextAreaAsynk(isLastArea);
+        if (isLastArea)
+        {
+            // ゲーム終了リクエスト
+            OnFinishGame();
+        }
+        else
+        {
+            // 現在のエリアが最後のエリアではない場合
+            await RoomModel.Instance.OnReadyNextAreaAsynk();
+        }
     }
 
     /// <summary>
@@ -287,7 +300,8 @@ public class GameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// カウントダウン開始通知
+    /// エリアクリア時のカウントダウン開始通知
+    /// (マスタークライアントが受信)
     /// </summary>
     void NotifyStartCountDown()
     {
@@ -320,14 +334,20 @@ public class GameDirector : MonoBehaviour
         }
     }
 
-    // 一旦終了処理 #######################################################################################
     /// <summary>
-    /// 最後の競技が終了した通知
+    /// ゲーム終了が完了したリクエスト
     /// </summary>
-    void NotifyAfterFinalGameUser()
+    public async void OnFinishGame()
     {
-        // 最終結果発表シーンに遷移
+        await RoomModel.Instance.OnFinishGameAsynk();
+    }
+
+    /// <summary>
+    /// 全員のゲーム終了処理が完了した通知
+    /// </summary>
+    void NotifyFinishGameUser(string nextSceneName)
+    {
         StopCoroutine(UpdateCoroutine());
-        SceneControler.Instance.StartSceneLoad("FinalResultsScene");
+        SceneControler.Instance.StartSceneLoad(nextSceneName);
     }
 }
