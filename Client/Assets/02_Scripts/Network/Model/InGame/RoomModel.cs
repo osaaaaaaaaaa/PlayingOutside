@@ -51,6 +51,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<int> OnCountDownUser { get; set; }
     // 全員のゲーム終了処理が完了した通知
     public Action<string> OnFinishGameUser { get; set; }
+    // コインのドロップ通知
+    public Action<Vector3, int[], string[]> OnDropCoinsUser { get; set; }
+    // 生成場所が異なるコインのドロップ通知
+    public Action<Vector3[], string[]> OnDropCoinsAtRandomPositionsUser { get; set; }
+    // アイテム取得通知
+    public Action<Guid, string,float> OnGetItemUser {  get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -410,6 +416,71 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             Debug.Log("次のゲーム：" + sceneName);
             OnFinishGameUser(sceneName);
         }
+    }
+
+    /// <summary>
+    /// ノックダウン時に呼び出し
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <returns></returns>
+    public async UniTask OnKnockDownAsynk(Vector3 startPoint)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnKnockDownAsynk(startPoint);
+    }
+
+    /// <summary>
+    /// 場外に出た時に呼び出し
+    /// </summary>
+    /// <param name="rangePointA"></param>
+    /// <param name="rangePointB"></param>
+    /// <returns></returns>
+    public async UniTask OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnOutOfBoundsAsynk(rangePointA, rangePointB);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// コイン(ポイント)のドロップ通知
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="angleY"></param>
+    public void OnDropCoins(Vector3 startPoint, int[] anglesY, string[] coinNames)
+    {
+        if (userState == USER_STATE.joined) OnDropCoinsUser(startPoint, anglesY, coinNames);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 生成場所が異なるコイン(ポイント)のドロップ通知
+    /// </summary>
+    /// <param name="startPoins"></param>
+    /// <param name="coinNames"></param>
+    public void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames)
+    {
+        if (userState == USER_STATE.joined) OnDropCoinsAtRandomPositionsUser(startPoins, coinNames);
+    }
+
+    /// <summary>
+    /// アイテムに触れた時に呼び出し
+    /// </summary>
+    /// <param name="itemId"></param>
+    /// <param name="itemName"></param>
+    /// <returns></returns>
+    public async UniTask OnGetItemAsynk(Item.ITEM_ID itemId, string itemName)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnGetItemAsynk(itemId, itemName);
+    }
+
+    /// <summary>
+    /// アイテム取得通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemName"></param>
+    /// <param name="option"></param>
+    public void OnGetItem(Guid connectionId, string itemName, float option)
+    {
+        if (userState == USER_STATE.joined) OnGetItemUser(connectionId, itemName, option);
     }
     #endregion
 

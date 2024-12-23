@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
@@ -46,8 +47,15 @@ public class PlayerController : MonoBehaviour
     #endregion
     #endregion
 
+    // 復活する座標
+    public Vector3 respawnPoint { get; private set; } = Vector3.zero;
+
     // 他のプレイヤーのTransform
     [SerializeField] List<GameObject> objOtherPlayers = new List<GameObject>();
+
+    // 立ち上がっているかどうか
+    bool isStandUp;
+    public bool IsStandUp { get { return isStandUp; } set { isStandUp = value; } }
 
     // 無敵状態かどうか
     bool isInvincible;
@@ -56,6 +64,8 @@ public class PlayerController : MonoBehaviour
     // 操作が可能かどうか
     bool isControlEnabled = true;
     public bool IsControlEnabled { get { return isControlEnabled; }set { isControlEnabled = value; } }
+
+    public bool isDebug;
 
     private void Awake()
     {
@@ -67,11 +77,13 @@ public class PlayerController : MonoBehaviour
         speed = defaultSpeed;
         jumpPower = 500;
         hp = hpMax;
+        isStandUp = true;
+        isInvincible = false;
     }
 
     void Update()
     {
-        if (!animController.isStandUp || !isControlEnabled)
+        if (!isStandUp || !isControlEnabled)
         {
             moveX = 0;
             moveZ = 0;
@@ -119,7 +131,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (moveX == 0 && moveZ == 0 || !animController.isStandUp || !isControlEnabled) return;
+        if (moveX == 0 && moveZ == 0 || !isStandUp || !isControlEnabled) return;
 
         // カメラの向きと右方向の大きさを取得する
         Vector3 cameraRot = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
@@ -147,7 +159,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void Hit(int damage, Vector3 specifiedKnockback, Transform tf)
     {
-        if (hp <= 0 || !animController.isStandUp || isInvincible) return;
+        if (hp <= 0 || !isStandUp || isInvincible) return;
 
         // ダメージに乱数を加える
         damage += Random.Range(0, 10);
@@ -227,13 +239,19 @@ public class PlayerController : MonoBehaviour
     /// ノックバックしつつダウンする処理
     /// </summary>
     /// <param name="knockBackVec"></param>
-    public void KnockBackAndDown(Vector3 knockBackVec)
+    public async void KnockBackAndDown(Vector3 knockBackVec)
     {
-        if (!animController.isStandUp || isInvincible) return;
+        if (!isStandUp || isInvincible) return;
         hp = hpMax;
+        transform.gameObject.layer = 8; // ノックダウン状態にする
+
+        // ノックバック演出
         transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
         animController.PlayKnockBackAnim();
         rb.AddForce(knockBackVec, ForceMode.Impulse);
+
+        // コイン(ポイント)のドロップ処理
+        if(!isDebug && SceneManager.GetActiveScene().name == "FinalGameScene") await RoomModel.Instance.OnKnockDownAsynk(transform.position);
     }
 
     /// <summary>
@@ -268,6 +286,7 @@ public class PlayerController : MonoBehaviour
 
     public void InitPlayer(Transform startPointTf)
     {
+        if(respawnPoint == Vector3.zero) respawnPoint = startPointTf.position;
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
         speed = defaultSpeed;

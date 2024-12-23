@@ -22,7 +22,11 @@ public class FinalGameDirector : MonoBehaviour
     public Dictionary<Guid, GameObject> characterList { get; private set; } = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
+    #region カメラ関係
     [SerializeField] CinemachineTargetGroup targetGroup;
+    #endregion
+
+    [SerializeField] GameObject coinPrefab;
     [SerializeField] GameObject gimmick;
 
     Coroutine coroutineCountDown;
@@ -45,6 +49,9 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
+        RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
+        RoomModel.Instance.OnDropCoinsAtRandomPositionsUser += this.NotifyDropCoinsAtRandomPositions;
+        RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
 
         SetupGame();
     }
@@ -58,6 +65,9 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
+        RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
+        RoomModel.Instance.OnDropCoinsAtRandomPositionsUser -= this.NotifyDropCoinsAtRandomPositions;
+        RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -87,7 +97,7 @@ public class FinalGameDirector : MonoBehaviour
         // カメラのターゲットグループを設定する
         targetGroup.m_Targets = new CinemachineTargetGroup.Target[characterList.Count];
         int i = 0;
-        foreach(var target in characterList.Values)
+        foreach (var target in characterList.Values)
         {
             targetGroup.m_Targets[i] = new CinemachineTargetGroup.Target()
             {
@@ -120,6 +130,7 @@ public class FinalGameDirector : MonoBehaviour
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
+            Vector3 startPos = characterStartPoints[user.Value.JoinOrder - 1].position;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1]);
 
             // ユーザー名の初期化処理
@@ -298,5 +309,57 @@ public class FinalGameDirector : MonoBehaviour
 
         // ゲーム終了リクエスト
         OnFinishGame();
+    }
+
+    /// <summary>
+    /// コイン(ポイント)のドロップ通知
+    /// </summary>
+    /// <param name="startPoint"></param>
+    /// <param name="anglesY"></param>
+    void NotifyDropCoinsUser(Vector3 startPoint, int[] anglesY, string[] coinNames)
+    {
+        for (int i = 0; i < coinNames.Length; i++)
+        {
+            var coin = Instantiate(coinPrefab);
+            coin.transform.position = startPoint;
+            coin.name = coinNames[i];
+            coin.GetComponent<CoinController>().Drop(anglesY[i]);
+        }
+    }
+
+    /// <summary>
+    /// 生成場所が異なるコイン(ポイント)のドロップ通知
+    /// </summary>
+    /// <param name="startPoins"></param>
+    /// <param name="coinNames"></param>
+    void NotifyDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames)
+    {
+        Debug.Log("コイン落下");
+        for (int i = 0; i < coinNames.Length; i++)
+        {
+
+            Debug.Log(startPoins[i].ToString() + "に落下");
+            var coin = Instantiate(coinPrefab);
+            coin.transform.position = startPoins[i];
+            coin.name = coinNames[i];
+        }
+    }
+
+    /// <summary>
+    /// アイテム取得通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemName"></param>
+    /// <param name="option"></param>
+    void NotifyGetItemUser(Guid connectionId, string itemName, float option)
+    {
+        GameObject item = GameObject.Find(itemName);
+        if (item == null) return;
+
+        item.GetComponent<ItemController>().UseItem();
+        if (connectionId == RoomModel.Instance.ConnectionId)
+        {
+            Debug.Log("自分に使用する");
+        }
     }
 }

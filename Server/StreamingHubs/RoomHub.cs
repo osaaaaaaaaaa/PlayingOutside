@@ -3,7 +3,9 @@ using Server.Model.Context;
 using Shared.Interfaces.Model.Entity;
 using Shared.Interfaces.StreamingHubs;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.Intrinsics.X86;
+using UnityEngine;
 
 namespace Server.StreamingHubs
 {
@@ -21,6 +23,10 @@ namespace Server.StreamingHubs
         const int baseAddScore = 100;
         // 最大ゲーム数
         const int maxGameCnt = 2;
+        // コイン１枚あたりのポイント数
+        const float pointsPerCoin = 10;
+        // コインをドロップするときの割合
+        const float dropPointRate = 0.4f;
 
         /// <summary>
         /// ユーザーの切断処理
@@ -426,6 +432,140 @@ namespace Server.StreamingHubs
                     // 全員がゲーム終了処理を完了した通知を配る
                     this.Broadcast(room).OnFinishGame(gameScene);
                 }
+            }
+        }
+
+        /// <summary>
+        /// ノックダウン時の処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task OnKnockDownAsynk(Vector3 startPoint)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                //Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "の所持ポイント：" + dataSelf.UserState.score);
+
+                // コインをドロップできる分の所持ポイントがある場合
+                if (dataSelf.UserState.score >= pointsPerCoin)
+                {
+                    float dropCoinCnt = GetDropCoinCnt(dataSelf);
+
+                    // 所持ポイントを減算
+                    dataSelf.UserState.score -= (int)(dropCoinCnt * pointsPerCoin);
+                    //Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "の失うポイント：" + (int)(dropCoinCnt * pointsPerCoin));
+                    //Console.WriteLine("ドロップするコイン数：" + dropCoinCnt);
+
+                    int[] coinAnglesY = new int[(int)dropCoinCnt];
+                    string[] coinNames = new string[(int)dropCoinCnt];
+                    for (int i = 0; i < coinAnglesY.Length; i++)
+                    {
+                        var rnd = new Random();
+                        coinAnglesY[i] = rnd.Next(0, 360);
+                        coinNames[i] = Guid.NewGuid().ToString();
+                    }
+
+                    // コインのドロップ通知を配る
+                    this.Broadcast(this.room).OnDropCoins(startPoint, coinAnglesY, coinNames);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 場外に出た時
+        /// </summary>
+        /// <param name="rangePointA">ステージの範囲A</param>
+        /// <param name="rangePointB">ステージの範囲B</param>
+        /// <returns></returns>
+        public async Task OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+
+                // コインをドロップできる分の所持ポイントがある場合
+                if (dataSelf.UserState.score >= pointsPerCoin)
+                {
+                    float dropCoinCnt = GetDropCoinCnt(dataSelf);
+
+                    // 所持ポイントを減算
+                    dataSelf.UserState.score -= (int)(dropCoinCnt * pointsPerCoin);
+
+                    Vector3[] startPoints = new Vector3[(int)dropCoinCnt];
+                    int[] coinAnglesY = new int[(int)dropCoinCnt];
+                    string[] coinNames = new string[(int)dropCoinCnt];
+                    for (int i = 0; i < coinAnglesY.Length; i++)
+                    {
+                        var rnd = new Random();
+
+                        float x = rnd.Next((int)rangePointA.x, (int)rangePointB.x);
+                        float y = rnd.Next((int)rangePointA.y, (int)rangePointB.y);
+                        float z = rnd.Next((int)rangePointA.z, (int)rangePointB.z);
+
+                        startPoints[i] = new Vector3(x, y, z);
+                        coinAnglesY[i] = rnd.Next(0, 360);
+                        coinNames[i] = Guid.NewGuid().ToString();
+                    }
+
+                    // 生成場所が異なるコインのドロップ通知を配る
+                    this.Broadcast(this.room).OnDropCoinsAtRandomPositions(startPoints, coinNames);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ユーザーがドロップするコインの枚数を取得する
+        /// </summary>
+        /// <returns></returns>
+        float GetDropCoinCnt(RoomData dataSelf)
+        {
+            float coins = MathF.Floor(dataSelf.UserState.score / pointsPerCoin); // 所持するコインの枚数
+            float dropCoinCnt = MathF.Floor(coins * dropPointRate);    // ドロップするコインの枚数(40%ドロップ)
+            if (dropCoinCnt <= 0) dropCoinCnt = 1;  // 調整用
+            return dropCoinCnt;
+        }
+
+        /// <summary>
+        /// アイテムの取得時の処理
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public async Task OnGetItemAsynk(Item.ITEM_ID itemId, string itemName)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                // 他のユーザーが既に同じアイテム名を使用していないかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (RoomData roomData in roomDataList)
+                {
+                    foreach (var name in roomData.UserState.usedItemNameList)
+                    {
+                        if (name == itemName)
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                // アイテムを使用する
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                dataSelf.UserState.usedItemNameList.Add(itemName);
+
+                float option = 0;
+                switch (itemId)
+                {
+                    case Item.ITEM_ID.Coin:
+                        dataSelf.UserState.score += (int)pointsPerCoin;
+                        option = dataSelf.UserState.score;
+                        break;
+                    default:
+                        break;
+                }
+
+                this.Broadcast(this.room).OnGetItem(this.ConnectionId, itemName, option);
             }
         }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Shared.Interfaces.StreamingHubs
 {
@@ -71,6 +72,26 @@ namespace Shared.Interfaces.StreamingHubs
         /// 全員がゲーム終了処理を完了した通知
         /// </summary>
         void OnFinishGame(GameScene scene);
+
+        /// <summary>
+        /// コイン(ポイント)のドロップ通知
+        /// </summary>
+        /// <param name="startPoint">生成する位置</param>
+        /// <param name="anglesY">コインの向き</param>
+        /// <param name="coinNames">コインのユニークな名前</param>
+        void OnDropCoins(Vector3 startPoint,int[] anglesY, string[] coinNames);
+
+        /// <summary>
+        /// 生成場所が異なるコイン(ポイント)のドロップ通知
+        /// </summary>
+        /// <param name="startPoins">生成する位置</param>
+        /// <param name="coinNames">コインのユニークな名前</param>
+        void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames);
+
+        /// <summary>
+        /// アイテム入手通知
+        /// </summary>
+        void OnGetItem(Guid connectionId, string itemName, float option);
         #endregion
 
         #region 競技『カントリーリレー』の処理

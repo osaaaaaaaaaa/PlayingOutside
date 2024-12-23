@@ -472,8 +472,9 @@ GameObject:
   - component: {fileID: 241302922}
   - component: {fileID: 241302921}
   - component: {fileID: 241302920}
-  m_Layer: 0
-  m_Name: Plane (2)
+  - component: {fileID: 241302923}
+  m_Layer: 10
+  m_Name: BoundaryAreaCollider
   m_TagString: DeathArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -507,9 +508,9 @@ MeshCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 759
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -566,6 +567,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 241302918}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &241302923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 241302918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fff27225179504e85e32f0fc9690a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rangePointA: {fileID: 729302176}
+  rangePointB: {fileID: 1271228688}
 --- !u!1 &247651879
 GameObject:
   m_ObjectHideFlags: 3
@@ -1002,8 +1017,10 @@ MonoBehaviour:
   characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
     type: 3}
   targetGroup: {fileID: 1573839150}
+  coinPrefab: {fileID: 6041006191695934633, guid: b07a720a6e383ff418e17bd2c90ae3a5,
+    type: 3}
   gimmick: {fileID: 1433167397}
-  isDebug: 1
+  isDebug: 0
 --- !u!1 &324710462
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,8 +1667,9 @@ GameObject:
   - component: {fileID: 422202157}
   - component: {fileID: 422202156}
   - component: {fileID: 422202155}
-  m_Layer: 0
-  m_Name: Plane (1)
+  - component: {fileID: 422202158}
+  m_Layer: 10
+  m_Name: BoundaryAreaCollider
   m_TagString: DeathArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1685,9 +1703,9 @@ MeshCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 759
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -1744,6 +1762,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 422202153}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &422202158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422202153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fff27225179504e85e32f0fc9690a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rangePointA: {fileID: 729302176}
+  rangePointB: {fileID: 1271228688}
 --- !u!1 &440942457
 GameObject:
   m_ObjectHideFlags: 0
@@ -3063,6 +3095,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723399436}
   m_Mesh: {fileID: 5658656288976874146, guid: ead967a3b7047464aa60a0a55b77cf2b, type: 3}
+--- !u!1 &729302175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 729302176}
+  m_Layer: 0
+  m_Name: RangePointA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &729302176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729302175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7, y: 7, z: -3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1798524483}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &760837314
 GameObject:
   m_ObjectHideFlags: 0
@@ -9320,7 +9383,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1090514972}
   m_Layer: 0
-  m_Name: DeathArea
+  m_Name: BoundaryAreas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10169,6 +10232,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1268155913}
   m_CullTransparentMesh: 1
+--- !u!1 &1271228687
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1271228688}
+  m_Layer: 0
+  m_Name: RangePointB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1271228688
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271228687}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7, y: 10, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1798524483}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1304716710
 GameObject:
   m_ObjectHideFlags: 0
@@ -10814,10 +10908,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.00029069185
-    width: 1
-    height: 0.9994186
+    x: 0.00021845102
+    y: 0
+    width: 0.9995631
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 70
@@ -11538,6 +11632,39 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721015559}
   m_Mesh: {fileID: 5658656288976874146, guid: ead967a3b7047464aa60a0a55b77cf2b, type: 3}
+--- !u!1 &1798524482
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1798524483}
+  m_Layer: 0
+  m_Name: RangePoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1798524483
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798524482}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 729302176}
+  - {fileID: 1271228688}
+  m_Father: {fileID: 1815333165}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1815333164
 GameObject:
   m_ObjectHideFlags: 0
@@ -11575,6 +11702,7 @@ Transform:
   - {fileID: 1700847096}
   - {fileID: 2120170014}
   - {fileID: 512429133}
+  - {fileID: 1798524483}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1834945455
@@ -12118,8 +12246,9 @@ GameObject:
   - component: {fileID: 1999496451}
   - component: {fileID: 1999496450}
   - component: {fileID: 1999496449}
-  m_Layer: 0
-  m_Name: Plane
+  - component: {fileID: 1999496452}
+  m_Layer: 10
+  m_Name: BoundaryAreaCollider
   m_TagString: DeathArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12153,9 +12282,9 @@ MeshCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 759
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -12212,6 +12341,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1999496447}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1999496452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999496447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3fff27225179504e85e32f0fc9690a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rangePointA: {fileID: 729302176}
+  rangePointB: {fileID: 1271228688}
 --- !u!1 &2017970718
 GameObject:
   m_ObjectHideFlags: 0

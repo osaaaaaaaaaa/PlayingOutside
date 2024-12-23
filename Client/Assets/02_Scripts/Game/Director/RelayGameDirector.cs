@@ -239,11 +239,8 @@ public class RelayGameDirector : MonoBehaviour
         if (isClearedAllUsers)
         {
             // カウントダウンのコルーチンを停止する
-            if(coroutineCountDown != null)
-            {
-                StopCoroutine(coroutineCountDown);
-                coroutineCountDown = null;
-            }
+            if(coroutineCountDown != null) StopCoroutine(coroutineCountDown);
+            coroutineCountDown = null;
 
             // 全員が現在のエリアをクリアした場合、次のエリアに移動する準備をする
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
@@ -271,6 +268,10 @@ public class RelayGameDirector : MonoBehaviour
     /// </summary>
     public async void OnReadyNextArea(bool isLastArea)
     {
+        // カウントダウンのコルーチンを停止する
+        if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
+        coroutineCountDown = null;
+
         if (isLastArea)
         {
             // ゲーム終了リクエスト

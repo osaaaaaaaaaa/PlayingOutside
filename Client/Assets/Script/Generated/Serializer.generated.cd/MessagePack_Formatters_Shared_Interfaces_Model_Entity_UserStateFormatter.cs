@@ -27,7 +27,8 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                 return;
             }
 
-            writer.WriteArrayHeader(9);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(10);
             writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
             writer.Write(value.isAreaCleared);
@@ -37,6 +38,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             writer.Write(value.isTransitionFinalResultScene);
             writer.Write(value.FinishGameCnt);
             writer.Write(value.isFinishGame);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.usedItemNameList, options);
         }
 
         public global::Shared.Interfaces.Model.Entity.UserState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -47,6 +49,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
             var ____result = new global::Shared.Interfaces.Model.Entity.UserState();
 
@@ -80,6 +83,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 8:
                         ____result.isFinishGame = reader.ReadBoolean();
+                        break;
+                    case 9:
+                        ____result.usedItemNameList = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();

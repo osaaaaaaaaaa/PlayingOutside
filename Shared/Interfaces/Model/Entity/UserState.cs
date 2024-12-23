@@ -19,7 +19,7 @@ namespace Shared.Interfaces.Model.Entity
         [Key(3)]
         public int areaGoalRank {  get; set; }  // [競技：カントリーリレー]現在のエリアをクリアしたときの順位
         [Key(4)]
-        public int score { get; set; }  // 現在のトータルスコア
+        public int score { get; set; }  // 現在の所持ポイント数
         [Key(5)]
         public bool isReadyNextArea { get; set; }   // [競技：カントリーリレー]次のエリアに進む準備完了したかどうか
         [Key(6)]
@@ -28,5 +28,7 @@ namespace Shared.Interfaces.Model.Entity
         public int FinishGameCnt { get; set; }    // 現在のゲーム数
         [Key(8)]
         public bool isFinishGame { get; set; }    // 現在のゲームが終了したかどうか
+        [Key(9)]
+        public List<string> usedItemNameList { get; set; } = new List<string>();    // アイテムの使用履歴
     }
 }

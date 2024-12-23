@@ -47,16 +47,19 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(8)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(11)
             {
-                { typeof(global::Shared.Interfaces.Model.Entity.GameScene.SCENE_ID), 0 },
-                { typeof(global::Server.Model.Entity.User), 1 },
-                { typeof(global::Shared.Interfaces.Model.Entity.GameScene), 2 },
-                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 3 },
-                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 4 },
-                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 5 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 6 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 7 },
+                { typeof(global::System.Collections.Generic.List<string>), 0 },
+                { typeof(global::Shared.Interfaces.Model.Entity.GameScene.SCENE_ID), 1 },
+                { typeof(global::Shared.Interfaces.Model.Entity.Item.ITEM_ID), 2 },
+                { typeof(global::Server.Model.Entity.User), 3 },
+                { typeof(global::Shared.Interfaces.Model.Entity.GameScene), 4 },
+                { typeof(global::Shared.Interfaces.Model.Entity.Item), 5 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 6 },
+                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 7 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 8 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 9 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 10 },
             };
         }
 
@@ -70,14 +73,17 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GameScene_SCENE_IDFormatter();
-                case 1: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
-                case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GameSceneFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
-                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 7: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 0: return new global::MessagePack.Formatters.ListFormatter<string>();
+                case 1: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GameScene_SCENE_IDFormatter();
+                case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.Item_ITEM_IDFormatter();
+                case 3: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GameSceneFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ItemFormatter();
+                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 7: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
+                case 8: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Shared.Interfaces.StreamingHubs
 {
@@ -28,7 +29,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="userId">ユーザーID</param>
         /// <param name="isMatching">自動マッチング済みかどうか</param>
         /// <returns></returns>
-        Task<JoinedUser[]> JoinAsynk(string roomName,int userId,bool isMatching);
+        Task<JoinedUser[]> JoinAsynk(string roomName, int userId, bool isMatching);
 
         /// <summary>
         /// ユーザー退室
@@ -68,10 +69,31 @@ namespace Shared.Interfaces.StreamingHubs
         Task OnCountDownAsynk(int currentTime);
 
         /// <summary>
-        /// 各自の画面でゲームが終了した
+        /// 各自の画面でゲームが終了
         /// </summary>
         /// <returns></returns>
         Task OnFinishGameAsynk();
+
+        /// <summary>
+        /// ノックダウン時
+        /// </summary>
+        /// <returns></returns>
+        Task OnKnockDownAsynk(Vector3 startPoint);
+
+        /// <summary>
+        /// 場外に出た時
+        /// </summary>
+        /// <param name="rangePointA">ステージの範囲A</param>
+        /// <param name="rangePointB">ステージの範囲B</param>
+        /// <returns></returns>
+        Task OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB);
+
+        /// <summary>
+        /// アイテムの入手処理
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        Task OnGetItemAsynk(Item.ITEM_ID itemId, string itemName);
         #endregion
 
         #region 競技『カントリーリレー』の処理

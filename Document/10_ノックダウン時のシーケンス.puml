@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant クライアントA
+participant クライアントB
+participant クライアントC
+participant サーバー
+
+autonumber
+title ノックダウン時のシーケンス図
+rnote over クライアントA:ノックダウンした
+クライアントA -> サーバー:クライアントAの座標
+rnote over サーバー:クライアントAがコイン(ポイント)をドロップする量を取得\n&ドロップできる場合は所持ポイントを減らす
+クライアントA <-- サーバー:コインの生成位置,各コインの向き(Y座標)
+クライアントB <-- サーバー:コインの生成位置,各コインの向き(Y座標)
+クライアントC <-- サーバー:コインの生成位置,各コインの向き(Y座標)
+rnote over クライアントA,クライアントC:コインを生成する
+@enduml

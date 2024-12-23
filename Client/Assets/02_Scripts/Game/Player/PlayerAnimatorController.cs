@@ -12,8 +12,6 @@ public class PlayerAnimatorController : MonoBehaviour
     PlayerController playerController;
     PlayerSkillController skillController;
 
-    // 立ち上がったかどうか
-    public bool isStandUp { get; private set; }
     // ノックバック中かどうか
     bool isKnockBackAnim;
 
@@ -33,13 +31,13 @@ public class PlayerAnimatorController : MonoBehaviour
         Die = 11,
         Run = 15,
         StandUp = 20,
+        Respawn = 21,
     }
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         skillController = GetComponent<PlayerSkillController>();
-        isStandUp = true;
         isKnockBackAnim = false;
     }
 
@@ -63,9 +61,17 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
 
-        if(id == ANIM_ID.Skill)
+        if (id == ANIM_ID.Skill)
         {
             skillController.OnStartSkillAnim();
+        }
+        if(id == ANIM_ID.Respawn)
+        {
+            isKnockBackAnim = false;
+            playerController.IsInvincible = true;
+            animator.SetBool("is_invincible", false);
+            skillController.OnEndSkillAnim();
+            animator.Play("Anim_Respawn");
         }
         if(!playerController.IsInvincible && id == ANIM_ID.Damage)
         {
@@ -91,6 +97,18 @@ public class PlayerAnimatorController : MonoBehaviour
         if (id == (int)ANIM_ID.Skill)
         {
             skillController.OnStartSkillAnim();
+        }
+        if (id == (int)ANIM_ID.Respawn)
+        {
+            isKnockBackAnim = false;
+            playerController.IsInvincible = true;
+            animator.SetBool("is_invincible", false);
+            skillController.OnEndSkillAnim();
+            animator.Play("Anim_Respawn");
+        }
+        if (id == (int)ANIM_ID.Damage)
+        {
+            animator.Play("Damage");
         }
 
         animator.SetInteger("animation", id);
@@ -119,7 +137,7 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         OnEndAnim();
 
-        isStandUp = false;
+        playerController.IsStandUp = false;
         isKnockBackAnim = true;
         animator.SetInteger("animation", (int)ANIM_ID.Die);
     }
@@ -129,9 +147,10 @@ public class PlayerAnimatorController : MonoBehaviour
     /// </summary>
     public void OnEndStandUpAnim() 
     {
-        isStandUp = true;
+        playerController.IsStandUp = true;
 
         // 無敵状態のアニメーション
+        StopCoroutine(FlashCoroutine());
         StartCoroutine(FlashCoroutine());
         SetInt(ANIM_ID.IdleB);
     }
@@ -142,8 +161,15 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <returns></returns>
     IEnumerator FlashCoroutine()
     {
+        playerController.IsControlEnabled = true;
         playerController.IsInvincible = true;
         animator.SetBool("is_invincible", true);
+
+        foreach (var meshs in skinnedMeshs)
+        {
+            meshs.enabled = true;
+        }
+        meshMain.enabled = true;
 
         float waitSec = 0.125f;
         for (float i = 0; i < 1; i += waitSec)
@@ -157,7 +183,13 @@ public class PlayerAnimatorController : MonoBehaviour
             meshMain.enabled = !meshMain.enabled;
         }
 
-        if(!skillController.isUsedSkill) playerController.IsInvincible = false;
+        foreach (var meshs in skinnedMeshs)
+        {
+            meshs.enabled = true;
+        }
+        meshMain.enabled = true;
+
+        if (!skillController.isUsedSkill) playerController.IsInvincible = false;
         animator.SetBool("is_invincible", false);
     }
 }

@@ -29,6 +29,7 @@ public class PlayerSkillController : MonoBehaviour
 
     public void OnStartSkillAnim()
     {
+        skillObj.SetActive(true);
         skillObj.GetComponent<ParticleSystem>().Play();
 
         switch (skillID)
@@ -44,6 +45,7 @@ public class PlayerSkillController : MonoBehaviour
 
     public void OnEndSkillAnim()
     {
+        skillObj.SetActive(false);
         playerController.InitPlayer();
         isUsedSkill = false;
 

@@ -1023,7 +1023,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737731343}
-  m_Material: {fileID: 13400000, guid: a1f108c6e14e7074fab81894c561643f, type: 2}
+  m_Material: {fileID: 13400000, guid: 26dce5c13b4722d4b8b84906c72b18de, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1238,9 +1238,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00013384223
+    y: 0.00029069185
     width: 1
-    height: 0.9997323
+    height: 0.9994186
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 40
@@ -1603,7 +1603,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 982459707}
-  m_Material: {fileID: 13400000, guid: a1f108c6e14e7074fab81894c561643f, type: 2}
+  m_Material: {fileID: 13400000, guid: 26dce5c13b4722d4b8b84906c72b18de, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7026280890621085707}
   - component: {fileID: 1640154380384167475}
   m_Layer: 0
-  m_Name: SpawnGlows
+  m_Name: RespawnGlows
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
