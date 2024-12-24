@@ -315,7 +315,10 @@ public class RelayGameDirector : MonoBehaviour
     /// </summary>
     public async void OnCountDown()
     {
-        if (currentTime >= 0) await RoomModel.Instance.OnCountDownAsynk(currentTime);
+        if (currentTime >= 0 && !areaController.isClearedArea)
+        {
+            await RoomModel.Instance.OnCountDownAsynk(currentTime);
+        }
     }
 
     /// <summary>
@@ -324,6 +327,8 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="currentTime"></param>
     void NotifyCountDownUser(int currentTime)
     {
+        if (areaController.isClearedArea) return;
+
         if(coroutineCountDown == null) this.currentTime = currentTime;
         countDownUI.SetActive(true);
         countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);

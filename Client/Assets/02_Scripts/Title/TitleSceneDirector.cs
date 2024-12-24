@@ -14,6 +14,7 @@ public class TitleSceneDirector : MonoBehaviour
     [SerializeField] Text textError;
     bool isDebug;
     bool isLocalData;
+    bool a = false;
 
     private void Start()
     {

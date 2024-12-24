@@ -391,6 +391,7 @@ namespace Server.StreamingHubs
             {
                 var dataSelf = roomStorage.Get(this.ConnectionId);
                 dataSelf.UserState.isFinishGame = true;
+                Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "がゲーム終了を迎えた");
 
                 // 全員がゲーム終了したかどうかチェック
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();

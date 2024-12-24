@@ -81,7 +81,7 @@ public class FinalGameDirector : MonoBehaviour
 
     IEnumerator CountDownCoroutine()
     {
-        if (currentTime == 0) currentTime = 121;
+        if (currentTime == 0) currentTime = 61;
         while (currentTime > 0)
         {
             currentTime--;

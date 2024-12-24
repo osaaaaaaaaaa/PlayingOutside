@@ -7,18 +7,19 @@ public class AreaGoal : MonoBehaviour
 {
     [SerializeField] AreaController controller;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.gameObject.layer == 3 || other.gameObject.layer == 7)
+        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 7 || collision.gameObject.layer == 8)
         {
-            other.GetComponent<PlayerEffectController>().SetEffect(EFFECT_ID.AreaCleared);
+            collision.gameObject.GetComponent<PlayerEffectController>().SetEffect(EFFECT_ID.AreaCleared);
         }
-        if (other.gameObject.layer == 3)
+        if (collision.gameObject.GetComponent<PlayerController>())
         {
-            other.gameObject.SetActive(false);
-
-            // サーバーなしで通しでやるときのデバック用
-            StartCoroutine(controller.CurrentAreaClearCoroutine(other.gameObject));
+            if (collision.gameObject.GetComponent<PlayerController>().enabled)
+            {
+                collision.gameObject.SetActive(false);
+                StartCoroutine(controller.CurrentAreaClearCoroutine(collision.gameObject));
+            }
         }
     }
 }

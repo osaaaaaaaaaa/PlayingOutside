@@ -2163,7 +2163,6 @@ MonoBehaviour:
   finishUI: {fileID: 27596145}
   spectatingUI: {fileID: 1290801995}
   imageBlackObj: {fileID: 274082040}
-  areaId: 0
 --- !u!4 &386103176
 Transform:
   m_ObjectHideFlags: 0
@@ -9098,10 +9097,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.00029069185
-    width: 1
-    height: 0.9994186
+    x: 0.00021845102
+    y: 0
+    width: 0.9995631
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60.000004
@@ -10398,9 +10397,9 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 1655
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -10799,9 +10798,9 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 1655
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
