@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ItemController : MonoBehaviour
 {
-    [SerializeField] Item.ITEM_ID itemID;
+    [SerializeField] EnumManager.ITEM_ID itemID;
     bool isHit = false;
 
     private async void OnTriggerEnter(Collider other)
@@ -27,7 +27,7 @@ public class ItemController : MonoBehaviour
     {
         switch (itemID) 
         {
-            case Item.ITEM_ID.Coin:
+            case EnumManager.ITEM_ID.Coin:
                 break;
         }
 

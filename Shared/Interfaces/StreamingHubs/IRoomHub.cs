@@ -93,7 +93,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        Task OnGetItemAsynk(Item.ITEM_ID itemId, string itemName);
+        Task OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName);
         #endregion
 
         #region 競技『カントリーリレー』の処理

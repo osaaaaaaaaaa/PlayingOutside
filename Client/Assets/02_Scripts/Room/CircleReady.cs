@@ -7,17 +7,17 @@ public class CircleReady : MonoBehaviour
     [SerializeField] RoomDirector roomDirector;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == 3)
+        if (other.GetComponent<PlayerController>())
         {
-            roomDirector.OnReadyCircle(true);
+            if(other.GetComponent<PlayerController>().enabled) roomDirector.OnReadyCircle(true);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer == 3)
+        if (other.GetComponent<PlayerController>())
         {
-            roomDirector.OnReadyCircle(false);
+            if (other.GetComponent<PlayerController>().enabled) roomDirector.OnReadyCircle(false);
         }
     }
 }

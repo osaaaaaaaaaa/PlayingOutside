@@ -17,6 +17,7 @@ public class AreaGoal : MonoBehaviour
         {
             if (collision.gameObject.GetComponent<PlayerController>().enabled)
             {
+                this.GetComponent<BoxCollider>().enabled = false;
                 collision.gameObject.SetActive(false);
                 StartCoroutine(controller.CurrentAreaClearCoroutine(collision.gameObject));
             }

@@ -406,6 +406,7 @@ namespace Server.StreamingHubs
                     roomData.UserState.isCountdownOver = false;
                     roomData.UserState.isFinishGame = false;
                     roomData.UserState.FinishGameCnt++;
+                    roomData.UserState.usedItemNameList.Clear();
                 }
 
                 Console.WriteLine("現在の終了したゲーム数：" + dataSelf.UserState.FinishGameCnt);
@@ -419,11 +420,11 @@ namespace Server.StreamingHubs
                 }
                 else
                 {
-                    GameScene gameScene = new GameScene();
+                    EnumManager.SCENE_ID gameScene = EnumManager.SCENE_ID.FinalGame;
                     // 次の競技が最終競技になる場合
                     if (dataSelf.UserState.FinishGameCnt == maxGameCnt - 1)
                     {
-                        gameScene.GameSceneId = GameScene.SCENE_ID.FinalGame;
+                        gameScene = EnumManager.SCENE_ID.FinalGame;
                     }
                     else
                     {
@@ -533,7 +534,7 @@ namespace Server.StreamingHubs
         /// </summary>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public async Task OnGetItemAsynk(Item.ITEM_ID itemId, string itemName)
+        public async Task OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -558,7 +559,7 @@ namespace Server.StreamingHubs
                 float option = 0;
                 switch (itemId)
                 {
-                    case Item.ITEM_ID.Coin:
+                    case EnumManager.ITEM_ID.Coin:
                         dataSelf.UserState.score += (int)pointsPerCoin;
                         option = dataSelf.UserState.score;
                         break;

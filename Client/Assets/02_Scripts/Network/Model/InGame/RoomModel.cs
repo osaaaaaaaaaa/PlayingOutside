@@ -399,17 +399,17 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 全員がゲーム終了処理を完了した通知
     /// </summary>
     /// <param name="scene"></param>
-    public void OnFinishGame(GameScene scene)
+    public void OnFinishGame(EnumManager.SCENE_ID scene)
     {
         if (userState == USER_STATE.joined)
         {
             string sceneName = "";
-            switch (scene.GameSceneId)
+            switch (scene)
             {
-                case GameScene.SCENE_ID.RelayGame:
+                case EnumManager.SCENE_ID.RelayGame:
                     sceneName = "RelayGameScene";
                     break;
-                case GameScene.SCENE_ID.FinalGame:
+                case EnumManager.SCENE_ID.FinalGame:
                     sceneName = "FinalGameScene";
                     break;
             }
@@ -467,7 +467,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="itemId"></param>
     /// <param name="itemName"></param>
     /// <returns></returns>
-    public async UniTask OnGetItemAsynk(Item.ITEM_ID itemId, string itemName)
+    public async UniTask OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
     {
         if (userState == USER_STATE.joined) await roomHub.OnGetItemAsynk(itemId, itemName);
     }

@@ -156,6 +156,7 @@ public class AreaController : MonoBehaviour
 
         // w’è‚³‚ê‚½ŠÔ·‚Å“®‚¯‚é‚æ‚¤‚É‚·‚é
         yield return new WaitForSeconds(fadeTime + restarningWaitSec);
+        isClearedArea = false;
         player.GetComponent<PlayerController>().enabled = true;
         player.SetActive(true);
         player.GetComponent<PlayerController>().InitPlayer();

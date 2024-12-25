@@ -327,8 +327,6 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="currentTime"></param>
     void NotifyCountDownUser(int currentTime)
     {
-        if (areaController.isClearedArea) return;
-
         if(coroutineCountDown == null) this.currentTime = currentTime;
         countDownUI.SetActive(true);
         countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);

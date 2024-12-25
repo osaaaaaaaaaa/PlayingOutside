@@ -71,7 +71,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// <summary>
         /// 全員がゲーム終了処理を完了した通知
         /// </summary>
-        void OnFinishGame(GameScene scene);
+        void OnFinishGame(EnumManager.SCENE_ID scene);
 
         /// <summary>
         /// コイン(ポイント)のドロップ通知
