@@ -94,6 +94,14 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="itemName"></param>
         /// <returns></returns>
         Task OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName);
+
+        /// <summary>
+        /// アイテムの使用
+        /// </summary>
+        /// <param name="ConnectionId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        Task OnUseItemAsynk(Guid connectionId, EnumManager.ITEM_ID itemId);
         #endregion
 
         #region 競技『カントリーリレー』の処理

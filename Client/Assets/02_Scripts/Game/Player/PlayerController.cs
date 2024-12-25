@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     #region コンポーネント
     PlayerAnimatorController animController;
     PlayerSkillController skillController;
+    PlayerItemController itemController;
     Rigidbody rb;
     CinemachineImpulseSource impulseSource;
     #endregion
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
     public float speed;
     public float Speed { get { return speed; } set { speed = value; } }
     public float defaultSpeed { get; private set; } = 5;
+    public float pepperSpeed { get; private set; } = 8;
     float jumpPower;
     #endregion
     #endregion
@@ -71,11 +73,12 @@ public class PlayerController : MonoBehaviour
     {
         skillController = GetComponent<PlayerSkillController>();
         animController = GetComponent<PlayerAnimatorController>();
+        itemController = GetComponent<PlayerItemController>();
         rb = GetComponent<Rigidbody>();
         impulseSource = GetComponent<CinemachineImpulseSource>();
 
         speed = defaultSpeed;
-        jumpPower = 500;
+        jumpPower = 600;
         hp = hpMax;
         isStandUp = true;
         isInvincible = false;
@@ -98,7 +101,9 @@ public class PlayerController : MonoBehaviour
         {
             if (moveX != 0 || moveZ != 0)
             {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
+                bool isUsePepper = itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper);
+                if (!isUsePepper) animController.SetInt(PlayerAnimatorController.ANIM_ID.Run);
+                if (isUsePepper) animController.SetInt(PlayerAnimatorController.ANIM_ID.RunFast);
             }
             else
             {
@@ -117,7 +122,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 var target = SerchNearTarget();
-                if(target != null) LookAtPlayer(target);
+                if (target != null) LookAtPlayer(target);
                 animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
             }
 
@@ -295,7 +300,9 @@ public class PlayerController : MonoBehaviour
     public void InitPlayer()
     {
         this.gameObject.layer = 3;
-        speed = defaultSpeed;
         isControlEnabled = true;
+
+        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
+        else  speed = defaultSpeed;
     }
 }

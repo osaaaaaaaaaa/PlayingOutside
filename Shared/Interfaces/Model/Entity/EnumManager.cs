@@ -17,8 +17,14 @@ namespace Shared.Interfaces.Model.Entity
 
         public enum ITEM_ID
         {
-            Coin = 0,
+            None = 0,
+            Coin,
             Pepper,
+        }
+
+        public enum ITEM_EFFECT_TIME
+        {
+            Pepper = 7,
         }
     }
 }

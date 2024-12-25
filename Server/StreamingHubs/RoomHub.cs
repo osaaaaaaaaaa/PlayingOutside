@@ -1,4 +1,5 @@
-﻿using MagicOnion.Server.Hubs;
+﻿using Google.Protobuf.WellKnownTypes;
+using MagicOnion.Server.Hubs;
 using Server.Model.Context;
 using Shared.Interfaces.Model.Entity;
 using Shared.Interfaces.StreamingHubs;
@@ -552,7 +553,7 @@ namespace Server.StreamingHubs
                     }
                 }
 
-                // アイテムを使用する
+                // アイテムを入手する
                 var dataSelf = roomStorage.Get(this.ConnectionId);
                 dataSelf.UserState.usedItemNameList.Add(itemName);
 
@@ -569,6 +570,18 @@ namespace Server.StreamingHubs
 
                 this.Broadcast(this.room).OnGetItem(this.ConnectionId, itemName, option);
             }
+        }
+
+        /// <summary>
+        /// アイテムの使用
+        /// </summary>
+        /// <param name="ConnectionId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public async Task OnUseItemAsynk(Guid connectionId, EnumManager.ITEM_ID itemId)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            this.Broadcast(this.room).OnUseItem(this.ConnectionId, itemId);
         }
 
         /// <summary>

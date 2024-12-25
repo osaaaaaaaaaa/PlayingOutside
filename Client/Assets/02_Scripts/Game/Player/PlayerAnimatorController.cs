@@ -30,6 +30,7 @@ public class PlayerAnimatorController : MonoBehaviour
         Damage = 10,
         Die = 11,
         Run = 15,
+        RunFast = 18,
         StandUp = 20,
         Respawn = 21,
     }

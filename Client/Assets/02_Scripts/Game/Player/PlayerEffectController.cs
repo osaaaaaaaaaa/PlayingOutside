@@ -16,10 +16,10 @@ public class PlayerEffectController : MonoBehaviour
         MudRipples,     // 泥の中にいるとき
         Down,           // [アニメーションからの呼び出し] ノックダウンするダメージを受けたとき
         KnockBackSmoke, // [アニメーションからの呼び出し] ノックバック中
-        PepperFire,   // [アイテム] 唐辛子を食べたとき
+        PepperFire,     // [アイテム] 唐辛子
     }
 
-    List<GameObject> particleSystems;
+    List<GameObject> particleSystems = new List<GameObject>();
     bool isTouchedMud;
 
     private void Awake()
@@ -68,9 +68,11 @@ public class PlayerEffectController : MonoBehaviour
                 effectTmp.transform.position += this.transform.position;
                 break;
             case EFFECT_ID.PepperFire:
-                if(!SerchSameNameParticle(EFFECT_ID.PepperFire.ToString()))
-                effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
-                effect.name = EFFECT_ID.PepperFire.ToString();
+                if (!SerchSameNameParticle(EFFECT_ID.PepperFire.ToString())) 
+                {
+                    effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
+                    effect.name = EFFECT_ID.PepperFire.ToString();
+                }
                 break;
         }
 
@@ -96,12 +98,20 @@ public class PlayerEffectController : MonoBehaviour
         particleSystems.Clear();
     }
 
-    public void StopParticle(string name)
+    public void StopParticle(EFFECT_ID efectId)
     {
+        string particleName = efectId.ToString();
+        GameObject particleToRemove = null;
         foreach (GameObject particleSystem in particleSystems)
         {
-            if (particleSystem != null && particleSystem.name == name) particleSystem.GetComponent<ParticleSystem>().Stop();
+            if (particleSystem != null && particleSystem.name == particleName)
+            {
+                particleToRemove = particleSystem;
+                particleSystem.GetComponent<ParticleSystem>().Stop();
+            }
         }
+
+        if (particleToRemove != null) particleSystems.Remove(particleToRemove);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -121,7 +131,7 @@ public class PlayerEffectController : MonoBehaviour
         if (other.tag == "Mud")
         {
             isTouchedMud = false;
-            StopParticle(EFFECT_ID.MudRipples.ToString());
+            StopParticle(EFFECT_ID.MudRipples);
         }
     }
 }

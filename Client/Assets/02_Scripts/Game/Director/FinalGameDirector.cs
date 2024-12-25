@@ -46,12 +46,15 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnCountdownOverUser += this.NotifyStartGame;
-        RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
-        RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
         RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser += this.NotifyDropCoinsAtRandomPositions;
+        #region ゲーム共通の通知処理
+        RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
+        RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
+        RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
+        #endregion
 
         SetupGame();
     }
@@ -62,12 +65,15 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnCountdownOverUser -= this.NotifyStartGame;
-        RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
-        RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
         RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser -= this.NotifyDropCoinsAtRandomPositions;
+        #region ゲーム共通の通知処理
+        RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
+        RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
+        RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
+        #endregion
     }
 
     IEnumerator UpdateCoroutine()
@@ -334,11 +340,8 @@ public class FinalGameDirector : MonoBehaviour
     /// <param name="coinNames"></param>
     void NotifyDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames)
     {
-        Debug.Log("コイン落下");
         for (int i = 0; i < coinNames.Length; i++)
         {
-
-            Debug.Log(startPoins[i].ToString() + "に落下");
             var coin = Instantiate(coinPrefab);
             coin.transform.position = startPoins[i];
             coin.name = coinNames[i];
@@ -356,10 +359,21 @@ public class FinalGameDirector : MonoBehaviour
         GameObject item = GameObject.Find(itemName);
         if (item == null) return;
 
-        item.GetComponent<ItemController>().UseItem();
         if (connectionId == RoomModel.Instance.ConnectionId)
         {
-            Debug.Log("自分に使用する");
+            characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(item.GetComponent<ItemController>().ItemId);
         }
+
+        Destroy(item);
+    }
+
+    /// <summary>
+    /// アイテム使用通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    void NotifyUseItemUser(Guid connectionId, EnumManager.ITEM_ID itemId)
+    {
+        characterList[connectionId].GetComponent<PlayerItemController>().UseItem(itemId);
     }
 }

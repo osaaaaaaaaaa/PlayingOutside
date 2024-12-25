@@ -92,6 +92,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// アイテム入手通知
         /// </summary>
         void OnGetItem(Guid connectionId, string itemName, float option);
+
+        /// <summary>
+        /// アイテム使用通知
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="itemId"></param>
+        void OnUseItem(Guid connectionId, EnumManager.ITEM_ID itemId);
         #endregion
 
         #region 競技『カントリーリレー』の処理

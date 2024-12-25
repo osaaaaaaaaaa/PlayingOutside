@@ -57,6 +57,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Vector3[], string[]> OnDropCoinsAtRandomPositionsUser { get; set; }
     // アイテム取得通知
     public Action<Guid, string,float> OnGetItemUser {  get; set; }
+    // アイテム使用通知
+    public Action<Guid,EnumManager.ITEM_ID> OnUseItemUser { get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -481,6 +483,27 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnGetItem(Guid connectionId, string itemName, float option)
     {
         if (userState == USER_STATE.joined) OnGetItemUser(connectionId, itemName, option);
+    }
+
+    /// <summary>
+    /// アイテム使用時に呼び出し
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
+    public async UniTask OnUseItemAsynk(EnumManager.ITEM_ID itemId)
+    {
+        if (userState == USER_STATE.joined) await roomHub.OnUseItemAsynk(this.ConnectionId, itemId);
+    }
+
+    /// <summary>
+    /// アイテム使用通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    public void OnUseItem(Guid connectionId, EnumManager.ITEM_ID itemId)
+    {
+        if (userState == USER_STATE.joined) OnUseItemUser(connectionId, itemId);
     }
     #endregion
 
