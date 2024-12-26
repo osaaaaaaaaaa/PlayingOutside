@@ -1,6 +1,7 @@
 using Shared.Interfaces.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ItemController : MonoBehaviour
@@ -8,17 +9,33 @@ public class ItemController : MonoBehaviour
     [SerializeField] EnumManager.ITEM_ID itemID;
     public EnumManager.ITEM_ID ItemId { get { return itemID; } }
 
+    [SerializeField] GameObject model;
+
     bool isHit = false;
+    float lifetime = 15;
+
+    private void OnEnable()
+    {
+        StartCoroutine(DestroyCoroutin());
+    }
 
     private async void OnTriggerEnter(Collider other)
     {
         // プレイヤーに触れた場合
         if (other.gameObject.layer == 3 && !isHit)
         {
-            if (other.GetComponent<PlayerItemController>().slotItemId == EnumManager.ITEM_ID.None)
+            if (ItemId == EnumManager.ITEM_ID.Coin)
             {
                 isHit = true;
-                await RoomModel.Instance.OnGetItemAsynk(itemID, this.name);
+                await RoomModel.Instance.GetItemAsynk(itemID, this.name);
+
+                // チュートリアルで使用する想定
+                if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined) Destroy(this.gameObject);
+            }
+            else if (other.GetComponent<PlayerItemController>().slotItemId == EnumManager.ITEM_ID.None)
+            {
+                isHit = true;
+                await RoomModel.Instance.GetItemAsynk(itemID, this.name);
 
                 // チュートリアルで使用する想定
                 if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
@@ -33,5 +50,37 @@ public class ItemController : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+    }
+
+    IEnumerator DestroyCoroutin()
+    {
+        const float flashingTime = 5;
+        const float flashingCnt = 20;
+        while (lifetime > flashingTime)
+        {
+            lifetime--;
+            yield return new WaitForSeconds(1);
+        }
+
+        while (lifetime > 0)
+        {
+            lifetime -= flashingTime / flashingCnt;
+            model.SetActive(!model.activeSelf);
+            yield return new WaitForSeconds(flashingTime / flashingCnt);
+        }
+
+        if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
+        {
+            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient) DestroyItemAsynk();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    async void DestroyItemAsynk()
+    {
+        await RoomModel.Instance.DestroyItemAsynk(this.name);
     }
 }

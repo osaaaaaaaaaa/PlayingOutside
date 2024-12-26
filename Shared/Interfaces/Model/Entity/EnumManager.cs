@@ -18,6 +18,7 @@ namespace Shared.Interfaces.Model.Entity
         public enum ITEM_ID
         {
             None = 0,
+            ItemBox,
             Coin,
             Pepper,
         }

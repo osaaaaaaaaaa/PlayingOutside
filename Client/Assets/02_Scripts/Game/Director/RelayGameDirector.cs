@@ -204,7 +204,7 @@ public class RelayGameDirector : MonoBehaviour
     public async void OnCountdownOver()
     {
         isGameStartCountDownOver = true;
-        await RoomModel.Instance.OnCountdownOverAsynk();
+        await RoomModel.Instance.CountdownOverAsynk();
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public class RelayGameDirector : MonoBehaviour
     /// </summary>
     public async void OnAreaCleared()
     {
-        await RoomModel.Instance.OnAreaClearedAsynk();
+        await RoomModel.Instance.AreaClearedAsynk();
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public class RelayGameDirector : MonoBehaviour
         else
         {
             // 現在のエリアが最後のエリアではない場合
-            await RoomModel.Instance.OnReadyNextAreaAsynk();
+            await RoomModel.Instance.ReadyNextAreaAsynk();
         }
     }
 
@@ -317,7 +317,7 @@ public class RelayGameDirector : MonoBehaviour
     {
         if (currentTime >= 0 && !areaController.isClearedArea)
         {
-            await RoomModel.Instance.OnCountDownAsynk(currentTime);
+            await RoomModel.Instance.CountDownAsynk(currentTime);
         }
     }
 
@@ -343,7 +343,7 @@ public class RelayGameDirector : MonoBehaviour
     /// </summary>
     public async void OnFinishGame()
     {
-        await RoomModel.Instance.OnFinishGameAsynk();
+        await RoomModel.Instance.FinishGameAsynk();
     }
 
     /// <summary>

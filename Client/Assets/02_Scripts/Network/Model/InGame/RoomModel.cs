@@ -59,6 +59,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid, string,float> OnGetItemUser {  get; set; }
     // アイテム使用通知
     public Action<Guid,EnumManager.ITEM_ID> OnUseItemUser { get; set; }
+    // アイテムの破棄通知
+    public Action<string> OnDestroyItemUser { get; set; }
+    // アイテムの生成通知
+    public Action<Vector3,EnumManager.ITEM_ID,string> OnSpawnItemUser { get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -239,7 +243,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             // 自動マッチング時は入室できたら準備完了リクエストを送信
             if (IsMatchingRunning)
             {
-                await OnReadyAsynk(true);
+                await ReadyAsynk(true);
             }
         }
     }
@@ -276,9 +280,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// ユーザーが退室する通知（自分も含む）
     /// </summary>
     /// <param name="user"></param>
-    public void OnLeave(Guid connectionId)
+    public void OnLeave(Guid connectionId, JoinedUser latestData)
     {
         if (userState == USER_STATE.leave_done) return;
+
+        // 自分のユーザー情報を更新
+        JoinedUsers[this.ConnectionId] = latestData;
 
         // アクション実行
         OnLeavedUser(connectionId);
@@ -324,11 +331,11 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 自分の準備が完了したかどうか
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnReadyAsynk(bool isReady)
+    public async UniTask ReadyAsynk(bool isReady)
     {
         Debug.Log("準備完了リクエストを送信");
         // サーバーに準備が完了したかどうかをリクエスト
-        await roomHub.OnReadyAsynk(isReady);
+        await roomHub.ReadyAsynk(isReady);
     }
 
     /// <summary>
@@ -348,10 +355,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 自分のゲーム開始前のカウントダウンが終了
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnCountdownOverAsynk()
+    public async UniTask CountdownOverAsynk()
     {
         // サーバーにカウントダウンが終了したことをリクエスト
-        await roomHub.OnCountdownOverAsynk();
+        await roomHub.CountdownOverAsynk();
     }
 
     /// <summary>
@@ -372,9 +379,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     /// <param name="currentTime"></param>
     /// <returns></returns>
-    public async UniTask OnCountDownAsynk(int currentTime)
+    public async UniTask CountDownAsynk(int currentTime)
     {
-        if (userState == USER_STATE.joined) await roomHub.OnCountDownAsynk(currentTime);
+        if (userState == USER_STATE.joined) await roomHub.CountDownAsynk(currentTime);
     }
 
     /// <summary>
@@ -391,9 +398,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// ゲーム終了が完了したリクエスト
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnFinishGameAsynk()
+    public async UniTask FinishGameAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.OnFinishGameAsynk();
+        if (userState == USER_STATE.joined) await roomHub.FinishGameAsynk();
     }
 
     /// <summary>
@@ -425,9 +432,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     /// <param name="startPoint"></param>
     /// <returns></returns>
-    public async UniTask OnKnockDownAsynk(Vector3 startPoint)
+    public async UniTask KnockDownAsynk(Vector3 startPoint)
     {
-        if (userState == USER_STATE.joined) await roomHub.OnKnockDownAsynk(startPoint);
+        if (userState == USER_STATE.joined) await roomHub.KnockDownAsynk(startPoint);
     }
 
     /// <summary>
@@ -436,9 +443,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="rangePointA"></param>
     /// <param name="rangePointB"></param>
     /// <returns></returns>
-    public async UniTask OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
+    public async UniTask OutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
     {
-        if (userState == USER_STATE.joined) await roomHub.OnOutOfBoundsAsynk(rangePointA, rangePointB);
+        if (userState == USER_STATE.joined) await roomHub.OutOfBoundsAsynk(rangePointA, rangePointB);
     }
 
     /// <summary>
@@ -469,12 +476,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="itemId"></param>
     /// <param name="itemName"></param>
     /// <returns></returns>
-    public async UniTask OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
+    public async UniTask GetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
     {
-        if (userState == USER_STATE.joined) await roomHub.OnGetItemAsynk(itemId, itemName);
+        if (userState == USER_STATE.joined) await roomHub.GetItemAsynk(itemId, itemName);
     }
 
     /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
     /// アイテム取得通知
     /// </summary>
     /// <param name="connectionId"></param>
@@ -491,12 +499,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
     /// <returns></returns>
-    public async UniTask OnUseItemAsynk(EnumManager.ITEM_ID itemId)
+    public async UniTask UseItemAsynk(EnumManager.ITEM_ID itemId)
     {
-        if (userState == USER_STATE.joined) await roomHub.OnUseItemAsynk(this.ConnectionId, itemId);
+        if (userState == USER_STATE.joined) await roomHub.UseItemAsynk(itemId);
     }
 
     /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
     /// アイテム使用通知
     /// </summary>
     /// <param name="connectionId"></param>
@@ -504,6 +513,50 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUseItem(Guid connectionId, EnumManager.ITEM_ID itemId)
     {
         if (userState == USER_STATE.joined) OnUseItemUser(connectionId, itemId);
+    }
+
+    /// <summary>
+    /// アイテムの破棄
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
+    public async UniTask DestroyItemAsynk(string itemName)
+    {
+        if (userState == USER_STATE.joined) await roomHub.DestroyItemAsynk(itemName);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// アイテムの破棄通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    public void OnDestroyItem(string itemName)
+    {
+        if (userState == USER_STATE.joined) OnDestroyItemUser(itemName);
+    }
+
+    /// <summary>
+    /// アイテムの生成
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
+    public async UniTask SpawnItemAsynk(Vector3 spawnPoint, EnumManager.ITEM_ID itemId)
+    {
+        if (userState == USER_STATE.joined) await roomHub.SpawnItemAsynk(spawnPoint, itemId);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// アイテムの生成通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    public void OnSpawnItem(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
+    {
+        if (userState == USER_STATE.joined) OnSpawnItemUser(spawnPoint, itemId, itemName);
     }
     #endregion
 
@@ -513,9 +566,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     /// <param name="isLastArea"></param>
     /// <returns></returns>
-    public async UniTask OnAreaClearedAsynk()
+    public async UniTask AreaClearedAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.OnAreaClearedAsynk();
+        if (userState == USER_STATE.joined) await roomHub.AreaClearedAsynk();
     }
 
     /// <summary>
@@ -531,9 +584,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 次のエリアに移動する準備が完了した処理
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnReadyNextAreaAsynk()
+    public async UniTask ReadyNextAreaAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.OnReadyNextAreaAsynk();
+        if (userState == USER_STATE.joined) await roomHub.ReadyNextAreaAsynk();
     }
 
     /// <summary>
@@ -573,9 +626,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 最終結果発表シーンに遷移した処理
     /// </summary>
     /// <returns></returns>
-    public async UniTask OnTransitionFinalResultSceneAsynk()
+    public async UniTask TransitionFinalResultSceneAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.OnTransitionFinalResultSceneAsynk();
+        if (userState == USER_STATE.joined) await roomHub.TransitionFinalResultSceneAsynk();
     }
 
     /// <summary>

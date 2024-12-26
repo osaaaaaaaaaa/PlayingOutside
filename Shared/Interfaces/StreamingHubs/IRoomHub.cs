@@ -50,13 +50,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="isAllUsersReady">全員が準備完了できたかどうか</param>
         /// <returns></returns>
-        Task OnReadyAsynk(bool isAllUsersReady);
+        Task ReadyAsynk(bool isAllUsersReady);
 
         /// <summary>
         /// ゲーム開始前のカウントダウン終了
         /// </summary>
         /// <returns></returns>
-        Task OnCountdownOverAsynk();
+        Task CountdownOverAsynk();
         #endregion
 
         #region ゲーム共通処理
@@ -66,19 +66,19 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        Task OnCountDownAsynk(int currentTime);
+        Task CountDownAsynk(int currentTime);
 
         /// <summary>
         /// 各自の画面でゲームが終了
         /// </summary>
         /// <returns></returns>
-        Task OnFinishGameAsynk();
+        Task FinishGameAsynk();
 
         /// <summary>
         /// ノックダウン時
         /// </summary>
         /// <returns></returns>
-        Task OnKnockDownAsynk(Vector3 startPoint);
+        Task KnockDownAsynk(Vector3 startPoint);
 
         /// <summary>
         /// 場外に出た時
@@ -86,22 +86,39 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="rangePointA">ステージの範囲A</param>
         /// <param name="rangePointB">ステージの範囲B</param>
         /// <returns></returns>
-        Task OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB);
+        Task OutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB);
 
         /// <summary>
         /// アイテムの入手処理
         /// </summary>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        Task OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName);
+        Task GetItemAsynk(EnumManager.ITEM_ID itemId, string itemName);
 
         /// <summary>
         /// アイテムの使用
         /// </summary>
-        /// <param name="ConnectionId"></param>
+        /// <param name="connectionId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        Task OnUseItemAsynk(Guid connectionId, EnumManager.ITEM_ID itemId);
+        Task UseItemAsynk(EnumManager.ITEM_ID itemId);
+
+        /// <summary>
+        /// アイテムの破棄
+        /// (マスタークライアントが呼び出す)
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        Task DestroyItemAsynk(string itemName);
+
+
+        /// <summary>
+        /// アイテムの生成
+        /// </summary>
+        /// <param name="spawnPoint"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        Task SpawnItemAsynk(Vector3 spawnPoint, EnumManager.ITEM_ID itemId);
         #endregion
 
         #region 競技『カントリーリレー』の処理
@@ -109,13 +126,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// エリアをクリアした処理
         /// </summary>
         /// <returns></returns>
-        Task OnAreaClearedAsynk();
+        Task AreaClearedAsynk();
 
         /// <summary>
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        Task OnReadyNextAreaAsynk();
+        Task ReadyNextAreaAsynk();
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)
@@ -124,7 +141,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// 最終結果発表シーンに遷移した処理
         /// </summary>
         /// <returns></returns>
-        Task OnTransitionFinalResultSceneAsynk();
+        Task TransitionFinalResultSceneAsynk();
         #endregion
     }
 }

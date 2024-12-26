@@ -159,7 +159,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     /// </summary>
     async void TransitionFinalResultScene()
     {
-        await RoomModel.Instance.OnTransitionFinalResultSceneAsynk();
+        await RoomModel.Instance.TransitionFinalResultSceneAsynk();
     }
 
     /// <summary>

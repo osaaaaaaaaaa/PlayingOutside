@@ -99,7 +99,7 @@ public class PlayerItemController : MonoBehaviour
         if (isOnUseButton) return;
         isOnUseButton = true;
         // アイテム使用リクエスト送信
-        await RoomModel.Instance.OnUseItemAsynk(slotItemId);
+        await RoomModel.Instance.UseItemAsynk(slotItemId);
 
 
         // 一旦

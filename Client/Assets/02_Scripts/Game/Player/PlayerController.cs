@@ -256,7 +256,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(knockBackVec, ForceMode.Impulse);
 
         // コイン(ポイント)のドロップ処理
-        if(!isDebug && SceneManager.GetActiveScene().name == "FinalGameScene") await RoomModel.Instance.OnKnockDownAsynk(transform.position);
+        if(!isDebug && SceneManager.GetActiveScene().name == "FinalGameScene") await RoomModel.Instance.KnockDownAsynk(transform.position);
     }
 
     /// <summary>

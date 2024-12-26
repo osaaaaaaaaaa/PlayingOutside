@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.Intrinsics.X86;
 using UnityEngine;
+using static Shared.Interfaces.Model.Entity.EnumManager;
 
 namespace Server.StreamingHubs
 {
@@ -42,23 +43,16 @@ namespace Server.StreamingHubs
                 && this.room.GetInMemoryStorage<RoomData>() != null
                 && this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
             {
-                var roomStorage = room.GetInMemoryStorage<RoomData>();
-                lock (roomStorage)
-                {
-                    var user = roomStorage.Get(this.ConnectionId).JoinedUser;
-                    // マスタークライアントの場合は、新しく指名する
-                    if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
-                }
-
-                // 退室したことを全メンバーに通知
-                this.Broadcast(room).OnLeave(this.ConnectionId);
+                LeaveAsynk();
             }
+            else
+            {
+                // 自分のデータを グループデータから削除する
+                this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
 
-            // 自分のデータを グループデータから削除する
-            this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
-
-            // ルーム内のメンバーから削除
-            room.RemoveAsync(this.Context);
+                // ルーム内のメンバーから削除
+                room.RemoveAsync(this.Context);
+            }
 
             return CompletedTask;
         }
@@ -217,13 +211,21 @@ namespace Server.StreamingHubs
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             var user = roomStorage.Get(this.ConnectionId).JoinedUser;
+            var dataList = roomStorage.AllValues.ToArray<RoomData>();
             Console.WriteLine(user.UserData.Name + "が退室しました");
 
             // 自分がマスタークライアントの場合は、新しくマスタークライアントを選ぶ
-            if (user.IsMasterClient) AssignNewMasterClient(roomStorage.AllValues.ToArray<RoomData>(), user.ConnectionId);
+            lock (roomStorage)
+            {
+                if (user.IsMasterClient) AssignNewMasterClient(dataList, user.ConnectionId);
+            }
 
-            // ルーム参加者にユーザーの退室通知を送信
-            this.Broadcast(room).OnLeave(this.ConnectionId);
+            foreach (var latestData in dataList)
+            {
+                // ルーム参加者にユーザーの退室通知を送信
+                if (latestData.JoinedUser.ConnectionId != this.ConnectionId)
+                    this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
+            }
 
             // 自分のデータを グループデータから削除する
             this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
@@ -236,6 +238,7 @@ namespace Server.StreamingHubs
         /// </summary>
         void AssignNewMasterClient(RoomData[] roomDatas, Guid exclusionId)
         {
+            Guid connectionId = Guid.Empty;
             foreach (RoomData roomData in roomDatas)
             {
                 if (roomData.JoinedUser.ConnectionId == exclusionId)
@@ -244,7 +247,9 @@ namespace Server.StreamingHubs
                 }
                 else if (!roomData.JoinedUser.IsMasterClient)
                 {
+                    connectionId = roomData.JoinedUser.ConnectionId;
                     roomData.JoinedUser.IsMasterClient = true;
+                    break;
                 }
             }
         }
@@ -289,7 +294,7 @@ namespace Server.StreamingHubs
         /// 準備完了したかどうか
         /// </summary>
         /// <returns></returns>
-        public async Task OnReadyAsynk(bool isReady)
+        public async Task ReadyAsynk(bool isReady)
         {
             bool isAllUsersReady = false;
             int readyCnt = 0;
@@ -340,7 +345,7 @@ namespace Server.StreamingHubs
         /// ゲーム開始前のカウントダウン終了処理
         /// </summary>
         /// <returns></returns>
-        public async Task OnCountdownOverAsynk()
+        public async Task CountdownOverAsynk()
         {
             int readyCnt = 0;
             RoomData[] roomDataList;
@@ -385,7 +390,7 @@ namespace Server.StreamingHubs
         /// 各自の画面でゲームが終了
         /// </summary>
         /// <returns></returns>
-        public async Task OnFinishGameAsynk()
+        public async Task FinishGameAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -442,7 +447,7 @@ namespace Server.StreamingHubs
         /// ノックダウン時の処理
         /// </summary>
         /// <returns></returns>
-        public async Task OnKnockDownAsynk(Vector3 startPoint)
+        public async Task KnockDownAsynk(Vector3 startPoint)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -481,7 +486,7 @@ namespace Server.StreamingHubs
         /// <param name="rangePointA">ステージの範囲A</param>
         /// <param name="rangePointB">ステージの範囲B</param>
         /// <returns></returns>
-        public async Task OnOutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
+        public async Task OutOfBoundsAsynk(Vector3 rangePointA, Vector3 rangePointB)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -535,7 +540,7 @@ namespace Server.StreamingHubs
         /// </summary>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public async Task OnGetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
+        public async Task GetItemAsynk(EnumManager.ITEM_ID itemId, string itemName)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -578,17 +583,58 @@ namespace Server.StreamingHubs
         /// <param name="ConnectionId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        public async Task OnUseItemAsynk(Guid connectionId, EnumManager.ITEM_ID itemId)
+        public async Task UseItemAsynk(EnumManager.ITEM_ID itemId)
+        {
+            this.Broadcast(this.room).OnUseItem(this.ConnectionId, itemId);
+        }
+
+        /// <summary>
+        /// アイテムの破棄
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public async Task DestroyItemAsynk(string itemName)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
-            this.Broadcast(this.room).OnUseItem(this.ConnectionId, itemId);
+            lock (roomStorage) 
+            {
+                // 他のユーザーが既に同じアイテム名を使用していないかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (RoomData roomData in roomDataList)
+                {
+                    foreach (var name in roomData.UserState.usedItemNameList)
+                    {
+                        if (name == itemName)
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                // マスターがアイテムを使用したことにする
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                dataSelf.UserState.usedItemNameList.Add(itemName);
+            }
+
+            this.Broadcast(this.room).OnDestroyItem(itemName);
+        }
+
+        /// <summary>
+        /// アイテムの生成
+        /// </summary>
+        /// <param name="spawnPoint"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public async Task SpawnItemAsynk(Vector3 spawnPoint, EnumManager.ITEM_ID itemId)
+        {
+            this.Broadcast(this.room).OnSpawnItem(spawnPoint, itemId, Guid.NewGuid().ToString());
         }
 
         /// <summary>
         /// エリアをクリアした処理
         /// </summary>
         /// <returns></returns>
-        public async Task OnAreaClearedAsynk()
+        public async Task AreaClearedAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
@@ -668,7 +714,7 @@ namespace Server.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        public async Task OnReadyNextAreaAsynk()
+        public async Task ReadyNextAreaAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
@@ -729,7 +775,7 @@ namespace Server.StreamingHubs
         /// </summary>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        public async Task OnCountDownAsynk(int currentTime)
+        public async Task CountDownAsynk(int currentTime)
         {
             this.Broadcast(room).OnCountDown(currentTime);
         }
@@ -738,7 +784,7 @@ namespace Server.StreamingHubs
         /// 最終結果発表シーンに遷移した通知
         /// </summary>
         /// <returns></returns>
-        public async Task OnTransitionFinalResultSceneAsynk()
+        public async Task TransitionFinalResultSceneAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 

@@ -32,7 +32,8 @@ namespace Shared.Interfaces.StreamingHubs
         /// ユーザーの退室通知
         /// </summary>
         /// <param name="connectionId">退室したユーザーの接続ID</param>
-        void OnLeave(Guid connectionId);
+        /// <param name="latestData">最新のユーザーデータ</param>
+        void OnLeave(Guid connectionId, JoinedUser latestData);
 
         /// <summary>
         /// プレイヤーの情報更新通知
@@ -99,6 +100,20 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="connectionId"></param>
         /// <param name="itemId"></param>
         void OnUseItem(Guid connectionId, EnumManager.ITEM_ID itemId);
+
+        /// <summary>
+        /// アイテムの破棄通知
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        void OnDestroyItem(string itemName);
+
+        /// <summary>
+        /// アイテムの生成通知
+        /// </summary>
+        /// <param name="spawnPoint"></param>
+        /// <param name="itemId"></param>
+        void OnSpawnItem(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName);
         #endregion
 
         #region 競技『カントリーリレー』の処理

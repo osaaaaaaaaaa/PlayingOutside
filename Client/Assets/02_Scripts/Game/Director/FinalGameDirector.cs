@@ -26,6 +26,10 @@ public class FinalGameDirector : MonoBehaviour
     [SerializeField] CinemachineTargetGroup targetGroup;
     #endregion
 
+    #region コントローラー関係
+    [SerializeField] ItemSpawner itemSpawner;
+    #endregion
+
     [SerializeField] GameObject coinPrefab;
     [SerializeField] GameObject gimmick;
 
@@ -54,6 +58,8 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
+        RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
+        RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
         #endregion
 
         SetupGame();
@@ -73,6 +79,8 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
+        RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
+        RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
         #endregion
     }
 
@@ -228,7 +236,7 @@ public class FinalGameDirector : MonoBehaviour
     public async void OnCountdownOver()
     {
         isGameStartCountDownOver = true;
-        await RoomModel.Instance.OnCountdownOverAsynk();
+        await RoomModel.Instance.CountdownOverAsynk();
     }
 
     /// <summary>
@@ -262,7 +270,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     public async void OnCountDown()
     {
-        if (currentTime >= 0) await RoomModel.Instance.OnCountDownAsynk(currentTime);
+        if (currentTime >= 0) await RoomModel.Instance.CountDownAsynk(currentTime);
     }
 
     /// <summary>
@@ -287,7 +295,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     public async void OnFinishGame()
     {
-        await RoomModel.Instance.OnFinishGameAsynk();
+        await RoomModel.Instance.FinishGameAsynk();
     }
 
     /// <summary>
@@ -375,5 +383,28 @@ public class FinalGameDirector : MonoBehaviour
     void NotifyUseItemUser(Guid connectionId, EnumManager.ITEM_ID itemId)
     {
         characterList[connectionId].GetComponent<PlayerItemController>().UseItem(itemId);
+    }
+
+    /// <summary>
+    /// アイテムの破棄通知
+    /// </summary>
+    /// <param name="itemName"></param>
+    void NotifyDestroyItemUser(string itemName)
+    {
+        GameObject item = GameObject.Find(itemName);
+        if (item != null)
+        {
+            Destroy(item);
+        }
+    }
+
+    /// <summary>
+    /// アイテムの生成通知
+    /// </summary>
+    /// <param name="spawnPoint"></param>
+    /// <param name="itemId"></param>
+    void NotifySpawnItemUser(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
+    {
+        itemSpawner.Spawn(spawnPoint, itemId, itemName);
     }
 }

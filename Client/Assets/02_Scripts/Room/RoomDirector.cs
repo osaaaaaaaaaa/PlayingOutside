@@ -183,7 +183,7 @@ public class RoomDirector : MonoBehaviour
     public async void OnReadyCircle(bool isReady)
     {
         btnLeave.interactable = !isReady;   // €”õŠ®—¹’†‚Í‘Şºƒ{ƒ^ƒ“‚ğ‰Ÿ‚¹‚È‚¢‚æ‚¤‚É‚·‚é
-        await RoomModel.Instance.OnReadyAsynk(isReady);
+        await RoomModel.Instance.ReadyAsynk(isReady);
     }
 
     /// <summary>

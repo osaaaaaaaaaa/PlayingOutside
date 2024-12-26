@@ -24,7 +24,7 @@ public class BoundaryAreaCollider : MonoBehaviour
             collision.gameObject.transform.position = playerController.respawnPoint;
             collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-            await RoomModel.Instance.OnOutOfBoundsAsynk(rangePointA.position, rangePointB.position);
+            await RoomModel.Instance.OutOfBoundsAsynk(rangePointA.position, rangePointB.position);
         }
     }
 }
