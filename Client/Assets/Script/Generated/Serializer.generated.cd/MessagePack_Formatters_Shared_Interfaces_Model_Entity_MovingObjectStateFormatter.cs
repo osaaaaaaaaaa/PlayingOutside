@@ -16,10 +16,10 @@
 
 namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
 {
-    public sealed class JoinedUserFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.JoinedUser>
+    public sealed class MovingObjectStateFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>
     {
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Shared.Interfaces.Model.Entity.JoinedUser value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Shared.Interfaces.Model.Entity.MovingObjectState value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -28,18 +28,15 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(8);
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.ConnectionId, options);
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Serialize(ref writer, value.UserData, options);
-            writer.Write(value.JoinOrder);
-            writer.Write(value.IsMasterClient);
-            writer.Write(value.IsStartMasterCountDown);
-            writer.Write(value.IsGameRunning);
-            writer.Write(value.IsMatching);
-            writer.Write(value.score);
+            writer.WriteArrayHeader(5);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.name, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.position, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.angle, options);
+            writer.Write(value.elapsedTimeTween);
+            writer.Write(value.isActiveSelf);
         }
 
-        public global::Shared.Interfaces.Model.Entity.JoinedUser Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::Shared.Interfaces.Model.Entity.MovingObjectState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
@@ -49,35 +46,26 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             options.Security.DepthStep(ref reader);
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var ____result = new global::Shared.Interfaces.Model.Entity.JoinedUser();
+            var ____result = new global::Shared.Interfaces.Model.Entity.MovingObjectState();
 
             for (int i = 0; i < length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        ____result.ConnectionId = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.name = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     case 1:
-                        ____result.UserData = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.position = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     case 2:
-                        ____result.JoinOrder = reader.ReadInt32();
+                        ____result.angle = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     case 3:
-                        ____result.IsMasterClient = reader.ReadBoolean();
+                        ____result.elapsedTimeTween = reader.ReadSingle();
                         break;
                     case 4:
-                        ____result.IsStartMasterCountDown = reader.ReadBoolean();
-                        break;
-                    case 5:
-                        ____result.IsGameRunning = reader.ReadBoolean();
-                        break;
-                    case 6:
-                        ____result.IsMatching = reader.ReadBoolean();
-                        break;
-                    case 7:
-                        ____result.score = reader.ReadInt32();
+                        ____result.isActiveSelf = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

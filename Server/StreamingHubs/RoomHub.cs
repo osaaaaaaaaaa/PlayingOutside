@@ -155,6 +155,7 @@ namespace Server.StreamingHubs
                     IsStartMasterCountDown = false, 
                     IsGameRunning = false,
                     IsMatching = isMatching,
+                    score = 0,
                 };
                 var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
                 roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
@@ -173,7 +174,7 @@ namespace Server.StreamingHubs
                     joinedUserList[i] = roomDataList[i].JoinedUser;
                 }
 
-                Console.WriteLine(roomData.JoinedUser.ConnectionId + "：" + roomData.JoinedUser.UserData.Name + "が入室");
+                Console.WriteLine(roomData.JoinedUser.ConnectionId + "：" + roomData.JoinedUser.UserData.Name + "が入室" + "...IsMasterClient:" + roomData.JoinedUser.IsMasterClient);
 
                 return joinedUserList;
             }
@@ -223,8 +224,7 @@ namespace Server.StreamingHubs
             foreach (var latestData in dataList)
             {
                 // ルーム参加者にユーザーの退室通知を送信
-                if (latestData.JoinedUser.ConnectionId != this.ConnectionId)
-                    this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
+                this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
             }
 
             // 自分のデータを グループデータから削除する
@@ -288,6 +288,23 @@ namespace Server.StreamingHubs
 
             // ルーム参加者にプレイヤー情報更新通知を送信
             this.BroadcastExceptSelf(room).OnUpdatePlayerState(this.ConnectionId, state);
+        }
+
+        /// <summary>
+        /// マスタークライアントの情報更新
+        /// </summary>
+        /// <param name="masterClient"></param>
+        /// <returns></returns>
+        public async Task UpdateMasterClientAsynk(MasterClient masterClient)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+
+            // ストレージ内のプレイヤー情報を更新する
+            var data = roomStorage.Get(this.ConnectionId);
+            data.PlayerState = masterClient.playerState;
+
+            // ルーム参加者にマスタークライアントの情報更新通知を送信
+            this.BroadcastExceptSelf(room).OnUpdateMasterClient(this.ConnectionId, masterClient);
         }
 
         /// <summary>
@@ -456,14 +473,12 @@ namespace Server.StreamingHubs
                 //Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "の所持ポイント：" + dataSelf.UserState.score);
 
                 // コインをドロップできる分の所持ポイントがある場合
-                if (dataSelf.UserState.score >= pointsPerCoin)
+                if (dataSelf.JoinedUser.score >= pointsPerCoin)
                 {
                     float dropCoinCnt = GetDropCoinCnt(dataSelf);
 
                     // 所持ポイントを減算
-                    dataSelf.UserState.score -= (int)(dropCoinCnt * pointsPerCoin);
-                    //Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "の失うポイント：" + (int)(dropCoinCnt * pointsPerCoin));
-                    //Console.WriteLine("ドロップするコイン数：" + dropCoinCnt);
+                    dataSelf.JoinedUser.score -= (int)(dropCoinCnt * pointsPerCoin);
 
                     int[] coinAnglesY = new int[(int)dropCoinCnt];
                     string[] coinNames = new string[(int)dropCoinCnt];
@@ -474,8 +489,14 @@ namespace Server.StreamingHubs
                         coinNames[i] = Guid.NewGuid().ToString();
                     }
 
+                    var userScore = new UserScore()
+                    {
+                        ConnectionId = this.ConnectionId,
+                        LatestScore = dataSelf.JoinedUser.score
+                    };
+
                     // コインのドロップ通知を配る
-                    this.Broadcast(this.room).OnDropCoins(startPoint, coinAnglesY, coinNames);
+                    this.Broadcast(this.room).OnDropCoins(startPoint, coinAnglesY, coinNames, userScore);
                 }
             }
         }
@@ -494,12 +515,12 @@ namespace Server.StreamingHubs
                 var dataSelf = roomStorage.Get(this.ConnectionId);
 
                 // コインをドロップできる分の所持ポイントがある場合
-                if (dataSelf.UserState.score >= pointsPerCoin)
+                if (dataSelf.JoinedUser.score >= pointsPerCoin)
                 {
                     float dropCoinCnt = GetDropCoinCnt(dataSelf);
 
                     // 所持ポイントを減算
-                    dataSelf.UserState.score -= (int)(dropCoinCnt * pointsPerCoin);
+                    dataSelf.JoinedUser.score -= (int)(dropCoinCnt * pointsPerCoin);
 
                     Vector3[] startPoints = new Vector3[(int)dropCoinCnt];
                     int[] coinAnglesY = new int[(int)dropCoinCnt];
@@ -517,8 +538,14 @@ namespace Server.StreamingHubs
                         coinNames[i] = Guid.NewGuid().ToString();
                     }
 
+                    var userScore = new UserScore()
+                    {
+                        ConnectionId = this.ConnectionId,
+                        LatestScore = dataSelf.JoinedUser.score
+                    };
+
                     // 生成場所が異なるコインのドロップ通知を配る
-                    this.Broadcast(this.room).OnDropCoinsAtRandomPositions(startPoints, coinNames);
+                    this.Broadcast(this.room).OnDropCoinsAtRandomPositions(startPoints, coinNames, userScore);
                 }
             }
         }
@@ -529,7 +556,7 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         float GetDropCoinCnt(RoomData dataSelf)
         {
-            float coins = MathF.Floor(dataSelf.UserState.score / pointsPerCoin); // 所持するコインの枚数
+            float coins = MathF.Floor(dataSelf.JoinedUser.score / pointsPerCoin); // 所持するコインの枚数
             float dropCoinCnt = MathF.Floor(coins * dropPointRate);    // ドロップするコインの枚数(40%ドロップ)
             if (dropCoinCnt <= 0) dropCoinCnt = 1;  // 調整用
             return dropCoinCnt;
@@ -566,8 +593,8 @@ namespace Server.StreamingHubs
                 switch (itemId)
                 {
                     case EnumManager.ITEM_ID.Coin:
-                        dataSelf.UserState.score += (int)pointsPerCoin;
-                        option = dataSelf.UserState.score;
+                        dataSelf.JoinedUser.score += (int)pointsPerCoin;
+                        option = dataSelf.JoinedUser.score;
                         break;
                     default:
                         break;
@@ -642,13 +669,13 @@ namespace Server.StreamingHubs
             lock (roomStorage)
             {
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
-                var data = roomStorage.Get(this.ConnectionId);
-                if (data.UserState.isAreaCleared) return;
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                if (dataSelf.UserState.isAreaCleared) return;
 
                 // 送信したユーザーのデータを更新
-                data.UserState.isAreaCleared = true;
-                data.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
-                data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+                dataSelf.UserState.isAreaCleared = true;
+                dataSelf.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
+                dataSelf.JoinedUser.score += baseAddScore / dataSelf.UserState.areaGoalRank;
 
                 RoomData master = GetMasterClient(roomDataList);
                 if (master != null && !master.JoinedUser.IsStartMasterCountDown) 
@@ -667,7 +694,15 @@ namespace Server.StreamingHubs
                 }
 
                 // エリアのクリア通知を自分以外に配る
-                this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId, data.JoinedUser.UserData.Name, (readyCnt == roomDataList.Length));
+                this.BroadcastExceptSelf(room).OnAreaCleared(this.ConnectionId, dataSelf.JoinedUser.UserData.Name, (readyCnt == roomDataList.Length));
+
+                // ユーザーのスコアを更新する
+                var userScore = new UserScore()
+                {
+                    ConnectionId = this.ConnectionId,
+                    LatestScore = dataSelf.JoinedUser.score
+                };
+                this.Broadcast(this.room).OnUpdateScore(userScore);
             }
         }
 
@@ -731,7 +766,7 @@ namespace Server.StreamingHubs
                 if (!data.UserState.isAreaCleared)
                 {
                     data.UserState.areaGoalRank = GetAreaClearedUsersCount(roomDataList) + 1;
-                    data.UserState.score += baseAddScore / data.UserState.areaGoalRank;
+                    data.JoinedUser.score += baseAddScore / data.UserState.areaGoalRank;
                 }
 
                 // 全員次のエリアに移動する準備が完了したかチェック
@@ -821,27 +856,31 @@ namespace Server.StreamingHubs
                     connectionId = roomData[i].JoinedUser.ConnectionId,
                     joinOrder = roomData[i].JoinedUser.JoinOrder,
                     rank = 0,
-                    score = roomData[i].UserState.score
+                    score = roomData[i].JoinedUser.score
                 };
             }
 
             // スコアを基準に降順に並び替える
             var sortList = resultData.OrderByDescending(d => d.score);
-            int roopCnt = 0;
+            int lastScore = 0;
+            int lastRank = 1;
             foreach (var sortData in sortList) 
             {
-                roopCnt++;
-                Console.WriteLine(sortData.connectionId + ":"+ roopCnt + "位,score:" + sortData.score);
-
                 for (int i = 0; i < resultData.Length; i++) 
                 {
                     if (resultData[i].connectionId == sortData.connectionId) 
                     {
-                        // 順位を取得
-                        resultData[i].rank = roopCnt;
+                        if(lastScore != resultData[i].score)
+                        {
+                            lastRank = lastScore == 0 ? 1 : lastRank + 1;
+                        }
+                        lastScore = resultData[i].score;
+                        resultData[i].rank = lastRank;
                         break;
                     }
                 }
+
+                Console.WriteLine(sortData.connectionId + ":" + lastRank + "位,score:" + sortData.score);
             }
 
             return resultData;

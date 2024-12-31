@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     PlayerItemController itemController;
     Rigidbody rb;
     CinemachineImpulseSource impulseSource;
+    CharacterControlUI characterControlUI;
+    FloatingJoystick floatingJoystick;
     #endregion
 
     #region カメラ関係
@@ -76,6 +78,10 @@ public class PlayerController : MonoBehaviour
         itemController = GetComponent<PlayerItemController>();
         rb = GetComponent<Rigidbody>();
         impulseSource = GetComponent<CinemachineImpulseSource>();
+        var CharacterControls = GameObject.Find("CharacterControls");
+        if(CharacterControls) characterControlUI = CharacterControls.GetComponent<CharacterControlUI>();
+        var FloatingJoystick = GameObject.Find("Floating Joystick");
+        if(FloatingJoystick) floatingJoystick = FloatingJoystick.GetComponent<FloatingJoystick>();
 
         speed = defaultSpeed;
         jumpPower = 600;
@@ -84,20 +90,42 @@ public class PlayerController : MonoBehaviour
         isInvincible = false;
     }
 
+    private void OnEnable()
+    {
+        if (characterControlUI != null && this.gameObject.layer == 3) characterControlUI.ToggleUIVisibiliity(true);
+    }
+
+    private void OnDisable()
+    {
+        if (characterControlUI != null && this.gameObject.layer == 3) characterControlUI.ToggleUIVisibiliity(false);
+    }
+
     void Update()
     {
         if (!isStandUp || !isControlEnabled)
         {
             moveX = 0;
             moveZ = 0;
+            characterControlUI.ToggleButtonInteractable(false);
             return;
         }
 
         // キー入力で移動方向を更新
-        moveX = Input.GetAxisRaw("Horizontal");
-        moveZ = Input.GetAxisRaw("Vertical");
+        if (floatingJoystick && floatingJoystick.Horizontal != 0 && floatingJoystick.Vertical != 0)
+        {
+            moveX = floatingJoystick.Horizontal;
+            moveZ = floatingJoystick.Vertical;
+        }
+        else
+        {
+            moveX = Input.GetAxisRaw("Horizontal");
+            moveZ = Input.GetAxisRaw("Vertical");
+        }
 
-        if (GetComponent<PlayerIsGroundController>().IsGround() && !skillController.isUsedSkill)
+        bool isInteractable = GetComponent<PlayerIsGroundController>().IsGround() && !skillController.isUsedSkill;
+        characterControlUI.ToggleButtonInteractable(isInteractable);
+
+        if (isInteractable)
         {
             if (moveX != 0 || moveZ != 0)
             {
@@ -110,6 +138,8 @@ public class PlayerController : MonoBehaviour
                 animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
             }
 
+            // ↓とりあえず残しておく####################################################
+
             // ジャンプ処理
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -118,20 +148,47 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(transform.up * jumpPower);
             }
 
-            // キック処理
-            if (Input.GetMouseButtonDown(0))
-            {
-                var target = SerchNearTarget();
-                if (target != null) LookAtPlayer(target);
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-            }
+            //// キック処理
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    var target = SerchNearTarget();
+            //    if (target != null) LookAtPlayer(target);
+            //    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+            //}
 
             // スキル発動処理
             if (Input.GetKeyDown(KeyCode.E))
             {
                 animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
             }
+
+            // デバック用、無敵化ON/OFF
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                if(this.gameObject.layer == 3) this.gameObject.layer = 8;
+                else this.gameObject.layer = 3;
+            }
         }
+    }
+
+    public void OnKickButton()
+    {
+        var target = SerchNearTarget();
+        if (target != null) LookAtPlayer(target);
+        animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+    }
+
+    public void OnJumpButton()
+    {
+        transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+        animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
+        rb.AddForce(transform.up * jumpPower);
+    }
+
+    public void OnSkillButton()
+    {
+        animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
+        characterControlUI.OnSkillButton();
     }
 
     private void FixedUpdate()
@@ -289,12 +346,30 @@ public class PlayerController : MonoBehaviour
         return target;
     }
 
+    public void OnColliderMudEnter()
+    {
+        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed - 3;
+        else speed = defaultSpeed - 3;
+    }
+
+    public void OnColliderMudExit()
+    {
+        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
+        else speed = defaultSpeed;
+    }
+
     public void InitPlayer(Transform startPointTf)
     {
         if(respawnPoint == Vector3.zero) respawnPoint = startPointTf.position;
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
-        speed = defaultSpeed;
+
+        IsStandUp = true;
+        IsControlEnabled = true;
+        IsInvincible = false;
+        this.gameObject.layer = 3;
+        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
+        else speed = defaultSpeed;
     }
 
     public void InitPlayer()

@@ -42,6 +42,20 @@ public class PlayerAnimatorController : MonoBehaviour
         isKnockBackAnim = false;
     }
 
+    private void OnDisable()
+    {
+        if(!playerController || !skillController) return;
+        OnEndAnim();
+        isKnockBackAnim = false;
+        StopCoroutine(FlashCoroutine());
+        foreach (var meshs in skinnedMeshs)
+        {
+            meshs.enabled = true;
+        }
+        meshMain.enabled = true;
+        animator.SetBool("is_invincible", false);
+    }
+
     private void Update()
     {
         if (isKnockBackAnim && GetComponent<PlayerIsGroundController>().IsGround())

@@ -17134,6 +17134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillObj: {fileID: 992331475354833917}
   skillID: 0
+  coolTime: 10
 --- !u!114 &7718717623469375132
 MonoBehaviour:
   m_ObjectHideFlags: 0

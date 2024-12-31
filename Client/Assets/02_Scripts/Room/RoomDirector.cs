@@ -17,6 +17,7 @@ public class RoomDirector : MonoBehaviour
     [SerializeField] Text textRoomName;
     [SerializeField] Button btnLeave;
     [SerializeField] TargetCameraController targetCameraController;
+    [SerializeField] CharacterControlUI characterControlUI;
 
     #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
@@ -83,6 +84,7 @@ public class RoomDirector : MonoBehaviour
         // キャラクター生成,
         GameObject character = Instantiate(characterPrefab);
         characterList[user.ConnectionId] = character;
+        character.name = user.UserData.Name;
 
         // プレイヤーの初期化処理
         character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1]);
@@ -91,14 +93,14 @@ public class RoomDirector : MonoBehaviour
         Color colorText = isMyCharacter ? Color.white : Color.green;
         character.GetComponent<PlayerUIController>().InitUI(user.UserData.Name, colorText);
 
-        // 自分ではない場合はPlayerControllerを外す , レイヤータグを変更
-        character.GetComponent<PlayerController>().enabled = isMyCharacter;
+        // 自分ではない場合はレイヤータグを変更してからPlayerControllerを外す
         character.layer = isMyCharacter ? 3 : 7;
+        character.GetComponent<PlayerController>().enabled = isMyCharacter;
 
         if (isMyCharacter)
         {
-            // 自分のモデルにカメラのターゲットを設定
-            targetCameraController.InitCamera(character.transform,0,user.ConnectionId);
+            targetCameraController.InitCamera(character.transform,0,user.ConnectionId); // 自分のモデルにカメラのターゲットを設定
+            characterControlUI.SetupButtonEvent(character);
 
             // ロード画面を閉じる
             SceneControler.Instance.StopSceneLoad();

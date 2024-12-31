@@ -47,16 +47,20 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(8)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(12)
             {
-                { typeof(global::System.Collections.Generic.List<string>), 0 },
-                { typeof(global::Server.Model.Entity.User), 1 },
-                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager), 2 },
-                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 3 },
-                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 4 },
-                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 5 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 6 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 7 },
+                { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>), 0 },
+                { typeof(global::System.Collections.Generic.List<string>), 1 },
+                { typeof(global::Server.Model.Entity.User), 2 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager), 3 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 4 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 5 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 6 },
+                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 7 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 8 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 9 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 10 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 11 },
             };
         }
 
@@ -70,14 +74,18 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new global::MessagePack.Formatters.ListFormatter<string>();
-                case 1: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
-                case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManagerFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
-                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 7: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 0: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>();
+                case 1: return new global::MessagePack.Formatters.ListFormatter<string>();
+                case 2: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManagerFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
+                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
+                case 7: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
+                case 8: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }

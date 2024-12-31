@@ -38,6 +38,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid> OnLeavedUser { get; set; }
     // プレイヤー情報更新通知
     public Action<Guid, PlayerState> OnUpdatePlayerStateUser { get; set; }
+    // マスタークライアントの情報更新通知
+    public Action<Guid, MasterClient> OnUpdateMasterClientUser { get; set; }
 
     #region ゲーム開始までの処理
     // 準備が完了したかどうかの通信
@@ -47,14 +49,16 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム共通の処理
+    // ユーザーの所持ポイント更新通知
+    public Action<Guid,int> OnUpdateScoreUser { get; set; }
     // カウントダウン通知
     public Action<int> OnCountDownUser { get; set; }
     // 全員のゲーム終了処理が完了した通知
     public Action<string> OnFinishGameUser { get; set; }
     // コインのドロップ通知
-    public Action<Vector3, int[], string[]> OnDropCoinsUser { get; set; }
+    public Action<Vector3, int[], string[], UserScore> OnDropCoinsUser { get; set; }
     // 生成場所が異なるコインのドロップ通知
-    public Action<Vector3[], string[]> OnDropCoinsAtRandomPositionsUser { get; set; }
+    public Action<Vector3[], string[], UserScore> OnDropCoinsAtRandomPositionsUser { get; set; }
     // アイテム取得通知
     public Action<Guid, string,float> OnGetItemUser {  get; set; }
     // アイテム使用通知
@@ -326,6 +330,33 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         }
     }
 
+    /// <summary>
+    /// マスタークライアントの情報更新処理
+    /// </summary>
+    /// <param name="playerState"></param>
+    /// <returns></returns>
+    public async UniTask UpdateMasterClientAsynk(MasterClient masterClient)
+    {
+        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done)
+        {
+            await roomHub.UpdateMasterClientAsynk(masterClient);
+        }
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// マスタークライアントの情報更新通知
+    /// </summary>
+    /// <param name="user"></param>
+    public void OnUpdateMasterClient(Guid connectionId, MasterClient masterClient)
+    {
+        // アクション実行
+        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done)
+        {
+            OnUpdateMasterClientUser(connectionId, masterClient);
+        }
+    }
+
     #region ゲーム開始までの処理
     /// <summary>
     /// 自分の準備が完了したかどうか
@@ -373,6 +404,18 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム共通処理
+    /// <summary>
+    /// ユーザーの所持ポイント更新通知
+    /// </summary>
+    public void OnUpdateScore(UserScore latestUserScore)
+    {
+        if (userState == USER_STATE.joined)
+        {
+            JoinedUsers[latestUserScore.ConnectionId].score = latestUserScore.LatestScore;
+            OnUpdateScoreUser(latestUserScore.ConnectionId, latestUserScore.LatestScore);
+        }
+    }
+
     /// <summary>
     /// カウントダウン処理
     /// (マスタークライアントが処理)
@@ -454,9 +497,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="angleY"></param>
-    public void OnDropCoins(Vector3 startPoint, int[] anglesY, string[] coinNames)
+    public void OnDropCoins(Vector3 startPoint, int[] anglesY, string[] coinNames, UserScore latestUserScore)
     {
-        if (userState == USER_STATE.joined) OnDropCoinsUser(startPoint, anglesY, coinNames);
+        if (userState == USER_STATE.joined)
+        {
+            JoinedUsers[latestUserScore.ConnectionId].score = latestUserScore.LatestScore;
+            OnDropCoinsUser(startPoint, anglesY, coinNames, latestUserScore);
+        }
     }
 
     /// <summary>
@@ -465,9 +512,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     /// <param name="startPoins"></param>
     /// <param name="coinNames"></param>
-    public void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames)
+    public void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames, UserScore latestUserScore)
     {
-        if (userState == USER_STATE.joined) OnDropCoinsAtRandomPositionsUser(startPoins, coinNames);
+        if (userState == USER_STATE.joined)
+        {
+            JoinedUsers[latestUserScore.ConnectionId].score = latestUserScore.LatestScore;
+            OnDropCoinsAtRandomPositionsUser(startPoins, coinNames, latestUserScore);
+        }
     }
 
     /// <summary>

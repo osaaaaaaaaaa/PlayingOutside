@@ -21,6 +21,8 @@ public class PlayerSkillController : MonoBehaviour
     }
 
     [SerializeField] SKILL_ID skillID = SKILL_ID.Skill1;
+    [SerializeField] float coolTime;
+    public float CoolTime { get { return coolTime; } }
 
     private void Start()
     {

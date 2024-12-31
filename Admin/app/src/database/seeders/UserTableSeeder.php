@@ -13,22 +13,22 @@ class UserTableSeeder extends Seeder
         User::create([
             'name' => '1番さん',
             'token' => 'A',
-            'character_id' => 1
+            'character_id' => 0
         ]);
         User::create([
             'name' => '2番ちゃん',
             'token' => 'B',
-            'character_id' => 1
+            'character_id' => 0
         ]);
         User::create([
             'name' => '3番野郎',
             'token' => 'C',
-            'character_id' => 1
+            'character_id' => 0
         ]);
         User::create([
             'name' => '4番くん',
             'token' => 'D',
-            'character_id' => 1
+            'character_id' => 0
         ]);
     }
 }

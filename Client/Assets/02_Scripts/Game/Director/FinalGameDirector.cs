@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 using static AreaController;
+using static UnityEngine.Rendering.DebugUI;
 
 public class FinalGameDirector : MonoBehaviour
 {
@@ -14,6 +16,8 @@ public class FinalGameDirector : MonoBehaviour
     [SerializeField] GameStartCountDown gameStartCountDown;
     [SerializeField] GameObject countDownUI;
     [SerializeField] GameObject finishUI;
+    [SerializeField] CharacterControlUI characterControlUI;
+    [SerializeField] UserScoreController userScoreController;
     #endregion
 
     #region キャラクター情報
@@ -31,7 +35,14 @@ public class FinalGameDirector : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject coinPrefab;
-    [SerializeField] GameObject gimmick;
+
+    #region MoveRootスクリプトを適用しているギミック
+    [SerializeField] GameObject gimmicksParent;
+    [SerializeField] List<GameObject> movingObjects;
+    Dictionary<string,MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
+    #endregion
+
+    Dictionary<string,GameObject> itemList = new Dictionary<string, GameObject>();
 
     Coroutine coroutineCountDown;
     int currentTime;
@@ -54,12 +65,15 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser += this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
+        RoomModel.Instance.OnUpdateScoreUser += this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
+
+        RoomModel.Instance.OnUpdateMasterClientUser += this.NotifyUpdatedMasterClient;
         #endregion
 
         SetupGame();
@@ -75,12 +89,15 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser -= this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
+        RoomModel.Instance.OnUpdateScoreUser -= this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
+
+        RoomModel.Instance.OnUpdateMasterClientUser -= this.NotifyUpdatedMasterClient;
         #endregion
     }
 
@@ -88,7 +105,14 @@ public class FinalGameDirector : MonoBehaviour
     {
         while (true)
         {
-            UpdatePlayerState();
+            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+            {
+                UpdateMasterClientAsynk();
+            }
+            else
+            {
+                UpdatePlayerState();
+            }
             yield return new WaitForSeconds(waitSeconds);
         }
     }
@@ -107,6 +131,12 @@ public class FinalGameDirector : MonoBehaviour
     void SetupGame()
     {
         GenerateCharacters();
+
+        // 動くオブジェクトを設定
+        foreach(var item in movingObjects)
+        {
+            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
+        }
 
         // カメラのターゲットグループを設定する
         targetGroup.m_Targets = new CinemachineTargetGroup.Target[characterList.Count];
@@ -138,24 +168,33 @@ public class FinalGameDirector : MonoBehaviour
 
         foreach (var user in users)
         {
+            var value = user.Value;
+
             // キャラクター生成,
             GameObject character = Instantiate(characterPrefab);
             characterList[user.Key] = character;
+            character.name = value.UserData.Name;
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
-            Vector3 startPos = characterStartPoints[user.Value.JoinOrder - 1].position;
-            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1]);
+            Vector3 startPos = characterStartPoints[value.JoinOrder - 1].position;
+            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
 
             // ユーザー名の初期化処理
             Color colorText = isMyCharacter ? Color.white : Color.green;
-            character.GetComponent<PlayerUIController>().InitUI(user.Value.UserData.Name, colorText);
-
-            // ゲームが開始するまではPlayerControllerを外す
-            character.GetComponent<PlayerController>().enabled = false;
+            character.GetComponent<PlayerUIController>().InitUI(value.UserData.Name, colorText);
 
             // レイヤータグを変更
             character.layer = isMyCharacter ? 3 : 7;
+            // ゲームが開始するまではPlayerControllerを外す
+            character.GetComponent<PlayerController>().enabled = false;
+
+            if (isMyCharacter)
+            {
+                characterControlUI.SetupButtonEvent(character);
+            }
+
+            userScoreController.InitUserScoreList(value.JoinOrder, value.UserData.Character_Id, value.UserData.Name, value.score);
         }
     }
 
@@ -231,6 +270,80 @@ public class FinalGameDirector : MonoBehaviour
     }
 
     /// <summary>
+    /// マスタークライアントの情報更新リクエスト
+    /// </summary>
+    public async void UpdateMasterClientAsynk()
+    {
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
+
+        List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
+        foreach (var obj in movingObjects)
+        {
+            if (obj.activeSelf && movingObjectList[obj.name].pathTween != null)
+            {
+                MovingObjectState movingObjectState = new MovingObjectState()
+                {
+                    name = obj.name,
+                    position = obj.transform.position,
+                    angle = obj.transform.eulerAngles,
+                    elapsedTimeTween = movingObjectList[obj.name].pathTween.Elapsed(),
+                    isActiveSelf = obj.activeSelf,
+                };
+                movingObjectStates.Add(movingObjectState);
+            }
+        }
+
+        var character = characterList[RoomModel.Instance.ConnectionId];
+        PlayerState playerState = null;
+        if (character.GetComponent<PlayerController>().enabled)
+        {
+            playerState = new PlayerState()
+            {
+                position = character.transform.position,
+                angle = character.transform.eulerAngles,
+                animationId = character.GetComponent<PlayerAnimatorController>().GetAnimId(),
+                isActiveSelf = character.activeSelf,
+            };
+        }
+
+        MasterClient masterClient = new MasterClient()
+        {
+            playerState = playerState,
+            objectStates = movingObjectStates,
+        };
+        await RoomModel.Instance.UpdateMasterClientAsynk(masterClient);
+    }
+
+    /// <summary>
+    /// マスタークライアントの情報更新通知処理
+    /// </summary>
+    /// <param name="user"></param>
+    void NotifyUpdatedMasterClient(Guid connectionId, MasterClient masterClient)
+    {
+        if (!isGameStartCountDownOver) return;
+
+        // プレイヤーの存在チェック
+        if (!characterList.ContainsKey(connectionId)) return;
+
+        if(masterClient.playerState != null)
+        {
+            PlayerState playerState = masterClient.playerState;
+
+            // 移動・回転・アニメーション処理
+            characterList[connectionId].SetActive(playerState.isActiveSelf);
+            characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
+            characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
+            characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
+        }
+
+        // オブジェクトの同期
+        foreach (var obj in masterClient.objectStates)
+        {
+            movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+        }
+    }
+
+    /// <summary>
     /// ゲーム開始前のカウントダウン終了リクエスト
     /// </summary>
     public async void OnCountdownOver()
@@ -248,11 +361,22 @@ public class FinalGameDirector : MonoBehaviour
         gameStartCountDown.PlayCountDownOverAnim();
 
         // プレイヤーの操作をできるようにする
+        characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
 
         // ギミックを起動
-        gimmick.SetActive(true);
+        gimmicksParent.SetActive(true);
+    }
+
+    /// <summary>
+    /// ユーザーの所持ポイント更新通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="score"></param>
+    void NotifyUpdateScore(Guid connectionId, int score)
+    {
+        userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[connectionId].JoinOrder, score);
     }
 
     /// <summary>
@@ -330,7 +454,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="anglesY"></param>
-    void NotifyDropCoinsUser(Vector3 startPoint, int[] anglesY, string[] coinNames)
+    void NotifyDropCoinsUser(Vector3 startPoint, int[] anglesY, string[] coinNames, UserScore latestUserScore)
     {
         for (int i = 0; i < coinNames.Length; i++)
         {
@@ -338,7 +462,10 @@ public class FinalGameDirector : MonoBehaviour
             coin.transform.position = startPoint;
             coin.name = coinNames[i];
             coin.GetComponent<CoinController>().Drop(anglesY[i]);
+            if(!itemList.ContainsKey(coin.name)) itemList.Add(coin.name, coin);
         }
+
+        userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[latestUserScore.ConnectionId].JoinOrder, latestUserScore.LatestScore);
     }
 
     /// <summary>
@@ -346,14 +473,17 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     /// <param name="startPoins"></param>
     /// <param name="coinNames"></param>
-    void NotifyDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames)
+    void NotifyDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames, UserScore latestUserScore)
     {
         for (int i = 0; i < coinNames.Length; i++)
         {
             var coin = Instantiate(coinPrefab);
             coin.transform.position = startPoins[i];
             coin.name = coinNames[i];
+            if (!itemList.ContainsKey(coin.name)) itemList.Add(coin.name, coin);
         }
+
+        userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[latestUserScore.ConnectionId].JoinOrder, latestUserScore.LatestScore);
     }
 
     /// <summary>
@@ -364,15 +494,20 @@ public class FinalGameDirector : MonoBehaviour
     /// <param name="option"></param>
     void NotifyGetItemUser(Guid connectionId, string itemName, float option)
     {
-        GameObject item = GameObject.Find(itemName);
-        if (item == null) return;
+        if (!itemList.ContainsKey(itemName)) return;
+        var itemController = itemList[itemName].GetComponent<ItemController>();
 
-        if (connectionId == RoomModel.Instance.ConnectionId)
+        if (itemController.ItemId == EnumManager.ITEM_ID.Coin)
         {
-            characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(item.GetComponent<ItemController>().ItemId);
+            userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[connectionId].JoinOrder, (int)option);
+        }
+        else if (connectionId == RoomModel.Instance.ConnectionId)
+        {
+            characterControlUI.GetComponent<CharacterControlUI>().SetImageItem(itemController.ItemId);
+            characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(itemController.ItemId);
         }
 
-        Destroy(item);
+        Destroy(itemList[itemName]);
     }
 
     /// <summary>
@@ -391,10 +526,9 @@ public class FinalGameDirector : MonoBehaviour
     /// <param name="itemName"></param>
     void NotifyDestroyItemUser(string itemName)
     {
-        GameObject item = GameObject.Find(itemName);
-        if (item != null)
+        if (itemList.ContainsKey(itemName))
         {
-            Destroy(item);
+            Destroy(itemList[itemName]);
         }
     }
 
@@ -405,6 +539,7 @@ public class FinalGameDirector : MonoBehaviour
     /// <param name="itemId"></param>
     void NotifySpawnItemUser(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
     {
-        itemSpawner.Spawn(spawnPoint, itemId, itemName);
+        var item = itemSpawner.Spawn(spawnPoint, itemId, itemName);
+        if (!itemList.ContainsKey(item.name)) itemList.Add(itemName, item);
     }
 }

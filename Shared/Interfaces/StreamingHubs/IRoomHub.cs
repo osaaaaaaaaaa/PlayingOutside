@@ -44,6 +44,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// <returns></returns>
         Task UpdatePlayerStateAsynk(PlayerState state);
 
+        /// <summary>
+        /// マスタークライアントの情報更新処理
+        /// </summary>
+        /// <param name="masterClient"></param>
+        /// <returns></returns>
+        Task UpdateMasterClientAsynk(MasterClient masterClient);
+
         #region ゲーム開始までの処理
         /// <summary>
         /// 準備完了したかどうか

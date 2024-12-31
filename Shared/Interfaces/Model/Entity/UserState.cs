@@ -19,16 +19,14 @@ namespace Shared.Interfaces.Model.Entity
         [Key(3)]
         public int areaGoalRank {  get; set; }  // [競技：カントリーリレー]現在のエリアをクリアしたときの順位
         [Key(4)]
-        public int score { get; set; }  // 現在の所持ポイント数
-        [Key(5)]
         public bool isReadyNextArea { get; set; }   // [競技：カントリーリレー]次のエリアに進む準備完了したかどうか
-        [Key(6)]
+        [Key(5)]
         public bool isTransitionFinalResultScene { get; set; }  // 最終結果発表シーンに遷移したかどうか
-        [Key(7)]
+        [Key(6)]
         public int FinishGameCnt { get; set; }    // 現在のゲーム数
-        [Key(8)]
+        [Key(7)]
         public bool isFinishGame { get; set; }    // 現在のゲームが終了したかどうか
-        [Key(9)]
+        [Key(8)]
         public List<string> usedItemNameList { get; set; } = new List<string>();    // アイテムの使用履歴
     }
 }

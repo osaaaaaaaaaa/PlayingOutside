@@ -17,6 +17,11 @@ public class ItemSpawner : MonoBehaviour
         StartCoroutine(SpawnCoroutine());
     }
 
+    private void OnDisable()
+    {
+        StopCoroutine(SpawnCoroutine());
+    }
+
     IEnumerator SpawnCoroutine()
     {
         while (true)

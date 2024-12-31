@@ -8,14 +8,20 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using DG.Tweening;
 using Server.Model.Entity;
+using static UnityEngine.Rendering.DebugUI;
 
 public class RelayGameDirector : MonoBehaviour
 {
-    [SerializeField] AreaController areaController;
     [SerializeField] GameStartCountDown gameStartCountDown;
-    [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] SpectatingUI spectatingUI;
     [SerializeField] GameObject countDownUI;
+
+    #region コントローラー関係
+    [SerializeField] AreaController areaController;
+    [SerializeField] TargetCameraController targetCameraController;
+    [SerializeField] CharacterControlUI characterControlUI;
+    [SerializeField] UserScoreController userScoreController;
+    #endregion
 
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
@@ -44,6 +50,12 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
         RoomModel.Instance.OnFinishGameUser += this.NotifyFinishGameUser;
+        RoomModel.Instance.OnUpdateScoreUser += this.NotifyUpdateScore;
+
+        RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
+        RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
+        RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
+        RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
 
         SetupGame();
     }
@@ -59,6 +71,12 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
         RoomModel.Instance.OnFinishGameUser -= this.NotifyFinishGameUser;
+        RoomModel.Instance.OnUpdateScoreUser -= this.NotifyUpdateScore;
+
+        RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
+        RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
+        RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
+        RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -101,9 +119,12 @@ public class RelayGameDirector : MonoBehaviour
 
         foreach (var user in users)
         {
+            var value = user.Value;
+
             // キャラクター生成,
             GameObject character = Instantiate(characterPrefab);
             characterList[user.Key] = character;
+            character.name = user.Value.UserData.Name;
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
@@ -113,17 +134,18 @@ public class RelayGameDirector : MonoBehaviour
             Color colorText = isMyCharacter ? Color.white : Color.green;
             character.GetComponent<PlayerUIController>().InitUI(user.Value.UserData.Name, colorText);
 
+            // レイヤータグを変更
+            character.layer = isMyCharacter ? 3 : 7;
             // ゲームが開始するまではPlayerControllerを外す
             character.GetComponent<PlayerController>().enabled = false;
 
-            // レイヤータグを変更
-            character.layer = isMyCharacter ? 3 : 7;
-
             if (isMyCharacter)
             {
-                // 自分のモデルにカメラのターゲットを設定
-                targetCameraController.InitCamera(character.transform, 0, user.Key);
+                targetCameraController.InitCamera(character.transform, 0, user.Key);    // 自分のモデルにカメラのターゲットを設定
+                characterControlUI.SetupButtonEvent(character);
             }
+
+            userScoreController.InitUserScoreList(value.JoinOrder, value.UserData.Character_Id, value.UserData.Name, value.score);
         }
     }
 
@@ -216,6 +238,7 @@ public class RelayGameDirector : MonoBehaviour
         gameStartCountDown.PlayCountDownOverAnim();
 
         // プレイヤーの操作をできるようにする
+        characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
     }
@@ -301,6 +324,16 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
+    /// ユーザーの所持ポイント更新通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="score"></param>
+    void NotifyUpdateScore(Guid connectionId, int score)
+    {
+        userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[connectionId].JoinOrder, score);
+    }
+
+    /// <summary>
     /// エリアクリア時のカウントダウン開始通知
     /// (マスタークライアントが受信)
     /// </summary>
@@ -336,6 +369,65 @@ public class RelayGameDirector : MonoBehaviour
         {
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
         }
+    }
+
+    /// <summary>
+    /// アイテム取得通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemName"></param>
+    /// <param name="option"></param>
+    void NotifyGetItemUser(Guid connectionId, string itemName, float option)
+    {
+        GameObject item = GameObject.Find(itemName);
+        if (item == null) return;
+        var itemController = item.GetComponent<ItemController>();
+
+        if (itemController.ItemId == EnumManager.ITEM_ID.Coin)
+        {
+            userScoreController.UpdateScore(RoomModel.Instance.JoinedUsers[connectionId].JoinOrder, (int)option);
+        }
+        else if (connectionId == RoomModel.Instance.ConnectionId)
+        {
+            characterControlUI.GetComponent<CharacterControlUI>().SetImageItem(itemController.ItemId);
+            characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(itemController.ItemId);
+        }
+
+        Destroy(item);
+    }
+
+    /// <summary>
+    /// アイテム使用通知
+    /// </summary>
+    /// <param name="connectionId"></param>
+    /// <param name="itemId"></param>
+    void NotifyUseItemUser(Guid connectionId, EnumManager.ITEM_ID itemId)
+    {
+        characterList[connectionId].GetComponent<PlayerItemController>().UseItem(itemId);
+    }
+
+    /// <summary>
+    /// アイテムの破棄通知
+    /// </summary>
+    /// <param name="itemName"></param>
+    void NotifyDestroyItemUser(string itemName)
+    {
+        GameObject item = GameObject.Find(itemName);
+        if (item != null)
+        {
+            Destroy(item);
+        }
+    }
+
+    /// <summary>
+    /// アイテムの生成通知
+    /// </summary>
+    /// <param name="spawnPoint"></param>
+    /// <param name="itemId"></param>
+    void NotifySpawnItemUser(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
+    {
+        if (areaController.ItemSpawnerList[(int)areaController.areaId].enabled)
+            areaController.ItemSpawnerList[(int)areaController.areaId].Spawn(spawnPoint, itemId, itemName);
     }
 
     /// <summary>

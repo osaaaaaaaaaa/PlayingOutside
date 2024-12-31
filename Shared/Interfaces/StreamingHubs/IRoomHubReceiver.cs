@@ -42,6 +42,12 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="state">プレイヤー情報</param>
         void OnUpdatePlayerState(Guid connectionId, PlayerState state);
 
+        /// <summary>
+        /// マスタークライアントの情報更新通知
+        /// </summary>
+        /// <param name="masterClient"></param>
+        void OnUpdateMasterClient(Guid connectionId, MasterClient masterClient);
+
         #region ゲーム開始までの処理
         /// <summary>
         /// 準備完了したかどうかの通知
@@ -57,6 +63,11 @@ namespace Shared.Interfaces.StreamingHubs
         #endregion
 
         #region ゲーム共通処理
+        /// <summary>
+        /// ユーザーの所持ポイント更新通知
+        /// </summary>
+        void OnUpdateScore(UserScore latestUserScore);
+
         /// <summary>
         /// カウントダウン開始通知
         /// (マスタークライアントが受信)
@@ -76,18 +87,20 @@ namespace Shared.Interfaces.StreamingHubs
 
         /// <summary>
         /// コイン(ポイント)のドロップ通知
+        /// (ユーザーがノックダウンしたときに処理)
         /// </summary>
         /// <param name="startPoint">生成する位置</param>
         /// <param name="anglesY">コインの向き</param>
         /// <param name="coinNames">コインのユニークな名前</param>
-        void OnDropCoins(Vector3 startPoint,int[] anglesY, string[] coinNames);
+        void OnDropCoins(Vector3 startPoint,int[] anglesY, string[] coinNames, UserScore userScore);
 
         /// <summary>
         /// 生成場所が異なるコイン(ポイント)のドロップ通知
+        /// (ユーザーが場外に出たときに処理)
         /// </summary>
         /// <param name="startPoins">生成する位置</param>
         /// <param name="coinNames">コインのユニークな名前</param>
-        void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames);
+        void OnDropCoinsAtRandomPositions(Vector3[] startPoins, string[] coinNames, UserScore userScore);
 
         /// <summary>
         /// アイテム入手通知

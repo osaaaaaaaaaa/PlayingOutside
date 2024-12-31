@@ -28,12 +28,11 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(10);
+            writer.WriteArrayHeader(9);
             writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
             writer.Write(value.isAreaCleared);
             writer.Write(value.areaGoalRank);
-            writer.Write(value.score);
             writer.Write(value.isReadyNextArea);
             writer.Write(value.isTransitionFinalResultScene);
             writer.Write(value.FinishGameCnt);
@@ -70,21 +69,18 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         ____result.areaGoalRank = reader.ReadInt32();
                         break;
                     case 4:
-                        ____result.score = reader.ReadInt32();
-                        break;
-                    case 5:
                         ____result.isReadyNextArea = reader.ReadBoolean();
                         break;
-                    case 6:
+                    case 5:
                         ____result.isTransitionFinalResultScene = reader.ReadBoolean();
                         break;
-                    case 7:
+                    case 6:
                         ____result.FinishGameCnt = reader.ReadInt32();
                         break;
-                    case 8:
+                    case 7:
                         ____result.isFinishGame = reader.ReadBoolean();
                         break;
-                    case 9:
+                    case 8:
                         ____result.usedItemNameList = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:

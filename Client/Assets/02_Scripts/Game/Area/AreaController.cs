@@ -10,6 +10,8 @@ public class AreaController : MonoBehaviour
 {
     [SerializeField] RelayGameDirector gameDirector;
     [SerializeField] TargetCameraController targetCameraController;
+    [SerializeField] List<ItemSpawner> itemSpawnerList;
+    public List<ItemSpawner> ItemSpawnerList { get { return itemSpawnerList; } }
 
     [SerializeField] List<GameObject> startPoints;    // 各エリアのスタート地点
     [SerializeField] List<GameObject> gimmicks;       // エリア毎のギミック
@@ -34,6 +36,11 @@ public class AreaController : MonoBehaviour
         imageBlack = imageBlackObj.GetComponent<Image>();
         isClearedArea = false;
 
+        foreach (var item in itemSpawnerList)
+        {
+            item.enabled = false;
+        }
+        itemSpawnerList[(int)areaId].enabled = true;
         foreach (var gimmick in gimmicks)
         {
             gimmick.SetActive(false);
@@ -123,7 +130,8 @@ public class AreaController : MonoBehaviour
             // 観戦用のUIを非表示する
             spectatingUI.GetComponent<SpectatingUI>().InitUI(false);
 
-            // 現在のエリアのギミックを非表示
+            // 現在のエリアを撤去
+            itemSpawnerList[(int)areaId].enabled = false;
             gimmicks[(int)areaId].SetActive(false);
 
             // 次のエリアに移動する準備が完了したリクエスト
@@ -141,7 +149,8 @@ public class AreaController : MonoBehaviour
         areaId++;
         Debug.Log("エリアのID："+ (int)areaId);
 
-        // 次のエリアのギミックを表示
+        // 次のエリアの準備
+        itemSpawnerList[(int)areaId].enabled = true;
         gimmicks[(int)areaId].SetActive(true);
 
         // 次のエリアに移動する && カメラをセットアップ

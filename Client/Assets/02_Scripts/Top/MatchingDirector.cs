@@ -102,8 +102,6 @@ public class MatchingDirector : MonoBehaviour
     /// </summary>
     void NotifyLeavedUser(Guid connectionId)
     {
-        Debug.Log(connectionId + "が退室");
-        Debug.Log(RoomModel.Instance.ConnectionId + "が自分");
         // マッチングが完了して、自分のロビー退室通知(マッチング完了通知)が届いた場合
         if (RoomModel.Instance.IsMatchingRunning && connectionId == RoomModel.Instance.ConnectionId)
         {

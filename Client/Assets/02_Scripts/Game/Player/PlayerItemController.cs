@@ -21,14 +21,6 @@ public class PlayerItemController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            OnUseItemButton();
-        }
-
-
-
-
         List<EnumManager.ITEM_ID> keyList = new List<EnumManager.ITEM_ID>(itemEffectTimeList.Keys);
         List<EnumManager.ITEM_ID> effectsToRemove = new List<EnumManager.ITEM_ID>();
 
@@ -61,7 +53,7 @@ public class PlayerItemController : MonoBehaviour
 
     public void SetItemSlot(EnumManager.ITEM_ID itemId)
     {
-        slotItemId = itemId;
+        if(itemId != ITEM_ID.None && itemId != ITEM_ID.ItemBox && itemId != ITEM_ID.Coin) slotItemId = itemId;
     }
 
     public void UseItem(EnumManager.ITEM_ID _itemId)

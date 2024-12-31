@@ -23,5 +23,7 @@ namespace Shared.Interfaces.Model.Entity
         public bool IsGameRunning { get; set; }    // ゲーム中かどうか
         [Key(6)]
         public bool IsMatching { get; set; }    // 自動マッチングかが完了しているかどうか
+        [Key(7)]
+        public int score { get; set; }  // 所持ポイント
     }
 }

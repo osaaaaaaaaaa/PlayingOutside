@@ -18,6 +18,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     [SerializeField] TotalScoreUIController totalScoreUIController;
     [SerializeField] GameObject crownPrefab;
     [SerializeField] GameObject btnLeave;
+    [SerializeField] CharacterControlUI characterControlUI;
 
     const float waitSeconds = 0.1f;
 
@@ -68,23 +69,31 @@ public class FinalResultSceneDirector : MonoBehaviour
 
         foreach (var user in users)
         {
+            var value = user.Value;
+
             // キャラクター生成,
             GameObject character = Instantiate(characterPrefab);
             characterList[user.Key] = character;
+            character.name = value.UserData.Name;
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
-            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1]);
+            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
 
             // ユーザー名の初期化処理
             Color colorText = isMyCharacter ? Color.white : Color.green;
-            character.GetComponent<PlayerUIController>().InitUI(user.Value.UserData.Name, colorText);
+            character.GetComponent<PlayerUIController>().InitUI(value.UserData.Name, colorText);
+
+            // レイヤータグを変更
+            character.layer = isMyCharacter ? 3 : 7;
 
             // 全員がシーン遷移完了するまでPlayerControllerを外す
             character.GetComponent<PlayerController>().enabled = false;
 
-            // レイヤータグを変更
-            character.layer = isMyCharacter ? 3 : 7;
+            if (isMyCharacter)
+            {
+                characterControlUI.SetupButtonEvent(character);
+            }
         }
     }
 
@@ -169,24 +178,23 @@ public class FinalResultSceneDirector : MonoBehaviour
     /// <param name="playerState"></param>
     void NotifyTransitionFinalResultSceneAllUsers(ResultData[] result)
     {
-        Guid winnerId = new Guid();
+        List<Guid> winnerIdList = new List<Guid>();
         foreach (ResultData resultData in result)
         {
             if (resultData.rank == 1)
             {
-                winnerId = resultData.connectionId;
-                break;
+                winnerIdList.Add(resultData.connectionId);
             }
         }
         Debug.Log("リザルトシーンです");
-        StartCoroutine(ShowResultsCoroutine(result, winnerId));
+        StartCoroutine(ShowResultsCoroutine(result, winnerIdList));
     }
 
     /// <summary>
     /// 結果発表開始コルーチン
     /// </summary>
     /// <returns></returns>
-    IEnumerator ShowResultsCoroutine(ResultData[] result,Guid winnerId)
+    IEnumerator ShowResultsCoroutine(ResultData[] result,List<Guid> winnerIdList)
     {
         totalScoreUIController.Init(result);
         yield return new WaitForSeconds(1f);
@@ -198,10 +206,17 @@ public class FinalResultSceneDirector : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // １位のプレイヤーに王冠をセットする
-        Instantiate(crownPrefab, characterList[winnerId].transform);
+        foreach (var winnerId in winnerIdList) 
+        {
+            Instantiate(crownPrefab, characterList[winnerId].transform);
+        }
         yield return new WaitForSeconds(1f);    // 王冠のアニメーションが終了する時間
 
-        particleController.GenerateParticles(characterList[winnerId].transform);
+        foreach (var winnerId in winnerIdList)
+        {
+            particleController.GenerateSparksParticles(characterList[winnerId].transform);
+        }
+        particleController.GenarateConfettiParticle();
         yield return new WaitForSeconds(2f);  // パーティクルの生存時間
 
         StartCoroutine(UpdateCoroutine());
