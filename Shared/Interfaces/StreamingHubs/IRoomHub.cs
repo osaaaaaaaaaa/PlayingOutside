@@ -126,6 +126,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="itemId"></param>
         /// <returns></returns>
         Task SpawnItemAsynk(Vector3 spawnPoint, EnumManager.ITEM_ID itemId);
+
+        /// <summary>
+        /// 動的なオブジェクトを生成
+        /// </summary>
+        /// <param name="spawnObject"></param>
+        /// <returns></returns>
+        Task SpawnObjectAsynk(SpawnObject spawnObject);
         #endregion
 
         #region 競技『カントリーリレー』の処理

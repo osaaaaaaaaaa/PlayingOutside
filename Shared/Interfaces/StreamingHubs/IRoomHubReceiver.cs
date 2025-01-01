@@ -127,6 +127,12 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="spawnPoint"></param>
         /// <param name="itemId"></param>
         void OnSpawnItem(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName);
+
+        /// <summary>
+        /// 動的なオブジェクトの生成通知
+        /// </summary>
+        /// <param name="spawnObject"></param>
+        void OnSpawnObject(SpawnObject spawnObject);
         #endregion
 
         #region 競技『カントリーリレー』の処理

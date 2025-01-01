@@ -22,7 +22,7 @@ public class Hay : MonoBehaviour
         addForceVec = force;
         isInit = true;
 
-        rb.AddForce(force * 8, ForceMode.VelocityChange);
+        rb.AddForce(force, ForceMode.VelocityChange);
     }
 
     private void OnTriggerEnter(Collider other)

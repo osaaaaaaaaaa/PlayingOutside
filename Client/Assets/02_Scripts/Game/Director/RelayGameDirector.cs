@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using DG.Tweening;
 using Server.Model.Entity;
-using static UnityEngine.Rendering.DebugUI;
 
 public class RelayGameDirector : MonoBehaviour
 {
@@ -23,9 +22,19 @@ public class RelayGameDirector : MonoBehaviour
     [SerializeField] UserScoreController userScoreController;
     #endregion
 
+    #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
+    #endregion
+
+    #region MoveRootスクリプトを適用しているギミック
+    [SerializeField] GameObject gimmicksParent;
+    [SerializeField] List<GameObject> movingObjects;
+    Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
+    #endregion
+
+    Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
 
     Coroutine coroutineCountDown;
     int currentTime;
@@ -44,6 +53,7 @@ public class RelayGameDirector : MonoBehaviour
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
+        RoomModel.Instance.OnUpdateMasterClientUser += this.NotifyUpdatedMasterClient;
         RoomModel.Instance.OnCountdownOverUser += this.NotifyStartGame;
         RoomModel.Instance.OnAreaClearedUser += this.NotifyAreaClearedUser;
         RoomModel.Instance.OnReadyNextAreaUser += this.NotifyRedyNextAreaAllUsers;
@@ -56,6 +66,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
+        RoomModel.Instance.OnSpawnObjectUser += this.NotifySpawnObjectUser;
 
         SetupGame();
     }
@@ -65,6 +76,7 @@ public class RelayGameDirector : MonoBehaviour
         // シーン遷移時に関数の登録を解除
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
+        RoomModel.Instance.OnUpdateMasterClientUser -= this.NotifyUpdatedMasterClient;
         RoomModel.Instance.OnCountdownOverUser -= this.NotifyStartGame;
         RoomModel.Instance.OnAreaClearedUser -= this.NotifyAreaClearedUser;
         RoomModel.Instance.OnReadyNextAreaUser -= this.NotifyRedyNextAreaAllUsers;
@@ -77,13 +89,21 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
+        RoomModel.Instance.OnSpawnObjectUser -= this.NotifySpawnObjectUser;
     }
 
     IEnumerator UpdateCoroutine()
     {
         while (true)
         {
-            UpdatePlayerState();
+            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+            {
+                UpdateMasterClientAsynk();
+            }
+            else
+            {
+                UpdatePlayerState();
+            }
             yield return new WaitForSeconds(waitSeconds);
         }
     }
@@ -102,6 +122,12 @@ public class RelayGameDirector : MonoBehaviour
     void SetupGame()
     {
         GenerateCharacters();
+
+        // 動くオブジェクトを設定
+        foreach (var item in movingObjects)
+        {
+            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
+        }
 
         // ロード画面を閉じる
         SceneControler.Instance.StopSceneLoad();
@@ -180,6 +206,14 @@ public class RelayGameDirector : MonoBehaviour
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
         }
+
+        if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+        {
+            foreach (var obj in movingObjectList)
+            {
+                obj.Value.ResumeTween();
+            }
+        }
     }
 
     /// <summary>
@@ -219,6 +253,81 @@ public class RelayGameDirector : MonoBehaviour
         characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
     }
+
+    /// <summary>
+    /// マスタークライアントの情報更新リクエスト
+    /// </summary>
+    public async void UpdateMasterClientAsynk()
+    {
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
+
+        List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
+        foreach (var obj in movingObjects)
+        {
+            if (obj.activeSelf && movingObjectList[obj.name].pathTween != null)
+            {
+                MovingObjectState movingObjectState = new MovingObjectState()
+                {
+                    name = obj.name,
+                    position = obj.transform.position,
+                    angle = obj.transform.eulerAngles,
+                    elapsedTimeTween = movingObjectList[obj.name].pathTween.Elapsed(),
+                    isActiveSelf = obj.activeSelf,
+                };
+                movingObjectStates.Add(movingObjectState);
+            }
+        }
+
+        var character = characterList[RoomModel.Instance.ConnectionId];
+        PlayerState playerState = null;
+        if (character.GetComponent<PlayerController>().enabled)
+        {
+            playerState = new PlayerState()
+            {
+                position = character.transform.position,
+                angle = character.transform.eulerAngles,
+                animationId = character.GetComponent<PlayerAnimatorController>().GetAnimId(),
+                isActiveSelf = character.activeSelf,
+            };
+        }
+
+        MasterClient masterClient = new MasterClient()
+        {
+            playerState = playerState,
+            objectStates = movingObjectStates,
+        };
+        await RoomModel.Instance.UpdateMasterClientAsynk(masterClient);
+    }
+
+    /// <summary>
+    /// マスタークライアントの情報更新通知処理
+    /// </summary>
+    /// <param name="user"></param>
+    void NotifyUpdatedMasterClient(Guid connectionId, MasterClient masterClient)
+    {
+        if (!isGameStartCountDownOver) return;
+
+        // プレイヤーの存在チェック
+        if (!characterList.ContainsKey(connectionId)) return;
+
+        if (masterClient.playerState != null)
+        {
+            PlayerState playerState = masterClient.playerState;
+
+            // 移動・回転・アニメーション処理
+            characterList[connectionId].SetActive(playerState.isActiveSelf);
+            characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
+            characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
+            characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
+        }
+
+        // オブジェクトの同期
+        foreach (var obj in masterClient.objectStates)
+        {
+            movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+        }
+    }
+
 
     /// <summary>
     /// ゲーム開始前のカウントダウン終了リクエスト
@@ -379,9 +488,8 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="option"></param>
     void NotifyGetItemUser(Guid connectionId, string itemName, float option)
     {
-        GameObject item = GameObject.Find(itemName);
-        if (item == null) return;
-        var itemController = item.GetComponent<ItemController>();
+        if (!itemList.ContainsKey(itemName)) return;
+        var itemController = itemList[itemName].GetComponent<ItemController>();
 
         if (itemController.ItemId == EnumManager.ITEM_ID.Coin)
         {
@@ -393,7 +501,7 @@ public class RelayGameDirector : MonoBehaviour
             characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(itemController.ItemId);
         }
 
-        Destroy(item);
+        Destroy(itemList[itemName]);
     }
 
     /// <summary>
@@ -412,10 +520,9 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="itemName"></param>
     void NotifyDestroyItemUser(string itemName)
     {
-        GameObject item = GameObject.Find(itemName);
-        if (item != null)
+        if (itemList.ContainsKey(itemName))
         {
-            Destroy(item);
+            Destroy(itemList[itemName]);
         }
     }
 
@@ -427,7 +534,19 @@ public class RelayGameDirector : MonoBehaviour
     void NotifySpawnItemUser(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
     {
         if (areaController.ItemSpawnerList[(int)areaController.areaId].enabled)
-            areaController.ItemSpawnerList[(int)areaController.areaId].Spawn(spawnPoint, itemId, itemName);
+        {
+            var item = areaController.ItemSpawnerList[(int)areaController.areaId].Spawn(spawnPoint, itemId, itemName);
+            if (!itemList.ContainsKey(item.name)) itemList.Add(itemName, item);
+        }
+    }
+
+    /// <summary>
+    /// 動的なオブジェクトの生成通知
+    /// </summary>
+    /// <param name="spawnObject"></param>
+    void NotifySpawnObjectUser(SpawnObject spawnObject)
+    {
+        GetComponent<ObjectPrefabController>().Spawn(spawnObject);
     }
 
     /// <summary>

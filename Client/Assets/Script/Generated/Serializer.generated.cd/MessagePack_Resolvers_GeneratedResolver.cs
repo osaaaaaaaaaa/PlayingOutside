@@ -47,20 +47,22 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(12)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(14)
             {
                 { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>), 0 },
                 { typeof(global::System.Collections.Generic.List<string>), 1 },
-                { typeof(global::Server.Model.Entity.User), 2 },
-                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager), 3 },
-                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 4 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 5 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 6 },
-                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 7 },
-                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 8 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 9 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 10 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 11 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID), 2 },
+                { typeof(global::Server.Model.Entity.User), 3 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager), 4 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 5 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 6 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 7 },
+                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 8 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 9 },
+                { typeof(global::Shared.Interfaces.Model.Entity.SpawnObject), 10 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 11 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 12 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 13 },
             };
         }
 
@@ -76,16 +78,18 @@ namespace MessagePack.Resolvers
             {
                 case 0: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>();
                 case 1: return new global::MessagePack.Formatters.ListFormatter<string>();
-                case 2: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
-                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManagerFormatter();
-                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
-                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
-                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
-                case 7: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 8: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
-                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
-                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 11: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_SPAWN_OBJECT_IDFormatter();
+                case 3: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManagerFormatter();
+                case 5: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 6: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
+                case 7: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
+                case 8: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.SpawnObjectFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }

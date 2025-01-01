@@ -27,5 +27,10 @@ namespace Shared.Interfaces.Model.Entity
         {
             Pepper = 7,
         }
+
+        public enum SPAWN_OBJECT_ID
+        {
+            Hay = 0,
+        }
     }
 }

@@ -32,9 +32,9 @@ public class MoveSetRoot : MonoBehaviour
     /// Ä¶ÄŠJˆ—
     /// </summary>
     /// <param name="_elapsedTime"></param>
-    public void ResumeTween(float _elapsedTime)
+    public void ResumeTween()
     {
-        pathTween.Goto(_elapsedTime, true);
+        if(!pathTween.IsPlaying()) pathTween.Goto(elapsedTime, true);
     }
 
     public void SetPotition(MovingObjectState movingObjectState, float animSec)

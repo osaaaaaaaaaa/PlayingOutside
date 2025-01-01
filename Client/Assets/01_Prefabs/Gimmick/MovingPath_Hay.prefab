@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 2000582875820479150}
   - component: {fileID: 4503485191984113793}
   m_Layer: 9
-  m_Name: Hay 1
+  m_Name: MovingPath_Hay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

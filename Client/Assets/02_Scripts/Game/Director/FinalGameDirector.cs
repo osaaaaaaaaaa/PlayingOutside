@@ -60,6 +60,7 @@ public class FinalGameDirector : MonoBehaviour
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
+        RoomModel.Instance.OnUpdateMasterClientUser += this.NotifyUpdatedMasterClient;
         RoomModel.Instance.OnCountdownOverUser += this.NotifyStartGame;
         RoomModel.Instance.OnAfterFinalGameUser += this.NotifyAfterFinalGameUser;
         RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
@@ -72,8 +73,7 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
-
-        RoomModel.Instance.OnUpdateMasterClientUser += this.NotifyUpdatedMasterClient;
+        RoomModel.Instance.OnSpawnObjectUser += this.NotifySpawnObjectUser;
         #endregion
 
         SetupGame();
@@ -84,6 +84,7 @@ public class FinalGameDirector : MonoBehaviour
         // シーン遷移時に関数の登録を解除
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
+        RoomModel.Instance.OnUpdateMasterClientUser -= this.NotifyUpdatedMasterClient;
         RoomModel.Instance.OnCountdownOverUser -= this.NotifyStartGame;
         RoomModel.Instance.OnAfterFinalGameUser -= this.NotifyAfterFinalGameUser;
         RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
@@ -96,8 +97,7 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
-
-        RoomModel.Instance.OnUpdateMasterClientUser -= this.NotifyUpdatedMasterClient;
+        RoomModel.Instance.OnSpawnObjectUser -= this.NotifySpawnObjectUser;
         #endregion
     }
 
@@ -228,6 +228,14 @@ public class FinalGameDirector : MonoBehaviour
             // 該当のキャラクター削除&リストから削除
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
+        }
+
+        if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+        {
+            foreach(var obj in movingObjectList)
+            {
+                obj.Value.ResumeTween();
+            }
         }
     }
 
@@ -541,5 +549,14 @@ public class FinalGameDirector : MonoBehaviour
     {
         var item = itemSpawner.Spawn(spawnPoint, itemId, itemName);
         if (!itemList.ContainsKey(item.name)) itemList.Add(itemName, item);
+    }
+
+    /// <summary>
+    /// 動的なオブジェクトの生成通知
+    /// </summary>
+    /// <param name="spawnObject"></param>
+    void NotifySpawnObjectUser(SpawnObject spawnObject)
+    {
+        GetComponent<ObjectPrefabController>().Spawn(spawnObject);
     }
 }

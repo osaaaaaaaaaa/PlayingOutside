@@ -67,6 +67,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<string> OnDestroyItemUser { get; set; }
     // アイテムの生成通知
     public Action<Vector3,EnumManager.ITEM_ID,string> OnSpawnItemUser { get; set; }
+    // 動的なオブジェクトの生成通知
+    public Action<SpawnObject> OnSpawnObjectUser { get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -608,6 +610,25 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnSpawnItem(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
     {
         if (userState == USER_STATE.joined) OnSpawnItemUser(spawnPoint, itemId, itemName);
+    }
+
+    /// <summary>
+    /// 動的なオブジェクトを生成
+    /// </summary>
+    /// <param name="spawnObject"></param>
+    /// <returns></returns>
+    public async UniTask SpawnObjectAsynk(SpawnObject spawnObject)
+    {
+        if (userState == USER_STATE.joined) await roomHub.SpawnObjectAsynk(spawnObject);
+    }
+
+    /// <summary>
+    /// 動的なオブジェクトの生成通知
+    /// </summary>
+    /// <param name="spawnObject"></param>
+    public void OnSpawnObject(SpawnObject spawnObject)
+    {
+        if (userState == USER_STATE.joined) OnSpawnObjectUser(spawnObject);
     }
     #endregion
 

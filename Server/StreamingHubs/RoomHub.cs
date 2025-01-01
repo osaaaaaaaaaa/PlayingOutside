@@ -249,6 +249,7 @@ namespace Server.StreamingHubs
                 {
                     connectionId = roomData.JoinedUser.ConnectionId;
                     roomData.JoinedUser.IsMasterClient = true;
+                    Console.WriteLine("新しくマスタークライアント：" + roomData.JoinedUser.UserData.Name);
                     break;
                 }
             }
@@ -655,6 +656,16 @@ namespace Server.StreamingHubs
         public async Task SpawnItemAsynk(Vector3 spawnPoint, EnumManager.ITEM_ID itemId)
         {
             this.Broadcast(this.room).OnSpawnItem(spawnPoint, itemId, Guid.NewGuid().ToString());
+        }
+
+        /// <summary>
+        /// 動的なオブジェクトの生成
+        /// </summary>
+        /// <param name="spawnObject"></param>
+        /// <returns></returns>
+        public async Task SpawnObjectAsynk(SpawnObject spawnObject)
+        {
+            this.Broadcast(this.room).OnSpawnObject(spawnObject);
         }
 
         /// <summary>
