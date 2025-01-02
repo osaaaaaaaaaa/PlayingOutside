@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static PlayerSkillController;
 
 public class PlayerAnimatorController : MonoBehaviour
 {
@@ -24,15 +25,18 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         IdleA = 1,
         IdleB,
-        Jump = 3,
-        Kick = 5,
-        Skill = 6,
+        Jump,
+        Kick,
+        MachKick,
+        Skill1_Hurricane = 6,
+        Skill2_Screwkick = 7,
+        Skill3_MachAura = 8,
         Damage = 10,
         Die = 11,
         Run = 15,
         RunFast = 18,
         StandUp = 20,
-        Respawn = 21,
+        Respawn,
     }
 
     private void Awake()
@@ -68,6 +72,25 @@ public class PlayerAnimatorController : MonoBehaviour
         }
     }
 
+    public ANIM_ID GetSkillAnimId()
+    {
+        ANIM_ID resultId = ANIM_ID.IdleB;
+        switch (skillController.SkillId)
+        {
+            case SKILL_ID.Skill1:
+                resultId = ANIM_ID.Skill1_Hurricane;
+                break;
+            case SKILL_ID.Skill2:
+                resultId = ANIM_ID.Skill2_Screwkick;
+                break;
+            case SKILL_ID.Skill3:
+                resultId = ANIM_ID.Skill3_MachAura;
+                break;
+        }
+
+        return resultId;
+    }
+
     /// <summary>
     /// プレイヤー用
     /// </summary>
@@ -76,9 +99,10 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
 
-        if (id == ANIM_ID.Skill)
+        if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura)
         {
             skillController.OnStartSkillAnim();
+            if (id == ANIM_ID.Skill3_MachAura) return;
         }
         if(id == ANIM_ID.Respawn)
         {
@@ -93,7 +117,7 @@ public class PlayerAnimatorController : MonoBehaviour
             playerController.IsInvincible = true;
             animator.Play("Damage");
         }
-        if(id == ANIM_ID.Kick || id == ANIM_ID.Damage)
+        if(id == ANIM_ID.Kick || id == ANIM_ID.MachKick || id == ANIM_ID.Damage)
         {
             playerController.IsControlEnabled = false;
         }
@@ -107,11 +131,12 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <param name="id"></param>
     public void SetInt(int id)
     {
-        if (skillController.isUsedSkill) return;
+        if (skillController.isUsedSkill && skillController.SkillId != SKILL_ID.Skill3) return;
 
-        if (id == (int)ANIM_ID.Skill)
+        if (id == (int)ANIM_ID.Skill1_Hurricane || id == (int)ANIM_ID.Skill2_Screwkick || id == (int)ANIM_ID.Skill3_MachAura)
         {
             skillController.OnStartSkillAnim();
+            if (id == (int)ANIM_ID.Skill3_MachAura) return;
         }
         if (id == (int)ANIM_ID.Respawn)
         {
@@ -140,7 +165,14 @@ public class PlayerAnimatorController : MonoBehaviour
     public void OnEndAnim()
     {
         if (skillController.isUsedSkill) skillController.OnEndSkillAnim();
-        if (GetAnimId() != (int)ANIM_ID.Kick) playerController.IsInvincible = false;
+        if (GetAnimId() != (int)ANIM_ID.Kick && GetAnimId() != (int)ANIM_ID.MachKick) playerController.IsInvincible = false;
+        playerController.IsControlEnabled = true;
+        SetInt(ANIM_ID.IdleB);
+    }
+
+    public void OnEndMachKickAnim()
+    {
+        if (GetAnimId() != (int)ANIM_ID.Kick && GetAnimId() != (int)ANIM_ID.MachKick) playerController.IsInvincible = false;
         playerController.IsControlEnabled = true;
         SetInt(ANIM_ID.IdleB);
     }
@@ -204,7 +236,7 @@ public class PlayerAnimatorController : MonoBehaviour
         }
         meshMain.enabled = true;
 
-        if (!skillController.isUsedSkill) playerController.IsInvincible = false;
+        if (!skillController.isUsedSkill || skillController.SkillId == SKILL_ID.Skill3) playerController.IsInvincible = false;
         animator.SetBool("is_invincible", false);
     }
 }

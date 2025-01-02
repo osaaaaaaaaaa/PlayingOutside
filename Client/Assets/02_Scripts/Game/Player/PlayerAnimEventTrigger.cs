@@ -16,6 +16,7 @@ public class PlayerAnimEventTrigger : MonoBehaviour
         SetEffect_Down,
         SetEffect_Run,
         SetEffect_KnockBackSmoke,
+        OnEndMachKickAnim,
     }
 
     private void Start()
@@ -50,6 +51,9 @@ public class PlayerAnimEventTrigger : MonoBehaviour
                 break;
             case EVENT_ID.SetEffect_KnockBackSmoke:
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.KnockBackSmoke);
+                break;
+            case EVENT_ID.OnEndMachKickAnim:
+                animController.OnEndMachKickAnim();
                 break;
         }
     }

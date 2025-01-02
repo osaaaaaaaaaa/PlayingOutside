@@ -125,8 +125,10 @@ public class PlayerController : MonoBehaviour
         bool isInteractable = GetComponent<PlayerIsGroundController>().IsGround() && !skillController.isUsedSkill;
         characterControlUI.ToggleButtonInteractable(isInteractable);
 
-        if (isInteractable)
+        if (isInteractable || skillController.SkillId == PlayerSkillController.SKILL_ID.Skill3)
         {
+            bool isMachAura = skillController.SkillId == PlayerSkillController.SKILL_ID.Skill3 && skillController.isUsedSkill;
+
             if (moveX != 0 || moveZ != 0)
             {
                 bool isUsePepper = itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper);
@@ -135,7 +137,14 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
+                if (isMachAura)
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleA);
+                }
+                else
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
+                }
             }
 
             // ↓とりあえず残しておく####################################################
@@ -148,18 +157,25 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(transform.up * jumpPower);
             }
 
-            //// キック処理
-            //if (Input.GetMouseButtonDown(0))
-            //{
-            //    var target = SerchNearTarget();
-            //    if (target != null) LookAtPlayer(target);
-            //    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-            //}
+            // キック処理
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                var target = SerchNearTarget();
+                if (target != null) LookAtPlayer(target);
+                if (isMachAura)
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.MachKick);
+                }
+                else
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+                }
+            }
 
             // スキル発動処理
             if (Input.GetKeyDown(KeyCode.E))
             {
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
+                animController.SetInt(animController.GetSkillAnimId());
             }
 
             // デバック用、無敵化ON/OFF
@@ -187,7 +203,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnSkillButton()
     {
-        animController.SetInt(PlayerAnimatorController.ANIM_ID.Skill);
+        animController.SetInt(animController.GetSkillAnimId());
         characterControlUI.OnSkillButton();
     }
 
