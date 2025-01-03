@@ -10,6 +10,7 @@ using static PlayerSkillController;
 public class PlayerAnimatorController : MonoBehaviour
 {
     [SerializeField] Animator animator;
+    public Animator Animator { get { return animator; } }
     PlayerController playerController;
     PlayerSkillController skillController;
 
@@ -27,15 +28,19 @@ public class PlayerAnimatorController : MonoBehaviour
         IdleB,
         Jump,
         Kick,
-        MachKick,
-        Skill1_Hurricane = 6,
-        Skill2_Screwkick = 7,
-        Skill3_MachAura = 8,
-        Damage = 10,
-        Die = 11,
-        Run = 15,
-        RunFast = 18,
-        StandUp = 20,
+        MachKick_Start,
+        MachKick_Midlle,
+        MachKick_End,
+        Skill1_Hurricane,
+        Skill2_Screwkick,
+        Skill3_MachAura,
+        Skill4_RollKick,
+        Skill5_Stamp_Stamp,
+        Damage,
+        Die,
+        Run,
+        RunFast,
+        StandUp,
         Respawn,
     }
 
@@ -49,7 +54,7 @@ public class PlayerAnimatorController : MonoBehaviour
     private void OnDisable()
     {
         if(!playerController || !skillController) return;
-        OnEndAnim();
+        OnEndAnim(true);
         isKnockBackAnim = false;
         StopCoroutine(FlashCoroutine());
         foreach (var meshs in skinnedMeshs)
@@ -72,6 +77,22 @@ public class PlayerAnimatorController : MonoBehaviour
         }
     }
 
+    public void PlayAnimationFromFrame(float targetFlame,string animName)
+    {
+        // アニメーションのStateInfoを取得
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        // アニメーションの全体フレーム数を計算
+        int totalFrames = Mathf.RoundToInt(stateInfo.length * stateInfo.speed * stateInfo.speedMultiplier * 60f);
+        Debug.Log(totalFrames);
+
+        // 指定フレームを正規化タイムに変換 (0～1)
+        float normalizedTime = targetFlame / totalFrames;
+
+        // 指定したアニメーションを正規化タイムから再生
+        animator.Play(animName, 0, normalizedTime);
+    }
+
     public ANIM_ID GetSkillAnimId()
     {
         ANIM_ID resultId = ANIM_ID.IdleB;
@@ -86,6 +107,12 @@ public class PlayerAnimatorController : MonoBehaviour
             case SKILL_ID.Skill3:
                 resultId = ANIM_ID.Skill3_MachAura;
                 break;
+            case SKILL_ID.Skill4:
+                resultId = ANIM_ID.Skill4_RollKick;
+                break;
+            case SKILL_ID.Skill5:
+                resultId = ANIM_ID.Skill5_Stamp_Stamp;
+                break;
         }
 
         return resultId;
@@ -99,7 +126,8 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
 
-        if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura)
+        if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura
+            || id == ANIM_ID.Skill4_RollKick || id == ANIM_ID.Skill5_Stamp_Stamp)
         {
             skillController.OnStartSkillAnim();
             if (id == ANIM_ID.Skill3_MachAura) return;
@@ -117,12 +145,13 @@ public class PlayerAnimatorController : MonoBehaviour
             playerController.IsInvincible = true;
             animator.Play("Damage");
         }
-        if(id == ANIM_ID.Kick || id == ANIM_ID.MachKick || id == ANIM_ID.Damage)
+        if(id == ANIM_ID.Kick || id == ANIM_ID.Damage)
         {
             playerController.IsControlEnabled = false;
         }
 
         animator.SetInteger("animation", (int)id);
+        Debug.Log(GetAnimId());
     }
 
     /// <summary>
@@ -133,7 +162,8 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (skillController.isUsedSkill && skillController.SkillId != SKILL_ID.Skill3) return;
 
-        if (id == (int)ANIM_ID.Skill1_Hurricane || id == (int)ANIM_ID.Skill2_Screwkick || id == (int)ANIM_ID.Skill3_MachAura)
+        if (id == (int)ANIM_ID.Skill1_Hurricane || id == (int)ANIM_ID.Skill2_Screwkick || id == (int)ANIM_ID.Skill3_MachAura
+            || id == (int)ANIM_ID.Skill4_RollKick || id == (int)ANIM_ID.Skill5_Stamp_Stamp)
         {
             skillController.OnStartSkillAnim();
             if (id == (int)ANIM_ID.Skill3_MachAura) return;
@@ -162,19 +192,19 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <summary>
     /// アニメーションが終了した
     /// </summary>
-    public void OnEndAnim()
+    public void OnEndAnim(bool isEndSkillAnim)
     {
-        if (skillController.isUsedSkill) skillController.OnEndSkillAnim();
-        if (GetAnimId() != (int)ANIM_ID.Kick && GetAnimId() != (int)ANIM_ID.MachKick) playerController.IsInvincible = false;
+        if (isEndSkillAnim && skillController.isUsedSkill) skillController.OnEndSkillAnim();
+        if (GetAnimId() != (int)ANIM_ID.Kick) playerController.IsInvincible = false;
         playerController.IsControlEnabled = true;
         SetInt(ANIM_ID.IdleB);
     }
 
     public void OnEndMachKickAnim()
     {
-        if (GetAnimId() != (int)ANIM_ID.Kick && GetAnimId() != (int)ANIM_ID.MachKick) playerController.IsInvincible = false;
+        if (GetAnimId() != (int)ANIM_ID.Kick) playerController.IsInvincible = false;
         playerController.IsControlEnabled = true;
-        SetInt(ANIM_ID.IdleB);
+        SetInt(ANIM_ID.IdleA);
     }
 
     /// <summary>
@@ -182,10 +212,11 @@ public class PlayerAnimatorController : MonoBehaviour
     /// </summary>
     public void PlayKnockBackAnim()
     {
-        OnEndAnim();
+        OnEndAnim(skillController.SkillId != SKILL_ID.Skill3);
 
         playerController.IsStandUp = false;
         isKnockBackAnim = true;
+        animator.Play("Die");
         animator.SetInteger("animation", (int)ANIM_ID.Die);
     }
 

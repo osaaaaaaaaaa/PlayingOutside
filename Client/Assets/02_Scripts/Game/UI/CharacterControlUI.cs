@@ -53,6 +53,14 @@ public class CharacterControlUI : MonoBehaviour
         btnUseItem.interactable = toggle;
     }
 
+    public void ToggleButtonInteractable(bool toggle, bool isButtonKickActive)
+    {
+        btnKick.interactable = isButtonKickActive;
+        btnJump.interactable = toggle;
+        if (!isCoolTime) btnSkill.interactable = toggle;
+        btnUseItem.interactable = toggle;
+    }
+
     public void SetImageItem(EnumManager.ITEM_ID itemId)
     {
         int index = (int)(itemId - EnumManager.ITEM_ID.Pepper + 1);

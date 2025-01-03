@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerSkillController : MonoBehaviour
 {
     PlayerController playerController;
+    PlayerAnimatorController playerAnimatorController;
     Rigidbody rb;
 
     // 固有スキルのパーティクル
@@ -18,7 +19,7 @@ public class PlayerSkillController : MonoBehaviour
         Skill2,
         Skill3,
         Skill4,
-        SKill5
+        Skill5
     }
 
     [SerializeField] SKILL_ID skillID = SKILL_ID.Skill1;
@@ -28,13 +29,30 @@ public class PlayerSkillController : MonoBehaviour
     public float CoolTime { get { return coolTime; } }
     [SerializeField] float forsePower;
     bool isUseForse;
+    bool isEndSkill5;
 
     private void Start()
     {
         skillObj.SetActive(false);
         isUseForse = false;
         playerController = GetComponent<PlayerController>();
+        playerAnimatorController = GetComponent<PlayerAnimatorController>();
         rb = GetComponent<Rigidbody>();
+        isEndSkill5 = true;
+    }
+
+    private void Update()
+    {
+        if (!isEndSkill5 && skillID == SKILL_ID.Skill5 && isUsedSkill && GetComponent<PlayerIsGroundController>().IsGround())
+        {
+            // スキル5再生中で落下している場合
+            if (playerController.Rb.drag > 0)
+            {
+                isEndSkill5 = true;
+                transform.GetChild(0).transform.localPosition = Vector3.zero;
+                playerAnimatorController.PlayAnimationFromFrame(148, "Skill5");
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -48,7 +66,6 @@ public class PlayerSkillController : MonoBehaviour
     public void OnStartSkillAnim()
     {
         isUsedSkill = true;
-
         skillObj.SetActive(true);
         skillObj.GetComponent<ParticleSystem>().Play();
 
@@ -70,6 +87,15 @@ public class PlayerSkillController : MonoBehaviour
             case SKILL_ID.Skill3:
                 Invoke("OnEndSkillAnim", 8f);
                 break;
+            case SKILL_ID.Skill4:
+                playerController.IsInvincible = true;
+                playerController.IsControlEnabled = false;
+                break;
+            case SKILL_ID.Skill5:
+                playerController.IsInvincible = true;
+                playerController.Speed = 3f;
+                isEndSkill5 = false;
+                break;
         }
     }
 
@@ -87,6 +113,14 @@ public class PlayerSkillController : MonoBehaviour
                 break;
             case SKILL_ID.Skill2:
                 skillObj.GetComponent<BoxCollider>().enabled = false;
+                break;
+            case SKILL_ID.Skill3:
+                break;
+            case SKILL_ID.Skill4:
+                skillObj.GetComponent<SphereCollider>().enabled = false;
+                break;
+            case SKILL_ID.Skill5:
+                isEndSkill5 = true;
                 break;
         }
     }

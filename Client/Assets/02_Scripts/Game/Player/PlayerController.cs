@@ -15,10 +15,11 @@ public class PlayerController : MonoBehaviour
     PlayerAnimatorController animController;
     PlayerSkillController skillController;
     PlayerItemController itemController;
-    Rigidbody rb;
     CinemachineImpulseSource impulseSource;
     CharacterControlUI characterControlUI;
     FloatingJoystick floatingJoystick;
+    Rigidbody rb;
+    public Rigidbody Rb { get { return rb; } }
     #endregion
 
     #region カメラ関係
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour
     public float Speed { get { return speed; } set { speed = value; } }
     public float defaultSpeed { get; private set; } = 5;
     public float pepperSpeed { get; private set; } = 8;
-    float jumpPower;
+    [SerializeField] float jumpPower = 600;
     #endregion
     #endregion
 
@@ -84,7 +85,7 @@ public class PlayerController : MonoBehaviour
         if(FloatingJoystick) floatingJoystick = FloatingJoystick.GetComponent<FloatingJoystick>();
 
         speed = defaultSpeed;
-        jumpPower = 600;
+        //jumpPower = 600;
         hp = hpMax;
         isStandUp = true;
         isInvincible = false;
@@ -110,25 +111,42 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        bool isGround = GetComponent<PlayerIsGroundController>().IsGround();
+        bool isMachAura = skillController.SkillId == PlayerSkillController.SKILL_ID.Skill3 && skillController.isUsedSkill;
+        bool isEndMachKickAnim = !(animController.GetAnimId() == (int)PlayerAnimatorController.ANIM_ID.MachKick_Start
+                        || animController.GetAnimId() == (int)PlayerAnimatorController.ANIM_ID.MachKick_Midlle
+                        || animController.GetAnimId() == (int)PlayerAnimatorController.ANIM_ID.MachKick_End);
+
         // キー入力で移動方向を更新
-        if (floatingJoystick && floatingJoystick.Horizontal != 0 && floatingJoystick.Vertical != 0)
+        if (floatingJoystick && floatingJoystick.Horizontal != 0 && floatingJoystick.Vertical != 0
+            && isEndMachKickAnim)
         {
             moveX = floatingJoystick.Horizontal;
             moveZ = floatingJoystick.Vertical;
         }
-        else
+        else if(isEndMachKickAnim)
         {
             moveX = Input.GetAxisRaw("Horizontal");
             moveZ = Input.GetAxisRaw("Vertical");
         }
-
-        bool isInteractable = GetComponent<PlayerIsGroundController>().IsGround() && !skillController.isUsedSkill;
-        characterControlUI.ToggleButtonInteractable(isInteractable);
-
-        if (isInteractable || skillController.SkillId == PlayerSkillController.SKILL_ID.Skill3)
+        else
         {
-            bool isMachAura = skillController.SkillId == PlayerSkillController.SKILL_ID.Skill3 && skillController.isUsedSkill;
+            moveX = 0;
+            moveZ = 0;
+        }
 
+        bool isInteractable = isGround && !skillController.isUsedSkill;
+        if (isMachAura)
+        {
+            characterControlUI.ToggleButtonInteractable(isEndMachKickAnim && isGround, isGround);
+        }
+        else
+        {
+            characterControlUI.ToggleButtonInteractable(isInteractable);
+        }
+
+        if (isInteractable || isMachAura && isEndMachKickAnim && isGround)
+        {
             if (moveX != 0 || moveZ != 0)
             {
                 bool isUsePepper = itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper);
@@ -137,14 +155,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (isMachAura)
-                {
-                    animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleA);
-                }
-                else
-                {
-                    animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
-                }
+                animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
             }
 
             // ↓とりあえず残しておく####################################################
@@ -152,24 +163,7 @@ public class PlayerController : MonoBehaviour
             // ジャンプ処理
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
-                animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
-                rb.AddForce(transform.up * jumpPower);
-            }
-
-            // キック処理
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                var target = SerchNearTarget();
-                if (target != null) LookAtPlayer(target);
-                if (isMachAura)
-                {
-                    animController.SetInt(PlayerAnimatorController.ANIM_ID.MachKick);
-                }
-                else
-                {
-                    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-                }
+                Jump(jumpPower);
             }
 
             // スキル発動処理
@@ -185,6 +179,32 @@ public class PlayerController : MonoBehaviour
                 else this.gameObject.layer = 3;
             }
         }
+
+        if (isInteractable || isMachAura)
+        {
+            // キック処理
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                var target = SerchNearTarget();
+                if (target != null) LookAtPlayer(target);
+                if (isMachAura)
+                {
+                    if (animController.GetAnimId() == (int)PlayerAnimatorController.ANIM_ID.MachKick_Start
+                        || animController.GetAnimId() == (int)PlayerAnimatorController.ANIM_ID.MachKick_Midlle)
+                    {
+                        animController.Animator.SetInteger("animation", (int)PlayerAnimatorController.ANIM_ID.MachKick_Midlle);
+                    }
+                    else
+                    {
+                        animController.SetInt(PlayerAnimatorController.ANIM_ID.MachKick_Start);
+                    }
+                }
+                else
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
+                }
+            }
+        }
     }
 
     public void OnKickButton()
@@ -196,15 +216,20 @@ public class PlayerController : MonoBehaviour
 
     public void OnJumpButton()
     {
-        transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
-        animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
-        rb.AddForce(transform.up * jumpPower);
+        Jump(jumpPower);
     }
 
     public void OnSkillButton()
     {
         animController.SetInt(animController.GetSkillAnimId());
         characterControlUI.OnSkillButton();
+    }
+
+    public void Jump(float _jumpPower)
+    {
+        transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
+        animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
+        rb.AddForce(transform.up * _jumpPower);
     }
 
     private void FixedUpdate()
@@ -380,6 +405,7 @@ public class PlayerController : MonoBehaviour
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
 
+        rb.drag = 0;
         IsStandUp = true;
         IsControlEnabled = true;
         IsInvincible = false;
@@ -392,6 +418,7 @@ public class PlayerController : MonoBehaviour
     {
         this.gameObject.layer = 3;
         isControlEnabled = true;
+        rb.drag = 0;
 
         if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
         else  speed = defaultSpeed;
