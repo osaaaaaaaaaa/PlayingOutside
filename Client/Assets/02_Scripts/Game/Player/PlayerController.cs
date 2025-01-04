@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     PlayerAnimatorController animController;
     PlayerSkillController skillController;
     PlayerItemController itemController;
+    PlayerEffectController effectController;
     CinemachineImpulseSource impulseSource;
     CharacterControlUI characterControlUI;
     FloatingJoystick floatingJoystick;
@@ -46,7 +47,8 @@ public class PlayerController : MonoBehaviour
     #region スピード・ジャンプ
     public float speed;
     public float Speed { get { return speed; } set { speed = value; } }
-    public float defaultSpeed { get; private set; } = 5;
+    float defaultSpeed = 5f;
+    public float DefaultSpeed { get { return defaultSpeed; } set { defaultSpeed = value; } }
     public float pepperSpeed { get; private set; } = 8;
     [SerializeField] float jumpPower = 600;
     #endregion
@@ -77,6 +79,7 @@ public class PlayerController : MonoBehaviour
         skillController = GetComponent<PlayerSkillController>();
         animController = GetComponent<PlayerAnimatorController>();
         itemController = GetComponent<PlayerItemController>();
+        effectController = GetComponent<PlayerEffectController>();
         rb = GetComponent<Rigidbody>();
         impulseSource = GetComponent<CinemachineImpulseSource>();
         var CharacterControls = GameObject.Find("CharacterControls");
@@ -85,7 +88,6 @@ public class PlayerController : MonoBehaviour
         if(FloatingJoystick) floatingJoystick = FloatingJoystick.GetComponent<FloatingJoystick>();
 
         speed = defaultSpeed;
-        //jumpPower = 600;
         hp = hpMax;
         isStandUp = true;
         isInvincible = false;
@@ -390,7 +392,7 @@ public class PlayerController : MonoBehaviour
     public void OnColliderMudEnter()
     {
         if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed - 3;
-        else speed = defaultSpeed - 3;
+        else speed = defaultSpeed - 2;
     }
 
     public void OnColliderMudExit()
@@ -399,19 +401,25 @@ public class PlayerController : MonoBehaviour
         else speed = defaultSpeed;
     }
 
+    /// <summary>
+    /// プレイヤーの生成、復活地点に生成するときなど
+    /// </summary>
+    /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf)
     {
         if(respawnPoint == Vector3.zero) respawnPoint = startPointTf.position;
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
 
+        itemController.ClearAllItemEffects();
+        effectController.StopAllParticles();
         rb.drag = 0;
         IsStandUp = true;
         IsControlEnabled = true;
         IsInvincible = false;
         this.gameObject.layer = 3;
-        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
-        else speed = defaultSpeed;
+        defaultSpeed = 5;
+        speed = defaultSpeed;
     }
 
     public void InitPlayer()

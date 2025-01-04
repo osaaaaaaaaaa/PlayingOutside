@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class PlayerEffectController : MonoBehaviour
 {
     [SerializeField] List<GameObject> effectPrefabs;
+    PlayerController playerController;
 
     public enum EFFECT_ID
     {
@@ -17,14 +19,18 @@ public class PlayerEffectController : MonoBehaviour
         Down,           // [アニメーションからの呼び出し] ノックダウンするダメージを受けたとき
         KnockBackSmoke, // [アニメーションからの呼び出し] ノックバック中
         PepperFire,     // [アイテム] 唐辛子
+        AuraBuff,       // スピードアップ
+        AuraDebuff,     // スピードダウン
     }
 
     List<GameObject> particleSystems = new List<GameObject>();
     bool isTouchedMud;
+    Coroutine debuffCoroutine;
 
     private void Awake()
     {
         isTouchedMud = false;
+        playerController = GetComponent<PlayerController>();
         particleSystems = new List<GameObject>();
     }
 
@@ -74,6 +80,20 @@ public class PlayerEffectController : MonoBehaviour
                     effect.name = EFFECT_ID.PepperFire.ToString();
                 }
                 break;
+            case EFFECT_ID.AuraBuff:
+                if (!SerchSameNameParticle(EFFECT_ID.AuraBuff.ToString()))
+                {
+                    effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
+                    effect.name = EFFECT_ID.AuraBuff.ToString();
+                }
+                break;
+            case EFFECT_ID.AuraDebuff:
+                if (!SerchSameNameParticle(EFFECT_ID.AuraDebuff.ToString()))
+                {
+                    effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
+                    effect.name = EFFECT_ID.AuraDebuff.ToString();
+                }
+                break;
         }
 
         if (effect != null) particleSystems.Add(effect);
@@ -96,6 +116,12 @@ public class PlayerEffectController : MonoBehaviour
         }
 
         particleSystems.Clear();
+
+        if(debuffCoroutine != null)
+        {
+            StopCoroutine(debuffCoroutine);
+            debuffCoroutine = null;
+        }
     }
 
     public void StopParticle(EFFECT_ID efectId)
@@ -123,6 +149,18 @@ public class PlayerEffectController : MonoBehaviour
             SetEffect(EFFECT_ID.MudSplash);
             SetEffect(EFFECT_ID.MudRipples);
         }
+        if (other.GetComponent<DebuffCollider>() != null) 
+        {
+            if (other.GetComponent<DebuffCollider>().IsSpeedDown)
+            {
+                SetEffect(EFFECT_ID.AuraDebuff);
+                if(debuffCoroutine != null)
+                {
+                    StopCoroutine(debuffCoroutine);
+                }
+                debuffCoroutine = StartCoroutine(AuraDebufCoroutine(other.GetComponent<DebuffCollider>().DebuffTime));
+            }
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -133,5 +171,24 @@ public class PlayerEffectController : MonoBehaviour
             isTouchedMud = false;
             StopParticle(EFFECT_ID.MudRipples);
         }
+    }
+
+    IEnumerator AuraDebufCoroutine(float effectTime)
+    {
+        playerController.Speed -= playerController.DefaultSpeed;
+        playerController.DefaultSpeed = 3f;
+        playerController.Speed = playerController.DefaultSpeed;
+
+        while (effectTime > 0)
+        {
+            effectTime--;
+            yield return new WaitForSeconds(1f);
+        }
+
+        playerController.Speed -= playerController.DefaultSpeed;
+        playerController.DefaultSpeed = 5f;
+        playerController.Speed = playerController.DefaultSpeed;
+        StopParticle(EFFECT_ID.AuraDebuff);
+        debuffCoroutine = null;
     }
 }

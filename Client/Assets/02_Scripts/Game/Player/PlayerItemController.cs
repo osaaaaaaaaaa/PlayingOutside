@@ -31,7 +31,6 @@ public class PlayerItemController : MonoBehaviour
 
             if (itemEffectTimeList[key] <= 0)
             {
-                Debug.Log(key.ToString() + "‚ÌŒø‰Ê‚ªI—¹‚µ‚Ü‚µ‚½I");
                 effectsToRemove.Add(key);
             }
         }
@@ -39,15 +38,28 @@ public class PlayerItemController : MonoBehaviour
         // I—¹‚µ‚½Œø‰Ê‚ðíœ
         foreach (var key in effectsToRemove)
         {
-            switch (key)
-            {
-                case EnumManager.ITEM_ID.Pepper:
-                    playerController.speed = playerController.defaultSpeed;
-                    effectController.StopParticle(PlayerEffectController.EFFECT_ID.PepperFire);
-                    break;
-            }
-
+            ClearItem(key);
             itemEffectTimeList.Remove(key);
+        }
+    }
+
+    public void ClearAllItemEffects()
+    {
+        foreach (var key in itemEffectTimeList.Keys)
+        {
+            ClearItem(key);
+        }
+        itemEffectTimeList.Clear();
+    }
+
+    void ClearItem(EnumManager.ITEM_ID itemId)
+    {
+        switch (itemId)
+        {
+            case EnumManager.ITEM_ID.Pepper:
+                playerController.speed = playerController.DefaultSpeed;
+                effectController.StopParticle(PlayerEffectController.EFFECT_ID.PepperFire);
+                break;
         }
     }
 

@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerSkillController : MonoBehaviour
 {
     PlayerController playerController;
     PlayerAnimatorController playerAnimatorController;
     Rigidbody rb;
+    [SerializeField] PlayerAnimEventTrigger eventTrigger;
 
-    // 固有スキルのパーティクル
-    [SerializeField] GameObject skillObj;
+    [SerializeField] GameObject skillObj;       // 固有スキルのパーティクル
 
     public bool isUsedSkill { get; private set; }
 
@@ -27,9 +28,8 @@ public class PlayerSkillController : MonoBehaviour
 
     [SerializeField] float coolTime;
     public float CoolTime { get { return coolTime; } }
-    [SerializeField] float forsePower;
+    float forsePower;
     bool isUseForse;
-    bool isEndSkill5;
 
     private void Start()
     {
@@ -38,20 +38,20 @@ public class PlayerSkillController : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         playerAnimatorController = GetComponent<PlayerAnimatorController>();
         rb = GetComponent<Rigidbody>();
-        isEndSkill5 = true;
     }
 
     private void Update()
     {
-        if (!isEndSkill5 && skillID == SKILL_ID.Skill5 && isUsedSkill && GetComponent<PlayerIsGroundController>().IsGround())
+        // スキル5再生中で落下して着地するとき
+        if (eventTrigger.IsPlayStampAnimFall && skillID == SKILL_ID.Skill5 && isUsedSkill && GetComponent<PlayerIsGroundController>().IsGround())
         {
-            // スキル5再生中で落下している場合
-            if (playerController.Rb.drag > 0)
-            {
-                isEndSkill5 = true;
-                transform.GetChild(0).transform.localPosition = Vector3.zero;
-                playerAnimatorController.PlayAnimationFromFrame(148, "Skill5");
-            }
+            eventTrigger.IsPlayStampAnimFall = false;
+            skillObj.SetActive(true);
+            skillObj.GetComponent<ParticleSystem>().Play();
+            skillObj.GetComponent<BoxCollider>().enabled = true;
+            transform.GetChild(0).transform.localPosition = Vector3.zero;
+            playerAnimatorController.PlayAnimationFromFrame(148, "Skill5");
+            playerController.IsControlEnabled = false;
         }
     }
 
@@ -66,8 +66,7 @@ public class PlayerSkillController : MonoBehaviour
     public void OnStartSkillAnim()
     {
         isUsedSkill = true;
-        skillObj.SetActive(true);
-        skillObj.GetComponent<ParticleSystem>().Play();
+        bool isShowParticle = true;
 
         switch (skillID)
         {
@@ -92,10 +91,17 @@ public class PlayerSkillController : MonoBehaviour
                 playerController.IsControlEnabled = false;
                 break;
             case SKILL_ID.Skill5:
+                isShowParticle = false;
                 playerController.IsInvincible = true;
                 playerController.Speed = 3f;
-                isEndSkill5 = false;
+                playerController.IsControlEnabled = false;
                 break;
+        }
+
+        if (isShowParticle)
+        {
+            skillObj.SetActive(true);
+            skillObj.GetComponent<ParticleSystem>().Play();
         }
     }
 
@@ -120,7 +126,7 @@ public class PlayerSkillController : MonoBehaviour
                 skillObj.GetComponent<SphereCollider>().enabled = false;
                 break;
             case SKILL_ID.Skill5:
-                isEndSkill5 = true;
+                skillObj.GetComponent<BoxCollider>().enabled = false;
                 break;
         }
     }

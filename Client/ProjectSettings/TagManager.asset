@@ -11,6 +11,7 @@ TagManager:
   - Mud
   - GoalArea
   - Character
+  - Debuff
   layers:
   - Default
   - TransparentFX

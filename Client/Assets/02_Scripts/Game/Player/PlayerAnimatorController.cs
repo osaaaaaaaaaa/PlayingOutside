@@ -151,7 +151,6 @@ public class PlayerAnimatorController : MonoBehaviour
         }
 
         animator.SetInteger("animation", (int)id);
-        Debug.Log(GetAnimId());
     }
 
     /// <summary>

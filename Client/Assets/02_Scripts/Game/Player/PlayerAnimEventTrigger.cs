@@ -9,6 +9,9 @@ public class PlayerAnimEventTrigger : MonoBehaviour
     PlayerEffectController effectController;
     PlayerSkillController skillController;
 
+    bool isPlayStampAnimFall;
+    public bool IsPlayStampAnimFall { get { return isPlayStampAnimFall; } set { isPlayStampAnimFall = value; } }
+
     public enum EVENT_ID
     {
         OnEndAnim = 0,
@@ -32,6 +35,7 @@ public class PlayerAnimEventTrigger : MonoBehaviour
         animController = transform.parent.GetComponent<PlayerAnimatorController>();
         effectController = transform.parent.GetComponent<PlayerEffectController>();
         skillController = transform.parent.GetComponent<PlayerSkillController>();
+        isPlayStampAnimFall = false;
     }
 
     public void OnTriggerAnimEvent(EVENT_ID id)
@@ -72,18 +76,20 @@ public class PlayerAnimEventTrigger : MonoBehaviour
             case EVENT_ID.OnStampAnimRising:
                 // スキル5(Stamp)の上昇したとき
                 playerController.Jump(900);
+                playerController.IsControlEnabled = true;
                 break;
             case EVENT_ID.OnStampAnimFloating:
                 // スキル5(Stamp)の空中にとどまるとき
                 playerController.Rb.drag = 20;
+                isPlayStampAnimFall = true;
                 break;
             case EVENT_ID.OnStartStampAnimFall:
                 // スキル5(Stamp)の落下するとき
-                playerController.Rb.drag = 2;
+                if (isPlayStampAnimFall) playerController.Rb.drag = 2;
                 break;
             case EVENT_ID.OnLoopStampAnimFall:
                 // スキル5(Stamp)の落下アニメーションをループ再生する
-                animController.PlayAnimationFromFrame(106, "Skill5");
+                if(isPlayStampAnimFall) animController.PlayAnimationFromFrame(106, "Skill5");
                 break;
         }
     }
