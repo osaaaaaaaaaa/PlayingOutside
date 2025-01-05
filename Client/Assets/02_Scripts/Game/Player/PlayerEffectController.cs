@@ -64,7 +64,7 @@ public class PlayerEffectController : MonoBehaviour
                 {
                     effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
                     effect.name = EFFECT_ID.MudRipples.ToString();
-                }   
+                }
                 break;
             case EFFECT_ID.Down:
                 Instantiate(effectPrefabs[(int)efectId], this.transform.position + Vector3.up, Quaternion.identity);
@@ -74,7 +74,7 @@ public class PlayerEffectController : MonoBehaviour
                 effectTmp.transform.position += this.transform.position;
                 break;
             case EFFECT_ID.PepperFire:
-                if (!SerchSameNameParticle(EFFECT_ID.PepperFire.ToString())) 
+                if (!SerchSameNameParticle(EFFECT_ID.PepperFire.ToString()))
                 {
                     effect = Instantiate(effectPrefabs[(int)efectId], this.transform);
                     effect.name = EFFECT_ID.PepperFire.ToString();
@@ -103,21 +103,21 @@ public class PlayerEffectController : MonoBehaviour
     {
         foreach (GameObject particleSystem in particleSystems)
         {
-            if(particleSystem != null && particleSystem.name == name) return true;
+            if (particleSystem != null && particleSystem.name == name) return true;
         }
         return false;
     }
 
     public void StopAllParticles()
     {
-        foreach(GameObject particleSystem in particleSystems)
+        foreach (GameObject particleSystem in particleSystems)
         {
-            if(particleSystem != null) particleSystem.GetComponent<ParticleSystem>().Stop();
+            if (particleSystem != null) particleSystem.GetComponent<ParticleSystem>().Stop();
         }
 
         particleSystems.Clear();
 
-        if(debuffCoroutine != null)
+        if (debuffCoroutine != null)
         {
             StopCoroutine(debuffCoroutine);
             debuffCoroutine = null;
@@ -149,12 +149,12 @@ public class PlayerEffectController : MonoBehaviour
             SetEffect(EFFECT_ID.MudSplash);
             SetEffect(EFFECT_ID.MudRipples);
         }
-        if (other.GetComponent<DebuffCollider>() != null) 
+        if (other.GetComponent<DebuffCollider>() != null)
         {
             if (other.GetComponent<DebuffCollider>().IsSpeedDown)
             {
                 SetEffect(EFFECT_ID.AuraDebuff);
-                if(debuffCoroutine != null)
+                if (debuffCoroutine != null)
                 {
                     StopCoroutine(debuffCoroutine);
                 }
@@ -175,9 +175,12 @@ public class PlayerEffectController : MonoBehaviour
 
     IEnumerator AuraDebufCoroutine(float effectTime)
     {
-        playerController.Speed -= playerController.DefaultSpeed;
-        playerController.DefaultSpeed = 3f;
-        playerController.Speed = playerController.DefaultSpeed;
+        if (playerController.enabled)
+        {
+            playerController.Speed -= playerController.DefaultSpeed;
+            playerController.DefaultSpeed = 3f;
+            playerController.Speed = playerController.DefaultSpeed;
+        }
 
         while (effectTime > 0)
         {
@@ -185,9 +188,12 @@ public class PlayerEffectController : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        playerController.Speed -= playerController.DefaultSpeed;
-        playerController.DefaultSpeed = 5f;
-        playerController.Speed = playerController.DefaultSpeed;
+        if (playerController.enabled)
+        {
+            playerController.Speed -= playerController.DefaultSpeed;
+            playerController.DefaultSpeed = 5f;
+            playerController.Speed = playerController.DefaultSpeed;
+        }
         StopParticle(EFFECT_ID.AuraDebuff);
         debuffCoroutine = null;
     }

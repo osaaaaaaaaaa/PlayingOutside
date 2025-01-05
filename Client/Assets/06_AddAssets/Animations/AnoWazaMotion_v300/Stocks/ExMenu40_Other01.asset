@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -340790334, guid: 67cc4cb7839cd3741b63733d5adf0442, type: 3}
+  m_Name: ExMenu40_Other01
+  m_EditorClassIdentifier: 
+  controls:
+  - name: "100\u5F35\u308A\u624B(\u9577\u62BC\u3057\u7D99\u7D9A\u30FB\u79FB\u52D5\u53EF)"
+    icon: {fileID: 2800000, guid: 14412b4ecb387b94ca3ddfd52ce9eaa0, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 41
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "Y\uFF83\uFF9A\uFF8E\uFF9F\uFF70\uFF84"
+    icon: {fileID: 2800000, guid: f0138e69ae866be48ac8d16c0e3acc5e, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 47
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "Y\uFF83\uFF9A\uFF8E\uFF9F\uFF70\uFF84(\u9577\u62BC\u3057\u7D99\u7D9A\u30FB\u79FB\u52D5\u53EF)"
+    icon: {fileID: 2800000, guid: f0138e69ae866be48ac8d16c0e3acc5e, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 42
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u3044\u3063\u307A\u30934\u3093\u3067\u3053\u3044(\u9577\u62BC\u3057\u5206\u5C90)"
+    icon: {fileID: 2800000, guid: 06f460a07f09404488362c5e560cc64c, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 43
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u30E8\u30E6\u30FC\u4F1D\u8AAC"
+    icon: {fileID: 2800000, guid: 775fb7c95f3bcfb4eac0ef3deb133fc7, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 44
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\uFF75\uFF70\uFF96\uFF78\uFF7E\uFF9D"
+    icon: {fileID: 2800000, guid: 867a008d37b13b144a2a4b0efa5df421, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 45
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u30A6\u30E1\u30CF\u30E9\u30D6\u30ED\u30C3\u30AD\u30F3\u30B0"
+    icon: {fileID: 2800000, guid: 465ff365c53e2f948bc4d1826c229aa1, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 46
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []

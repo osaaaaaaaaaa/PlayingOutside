@@ -803,6 +803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   testCharacter: {fileID: 0}
   uiParent: {fileID: 728767813}
+  floatingJoystick: {fileID: 0}
   btnKick: {fileID: 1398648302}
   btnJump: {fileID: 1028681458}
   btnSkill: {fileID: 1284388697}
@@ -880,8 +881,12 @@ MonoBehaviour:
   - {fileID: 1062659167}
   - {fileID: 201882871}
   - {fileID: 2004454280}
-  characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
-    type: 3}
+  characterPrefabList:
+  - {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1, type: 3}
+  - {fileID: 8103460454560624290, guid: ca6ea51b41186bf428b2b895efaf118c, type: 3}
+  - {fileID: 6324321621586697641, guid: d08d7150401ccef4b8ed8f04e91819cc, type: 3}
+  - {fileID: 2038936076195645356, guid: cc77e5eed0e32d24abb69be8b2780890, type: 3}
+  - {fileID: 5833018912195850617, guid: ee938c9db71573b49a8ecd2b48c5fb1b, type: 3}
   particleController: {fileID: 1481222131}
   totalScoreUIController: {fileID: 1674184820}
   crownPrefab: {fileID: 8574579801759557814, guid: 5e6d2b50de1827e45b79a63fd9f01c5c,
@@ -1430,10 +1435,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.0003450513
-    y: 0
-    width: 0.9993099
-    height: 1
+    x: 0
+    y: 0.00007992983
+    width: 1
+    height: 0.99984014
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 40

@@ -80,7 +80,7 @@ public class MatchingDirector : MonoBehaviour
         userList[user.ConnectionId] = user.JoinOrder;
 
         // ƒ†[ƒU[‚ÌUIî•ñ‚ğİ’è
-        quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, 1 - 1);
+        quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, user.UserData.Character_Id - 1);
     }
 
     /// <summary>

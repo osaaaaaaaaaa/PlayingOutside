@@ -28,9 +28,7 @@ public class PlayerAnimatorController : MonoBehaviour
         IdleB,
         Jump,
         Kick,
-        MachKick_Start,
-        MachKick_Midlle,
-        MachKick_End,
+        MachKick,
         Skill1_Hurricane,
         Skill2_Screwkick,
         Skill3_MachAura,
@@ -130,7 +128,6 @@ public class PlayerAnimatorController : MonoBehaviour
             || id == ANIM_ID.Skill4_RollKick || id == ANIM_ID.Skill5_Stamp_Stamp)
         {
             skillController.OnStartSkillAnim();
-            if (id == ANIM_ID.Skill3_MachAura) return;
         }
         if(id == ANIM_ID.Respawn)
         {
@@ -165,7 +162,6 @@ public class PlayerAnimatorController : MonoBehaviour
             || id == (int)ANIM_ID.Skill4_RollKick || id == (int)ANIM_ID.Skill5_Stamp_Stamp)
         {
             skillController.OnStartSkillAnim();
-            if (id == (int)ANIM_ID.Skill3_MachAura) return;
         }
         if (id == (int)ANIM_ID.Respawn)
         {
@@ -197,13 +193,6 @@ public class PlayerAnimatorController : MonoBehaviour
         if (GetAnimId() != (int)ANIM_ID.Kick) playerController.IsInvincible = false;
         playerController.IsControlEnabled = true;
         SetInt(ANIM_ID.IdleB);
-    }
-
-    public void OnEndMachKickAnim()
-    {
-        if (GetAnimId() != (int)ANIM_ID.Kick) playerController.IsInvincible = false;
-        playerController.IsControlEnabled = true;
-        SetInt(ANIM_ID.IdleA);
     }
 
     /// <summary>

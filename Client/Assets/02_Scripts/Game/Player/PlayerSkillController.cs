@@ -49,7 +49,8 @@ public class PlayerSkillController : MonoBehaviour
             skillObj.SetActive(true);
             skillObj.GetComponent<ParticleSystem>().Play();
             skillObj.GetComponent<BoxCollider>().enabled = true;
-            transform.GetChild(0).transform.localPosition = Vector3.zero;
+            transform.GetChild(0).transform.localPosition = Vector3.zero;   // モデルを初期化
+            transform.gameObject.layer = 3;
             playerAnimatorController.PlayAnimationFromFrame(148, "Skill5");
             playerController.IsControlEnabled = false;
         }
@@ -65,6 +66,7 @@ public class PlayerSkillController : MonoBehaviour
 
     public void OnStartSkillAnim()
     {
+        if (isUsedSkill) return;
         isUsedSkill = true;
         bool isShowParticle = true;
 
@@ -76,6 +78,7 @@ public class PlayerSkillController : MonoBehaviour
                 skillObj.GetComponent<SphereCollider>().enabled = true;
                 break;
             case SKILL_ID.Skill2:
+                transform.gameObject.layer = 8; // 他のプレイヤーとの接触判定を無くす
                 playerController.IsInvincible = true;
                 playerController.IsControlEnabled = false;
                 skillObj.GetComponent<BoxCollider>().enabled = true;
@@ -84,7 +87,9 @@ public class PlayerSkillController : MonoBehaviour
                 forsePower = 8;
                 break;
             case SKILL_ID.Skill3:
-                Invoke("OnEndSkillAnim", 8f);
+                playerController.IsInvincible = true;
+                playerController.IsControlEnabled = false;
+                Invoke("OnEndSkillAnim", 12f);
                 break;
             case SKILL_ID.Skill4:
                 playerController.IsInvincible = true;
@@ -92,6 +97,7 @@ public class PlayerSkillController : MonoBehaviour
                 break;
             case SKILL_ID.Skill5:
                 isShowParticle = false;
+                transform.gameObject.layer = 8; // 他のプレイヤーとの接触判定を無くす
                 playerController.IsInvincible = true;
                 playerController.Speed = 3f;
                 playerController.IsControlEnabled = false;
@@ -107,6 +113,7 @@ public class PlayerSkillController : MonoBehaviour
 
     public void OnEndSkillAnim()
     {
+        CancelInvoke("OnEndSkillAnim");
         isUseForse = false;
         skillObj.SetActive(false);
         playerController.InitPlayer();
@@ -121,12 +128,14 @@ public class PlayerSkillController : MonoBehaviour
                 skillObj.GetComponent<BoxCollider>().enabled = false;
                 break;
             case SKILL_ID.Skill3:
+                playerAnimatorController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);
                 break;
             case SKILL_ID.Skill4:
                 skillObj.GetComponent<SphereCollider>().enabled = false;
                 break;
             case SKILL_ID.Skill5:
                 skillObj.GetComponent<BoxCollider>().enabled = false;
+                eventTrigger.IsPlayStampAnimFall = false;
                 break;
         }
     }

@@ -399,7 +399,7 @@ RectTransform:
   m_GameObject: {fileID: 66338991}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 682646302}
@@ -1419,8 +1419,12 @@ MonoBehaviour:
   - {fileID: 2017970719}
   - {fileID: 1162298303}
   - {fileID: 277481658}
-  characterPrefab: {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1,
-    type: 3}
+  characterPrefabList:
+  - {fileID: 7434985528216296464, guid: 1c35209d0f770b440a481d53769f80b1, type: 3}
+  - {fileID: 8103460454560624290, guid: ca6ea51b41186bf428b2b895efaf118c, type: 3}
+  - {fileID: 6324321621586697641, guid: d08d7150401ccef4b8ed8f04e91819cc, type: 3}
+  - {fileID: 2038936076195645356, guid: cc77e5eed0e32d24abb69be8b2780890, type: 3}
+  - {fileID: 5833018912195850617, guid: ee938c9db71573b49a8ecd2b48c5fb1b, type: 3}
   targetGroup: {fileID: 1573839150}
   itemSpawner: {fileID: 768301995}
   coinPrefab: {fileID: 6041006191695934633, guid: b07a720a6e383ff418e17bd2c90ae3a5,
@@ -12531,7 +12535,7 @@ RectTransform:
   m_GameObject: {fileID: 1491671592}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1092814110}
@@ -12847,10 +12851,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.0003450513
-    y: 0
-    width: 0.9993099
-    height: 1
+    x: 0
+    y: 0.00007992983
+    width: 1
+    height: 0.99984014
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 70
@@ -15339,7 +15343,7 @@ RectTransform:
   m_GameObject: {fileID: 2030079471}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 818462247}
@@ -15806,7 +15810,7 @@ RectTransform:
   m_GameObject: {fileID: 2134494022}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1252290592}

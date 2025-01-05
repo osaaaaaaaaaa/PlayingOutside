@@ -10,7 +10,7 @@ public class FinalResultSceneDirector : MonoBehaviour
 {
     #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
-    [SerializeField] GameObject characterPrefab;
+    [SerializeField] List<GameObject> characterPrefabList;
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
@@ -72,7 +72,7 @@ public class FinalResultSceneDirector : MonoBehaviour
             var value = user.Value;
 
             // キャラクター生成,
-            GameObject character = Instantiate(characterPrefab);
+            GameObject character = Instantiate(characterPrefabList[value.UserData.Character_Id - 1]);
             characterList[user.Key] = character;
             character.name = value.UserData.Name;
 

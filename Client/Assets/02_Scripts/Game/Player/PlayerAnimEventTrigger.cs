@@ -20,13 +20,12 @@ public class PlayerAnimEventTrigger : MonoBehaviour
         SetEffect_Down,
         SetEffect_Run,
         SetEffect_KnockBackSmoke,
-        OnEndMachKickStartAnim,
-        OnStartMachKickMidlleAnim,
-        OnEndMachKickEndAnim,
         OnStampAnimRising,
         OnStampAnimFloating,
         OnStartStampAnimFall,
         OnLoopStampAnimFall,
+        OnEndMachAuraChargeAnim,
+        CheckRapidMachKick,
     }
 
     private void Start()
@@ -63,16 +62,6 @@ public class PlayerAnimEventTrigger : MonoBehaviour
             case EVENT_ID.SetEffect_KnockBackSmoke:
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.KnockBackSmoke);
                 break;
-            case EVENT_ID.OnEndMachKickStartAnim:
-                if(animController.GetAnimId() != (int)PlayerAnimatorController.ANIM_ID.MachKick_Midlle) 
-                    animController.Animator.SetInteger("animation", (int)PlayerAnimatorController.ANIM_ID.MachKick_End);
-                break;
-            case EVENT_ID.OnStartMachKickMidlleAnim:
-                animController.Animator.SetInteger("animation", (int)PlayerAnimatorController.ANIM_ID.MachKick_End);
-                break;
-            case EVENT_ID.OnEndMachKickEndAnim:
-                animController.OnEndMachKickAnim();
-                break;
             case EVENT_ID.OnStampAnimRising:
                 // スキル5(Stamp)の上昇したとき
                 playerController.Jump(900);
@@ -90,6 +79,17 @@ public class PlayerAnimEventTrigger : MonoBehaviour
             case EVENT_ID.OnLoopStampAnimFall:
                 // スキル5(Stamp)の落下アニメーションをループ再生する
                 if(isPlayStampAnimFall) animController.PlayAnimationFromFrame(106, "Skill5");
+                break;
+            case EVENT_ID.OnEndMachAuraChargeAnim:
+                playerController.IsInvincible = false;
+                playerController.IsControlEnabled = true;
+                break;
+            case EVENT_ID.CheckRapidMachKick:
+                if (playerController.enabled && !playerController.IsPressMachKickBtn)
+                {
+                    animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleA);
+                }
+                playerController.IsPressMachKickBtn = false;
                 break;
         }
     }

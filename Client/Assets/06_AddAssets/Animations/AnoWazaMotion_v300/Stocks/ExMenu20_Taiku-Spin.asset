@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -340790334, guid: 67cc4cb7839cd3741b63733d5adf0442, type: 3}
+  m_Name: ExMenu20_Taiku-Spin
+  m_EditorClassIdentifier: 
+  controls:
+  - name: "\uFF7C\uFF6E\uFF70\uFF98\uFF6D\uFF70\uFF79\uFF9D(\u9577\u62BC\u3057\u3067\u771F)"
+    icon: {fileID: 2800000, guid: 7a3ac77c58805e24687022b092cc51d2, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 21
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "T\uFF7E\uFF9D\uFF8C\uFF9F\uFF70\uFF77\uFF6C\uFF78(\u9577\u62BC\u3057\u7D99\u7D9A\u30FB\u79FB\u52D5\u53EF)"
+    icon: {fileID: 2800000, guid: 6cb1389407a7a5049b968d2e144ad40f, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 23
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u30A6\u30EA\u30A2\u30C3\u4E0A(\u9577\u62BC\u3057\u7D99\u7D9A\u30FB\u79FB\u52D5\u53EF)"
+    icon: {fileID: 2800000, guid: 6aa7d473fdbb00c48b8d28d1ff4bb006, type: 3}
+    type: 101
+    parameter:
+      name: NCCYWazaInt
+    value: 24
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "SP\u30C9\u30E9\u30A4\u30D0\u30FC"
+    icon: {fileID: 2800000, guid: a6bf14d23acf1de4a8e15ce487ab4c14, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 25
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "G\u30AB\u30C3\u30BF\u30FC"
+    icon: {fileID: 2800000, guid: 515700660ae46724f9c5ac35d74d8cb8, type: 3}
+    type: 102
+    parameter:
+      name: NCCYWazaInt
+    value: 26
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []

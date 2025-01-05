@@ -11,24 +11,29 @@ class UserTableSeeder extends Seeder
     {
         // データを挿入
         User::create([
-            'name' => '1番さん',
+            'name' => 'ひよこ',
             'token' => 'A',
-            'character_id' => 0
+            'character_id' => 1
         ]);
         User::create([
-            'name' => '2番ちゃん',
+            'name' => 'チキンひよこ',
             'token' => 'B',
-            'character_id' => 0
+            'character_id' => 2
         ]);
         User::create([
-            'name' => '3番野郎',
+            'name' => 'ブラックひよこ',
             'token' => 'C',
-            'character_id' => 0
+            'character_id' => 3
         ]);
         User::create([
-            'name' => '4番くん',
+            'name' => 'スターひよこ',
             'token' => 'D',
-            'character_id' => 0
+            'character_id' => 4
+        ]);
+        User::create([
+            'name' => 'ゴールドひよこ',
+            'token' => 'E',
+            'character_id' => 5
         ]);
     }
 }

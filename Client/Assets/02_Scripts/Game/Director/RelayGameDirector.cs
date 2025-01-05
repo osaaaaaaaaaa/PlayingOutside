@@ -24,7 +24,7 @@ public class RelayGameDirector : MonoBehaviour
 
     #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
-    [SerializeField] GameObject characterPrefab;
+    [SerializeField] List<GameObject> characterPrefabList;
     public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
@@ -148,7 +148,7 @@ public class RelayGameDirector : MonoBehaviour
             var value = user.Value;
 
             // キャラクター生成,
-            GameObject character = Instantiate(characterPrefab);
+            GameObject character = Instantiate(characterPrefabList[value.UserData.Character_Id - 1]);
             characterList[user.Key] = character;
             character.name = user.Value.UserData.Name;
 
@@ -171,7 +171,7 @@ public class RelayGameDirector : MonoBehaviour
                 characterControlUI.SetupButtonEvent(character);
             }
 
-            userScoreController.InitUserScoreList(value.JoinOrder, value.UserData.Character_Id, value.UserData.Name, value.score);
+            userScoreController.InitUserScoreList(value.JoinOrder, value.UserData.Character_Id - 1, value.UserData.Name, value.score);
         }
     }
 

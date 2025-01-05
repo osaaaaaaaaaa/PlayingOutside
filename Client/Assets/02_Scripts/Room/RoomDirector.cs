@@ -21,7 +21,7 @@ public class RoomDirector : MonoBehaviour
 
     #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
-    [SerializeField] GameObject characterPrefab;
+    [SerializeField] List<GameObject> characterPrefabList;
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
@@ -82,7 +82,7 @@ public class RoomDirector : MonoBehaviour
         bool isMyCharacter = user.ConnectionId == RoomModel.Instance.ConnectionId;
 
         // キャラクター生成,
-        GameObject character = Instantiate(characterPrefab);
+        GameObject character = Instantiate(characterPrefabList[user.UserData.Character_Id - 1]);
         characterList[user.ConnectionId] = character;
         character.name = user.UserData.Name;
 

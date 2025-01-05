@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -340790334, guid: 67cc4cb7839cd3741b63733d5adf0442, type: 3}
+  m_Name: ExMenu00_StayG
+  m_EditorClassIdentifier: 
+  controls:
+  - name: "\uFF7B\uFF8F\uFF7F\uFF6F"
+    icon: {fileID: 2800000, guid: 5eb02bc62da4bfb469a259d8e46248a8, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 1
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u30AC\u30FC\u30C9"
+    icon: {fileID: 2800000, guid: 8b59fef47cfe74644b9c5117cab1e8e5, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 2
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u8DB3\u6255\u3044"
+    icon: {fileID: 2800000, guid: 40a28288887f29b4e8e3512bd231f0ab, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 3
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\uFF7F\uFF86\uFF6F\uFF8C\uFF9E\uFF69\uFF91"
+    icon: {fileID: 2800000, guid: afd94a6819396a545b58d63bc3504dc4, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 4
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "\u30BF\u30E1\u4E0D\u8DB3"
+    icon: {fileID: 2800000, guid: 52616b85c138af240901741a45a0c3b9, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 5
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: "[\u30E9\u30F3\u30C0\u30E0]"
+    icon: {fileID: 2800000, guid: 30ac1e22a64d5864088326c0d18c0966, type: 3}
+    type: 102
+    parameter:
+      name: NCCYStayGInt
+    value: 100
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
