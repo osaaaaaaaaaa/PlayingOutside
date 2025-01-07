@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AccountsTableSeeder::class);
         $this->call(UserTableSeeder::class);
         //$this->call(NGWordTableSeeder::class);
+        $this->call(FollowsTableSeeder::class);
+        $this->call(RatingsTableSeeder::class);
     }
 }

@@ -161,7 +161,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// <summary>
         /// 全員が遷移できた通知
         /// </summary>
-        void OnTransitionFinalResultSceneAllUsers(ResultData[] result);
+        void OnTransitionFinalResultSceneAllUsers(ResultData[] result, int ratingDelta);
         #endregion
     }
 }

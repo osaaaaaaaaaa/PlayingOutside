@@ -708,9 +708,15 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 全員が遷移できた通知
     /// </summary>
     /// <param name="result"></param>
-    public void OnTransitionFinalResultSceneAllUsers(ResultData[] result)
+    public async void OnTransitionFinalResultSceneAllUsers(ResultData[] result, int ratingDelta)
     {
-        if (userState == USER_STATE.joined) OnTransitionFinalResultSceneUser(result);
+        if (userState == USER_STATE.joined)
+        {
+            OnTransitionFinalResultSceneUser(result);
+
+            // レーティング更新API
+            await RatingModel.Instance.UpdateRatingAsync( UserModel.Instance.UserId, ratingDelta);
+        }
     }
     #endregion
 }

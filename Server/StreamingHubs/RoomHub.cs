@@ -1,11 +1,20 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using MagicOnion;
 using MagicOnion.Server.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using MySqlConnector;
+using Server.Model;
 using Server.Model.Context;
+using Server.Model.Entity;
+using Server.Services;
 using Shared.Interfaces.Model.Entity;
+using Shared.Interfaces.Services;
 using Shared.Interfaces.StreamingHubs;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Runtime.Intrinsics.X86;
+using System.Xml.Linq;
 using UnityEngine;
 using static Shared.Interfaces.Model.Entity.EnumManager;
 
@@ -39,7 +48,7 @@ namespace Server.StreamingHubs
             Console.WriteLine("切断検知");
 
             // 入室した状態で切断した場合
-            if (this.room != null 
+            if (this.room != null
                 && this.room.GetInMemoryStorage<RoomData>() != null
                 && this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
             {
@@ -121,9 +130,9 @@ namespace Server.StreamingHubs
             {
                 // そのルームではゲーム中かどうかチェック
                 bool isFailed = false;
-                foreach(var storageData in roomStorage.AllValues.ToArray<RoomData>())
+                foreach (var storageData in roomStorage.AllValues.ToArray<RoomData>())
                 {
-                    if(storageData.JoinedUser.IsGameRunning)
+                    if (storageData.JoinedUser.IsGameRunning)
                     {
                         isFailed = true;
                         Console.WriteLine("ゲーム中のため参加できません");
@@ -143,19 +152,21 @@ namespace Server.StreamingHubs
                 // DBからユーザー情報取得
                 GameDbContext context = new GameDbContext();
                 var user = context.Users.Where(user => user.Id == userId).FirstOrDefault();
+                var userRating = context.Ratings.Where(rate => rate.user_id == userId).FirstOrDefault();
 
                 // グループストレージにユーザーデータを格納
                 int joinOrder = GetJoinOrder(roomStorage.AllValues.ToArray<RoomData>());
-                var joinedUser = new JoinedUser() 
-                { 
-                    ConnectionId = this.ConnectionId, 
-                    UserData = user, 
-                    JoinOrder = joinOrder, 
-                    IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0), 
-                    IsStartMasterCountDown = false, 
+                var joinedUser = new JoinedUser()
+                {
+                    ConnectionId = this.ConnectionId,
+                    UserData = user,
+                    JoinOrder = joinOrder,
+                    IsMasterClient = (roomStorage.AllValues.ToArray<RoomData>().Length == 0),
+                    IsStartMasterCountDown = false,
                     IsGameRunning = false,
                     IsMatching = isMatching,
                     score = 0,
+                    rating = userRating.rating
                 };
                 var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
                 roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
@@ -174,7 +185,7 @@ namespace Server.StreamingHubs
                     joinedUserList[i] = roomDataList[i].JoinedUser;
                 }
 
-                Console.WriteLine(roomData.JoinedUser.ConnectionId + "：" + roomData.JoinedUser.UserData.Name + "が入室" + "...IsMasterClient:" + roomData.JoinedUser.IsMasterClient);
+                Console.WriteLine(roomData.JoinedUser.ConnectionId + "：" + roomData.JoinedUser.UserData.Name + "が入室" + "...IsMasterClient:" + roomData.JoinedUser.IsMasterClient + ",Rate:" + roomData.JoinedUser.rating);
 
                 return joinedUserList;
             }
@@ -388,9 +399,9 @@ namespace Server.StreamingHubs
                 if (readyCnt == roomDataList.Length) this.Broadcast(room).OnCountdownOver();
 
                 // マスタークライアント##############################################################################
-                
+
                 // 最終競技が始まる場合
-                if(data.UserState.FinishGameCnt == maxGameCnt - 1)
+                if (data.UserState.FinishGameCnt == maxGameCnt - 1)
                 {
                     // マスタークライアントにカウントダウン開始通知
                     var master = GetMasterClient(roomDataList);
@@ -624,7 +635,7 @@ namespace Server.StreamingHubs
         public async Task DestroyItemAsynk(string itemName)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
-            lock (roomStorage) 
+            lock (roomStorage)
             {
                 // 他のユーザーが既に同じアイテム名を使用していないかチェック
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
@@ -689,7 +700,7 @@ namespace Server.StreamingHubs
                 dataSelf.JoinedUser.score += baseAddScore / dataSelf.UserState.areaGoalRank;
 
                 RoomData master = GetMasterClient(roomDataList);
-                if (master != null && !master.JoinedUser.IsStartMasterCountDown) 
+                if (master != null && !master.JoinedUser.IsStartMasterCountDown)
                 {
                     master.JoinedUser.IsStartMasterCountDown = true;
 
@@ -749,9 +760,9 @@ namespace Server.StreamingHubs
         int GetAreaClearedUsersCount(RoomData[] roomData)
         {
             int count = 0;
-            foreach (var data in roomData) 
+            foreach (var data in roomData)
             {
-                if(data.UserState.isAreaCleared) count++;
+                if (data.UserState.isAreaCleared) count++;
             }
             return count;
         }
@@ -843,8 +854,8 @@ namespace Server.StreamingHubs
                 Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
 
                 // 全員が遷移したかどうかチェック
-                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 int transitionCnt = 0;
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 foreach (var roomData in roomDataList)
                 {
                     if (roomData.UserState.isTransitionFinalResultScene) transitionCnt++;
@@ -853,17 +864,23 @@ namespace Server.StreamingHubs
                 if (transitionCnt == roomDataList.Length)
                 {
                     // 全員が遷移できた通知
-                    this.Broadcast(room).OnTransitionFinalResultSceneAllUsers(GetResultData(roomDataList));
+                    var resultDatas = GetResultDataAsync(roomDataList);
+                    foreach (var resultData in resultDatas)
+                    {
+                        var ratingDelta = GetRatingDelta(resultData, resultDatas, roomDataList);
+                        this.BroadcastTo(room, resultData.connectionId).OnTransitionFinalResultSceneAllUsers(resultDatas, ratingDelta);
+                    }
                 }
             }
         }
 
-        ResultData[] GetResultData(RoomData[] roomData)
+        ResultData[] GetResultDataAsync(RoomData[] roomData)
         {
             ResultData[] resultData = new ResultData[roomData.Length];
             for (int i = 0; i < resultData.Length; i++)
             {
-                resultData[i] = new ResultData() { 
+                resultData[i] = new ResultData()
+                {
                     connectionId = roomData[i].JoinedUser.ConnectionId,
                     joinOrder = roomData[i].JoinedUser.JoinOrder,
                     rank = 0,
@@ -875,13 +892,13 @@ namespace Server.StreamingHubs
             var sortList = resultData.OrderByDescending(d => d.score);
             int lastScore = 0;
             int lastRank = 1;
-            foreach (var sortData in sortList) 
+            foreach (var sortData in sortList)
             {
-                for (int i = 0; i < resultData.Length; i++) 
+                for (int i = 0; i < resultData.Length; i++)
                 {
-                    if (resultData[i].connectionId == sortData.connectionId) 
+                    if (resultData[i].connectionId == sortData.connectionId)
                     {
-                        if(lastScore != resultData[i].score)
+                        if (lastScore != resultData[i].score)
                         {
                             lastRank = lastScore == 0 ? 1 : lastRank + 1;
                         }
@@ -895,6 +912,51 @@ namespace Server.StreamingHubs
             }
 
             return resultData;
+        }
+
+        int GetRatingDelta(ResultData targetData, ResultData[] resultDatas, RoomData[] roomData)
+        {
+            const int k_ratingDeltaMax = 32;
+            int result = 0;
+            foreach (var resultData in resultDatas)
+            {
+                // 引き分けの場合は無視する
+                if (targetData.connectionId != resultData.connectionId && targetData.rank != resultData.rank)
+                {
+                    Guid winnerConnectionId = targetData.rank < resultData.rank ? targetData.connectionId : resultData.connectionId;
+                    Guid loserConnectionId = targetData.rank > resultData.rank ? targetData.connectionId : resultData.connectionId;
+
+                    int ratingDelta = (int)(k_ratingDeltaMax / (MathF.Pow(10f, ((GetUserRating(winnerConnectionId, roomData) - GetUserRating(loserConnectionId, roomData)) / 400f)) + 1));  // イロレーティング計算
+                    ratingDelta = ratingDelta < 2 ? 2 : ratingDelta;    // 最低保証
+                    result += winnerConnectionId == targetData.connectionId ? ratingDelta : -ratingDelta;
+                }
+            }
+
+            return result;
+        }
+
+        float GetUserRating(Guid targetConnectionId, RoomData[] roomData)
+        {
+            foreach (var userData in roomData)
+            {
+                if (targetConnectionId == userData.JoinedUser.ConnectionId)
+                {
+                    return (float)userData.JoinedUser.rating;
+                }
+            }
+            return 0f;
+        }
+
+        int GetUserId(Guid targetConnectionId, RoomData[] roomData)
+        {
+            foreach (var userData in roomData)
+            {
+                if (targetConnectionId == userData.JoinedUser.ConnectionId)
+                {
+                    return userData.JoinedUser.UserData.Id;
+                }
+            }
+            return 0;
         }
     }
 }

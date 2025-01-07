@@ -1,6 +1,8 @@
 using DG.Tweening;
+using Server.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,10 +12,13 @@ public class EditPlayerUIController : MonoBehaviour
     #region TweenアニメーションするUIの親
     [SerializeField] List<GameObject> uiList;
     #endregion
+
     [SerializeField] List<GameObject> scrollViewList;
     [SerializeField] InputField userName;
+    [SerializeField] GameObject editUserNameButton;
+    [SerializeField] GameObject updateUserNameButton;
     [SerializeField] Text changeButtonText;
-    [SerializeField] CharacterManager characterManager;
+    [SerializeField] TopSceneCharacterManager characterManager;
     TopSceneUIManager topSceneUIManager;
 
     private void Start()
@@ -43,6 +48,13 @@ public class EditPlayerUIController : MonoBehaviour
     {
         if (topSceneUIManager.IsTaskRunning) return;
         topSceneUIManager.IsTaskRunning = true;
+
+        userName.text = UserModel.Instance.UserName;
+        userName.interactable = false;
+        editUserNameButton.SetActive(true);
+        editUserNameButton.GetComponent<Button>().interactable = true;
+        updateUserNameButton.SetActive(false);
+        updateUserNameButton.GetComponent<Button>().interactable = true;
 
         topSceneUIManager.OnSelectButton();
         ToggleUIVisibility(true);
@@ -81,6 +93,60 @@ public class EditPlayerUIController : MonoBehaviour
     /// </summary>
     public void OnEditUserNameButton()
     {
+        userName.interactable = true;
         userName.Select();
+        editUserNameButton.SetActive(false);
+        updateUserNameButton.SetActive(true);
+    }
+
+    /// <summary>
+    /// ユーザー名を変更するボタン
+    /// </summary>
+    public async void OnUpdateUserNameButtonAsync()
+    {
+        if (userName.text.Length <= 0 || userName.text == UserModel.Instance.UserName) return;
+        updateUserNameButton.GetComponent<Button>().interactable = false;
+        var user = new User()
+        {
+            Id = UserModel.Instance.UserId,
+            Name = userName.text,
+            Token = UserModel.Instance.AuthToken,
+        };
+
+        var result = await UserModel.Instance.UpdateUserAsync(user);
+        if (result != null)
+        {
+            ErrorUIController.Instance.ShowErrorUI(result);
+            updateUserNameButton.GetComponent<Button>().interactable = true;
+            return;
+        }
+
+        updateUserNameButton.SetActive(false);
+        updateUserNameButton.GetComponent<Button>().interactable = true;
+        editUserNameButton.SetActive(true);
+        userName.interactable = false;
+    }
+
+    /// <summary>
+    /// キャラクターID変更ボタン
+    /// </summary>
+    public async void OnUpdateCharacterIDButton(int characterId)
+    {
+        var user = new User()
+        {
+            Id = UserModel.Instance.UserId,
+            Token = UserModel.Instance.AuthToken,
+            Character_Id = characterId
+        };
+
+        var result = await UserModel.Instance.UpdateUserAsync(user);
+        if (result != null)
+        {
+            ErrorUIController.Instance.ShowErrorUI(result);
+            updateUserNameButton.GetComponent<Button>().interactable = true;
+            return;
+        }
+
+        characterManager.ToggleCharacter(characterId);
     }
 }

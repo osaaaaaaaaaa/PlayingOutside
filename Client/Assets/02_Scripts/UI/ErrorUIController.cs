@@ -61,6 +61,8 @@ public class ErrorUIController : MonoBehaviour
 
     public void HideErrorUI()
     {
+        btnClose.onClick.RemoveAllListeners();
+        btnClose.onClick.AddListener(HideErrorUI);
         btnClose.interactable = false;
         const float animSec = 0.25f;
         var sequence = DOTween.Sequence();

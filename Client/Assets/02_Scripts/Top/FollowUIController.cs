@@ -1,7 +1,9 @@
 using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
+using Server.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,15 +18,20 @@ public class FollowUIController : MonoBehaviour
     [SerializeField] GameObject scrollViewUser;
     [SerializeField] Transform contentViewUser;
     [SerializeField] Text changeButtonText;
+    [SerializeField] GameObject errorTextUser;
     #endregion
 
     #region ユーザー検索関係
     [SerializeField] GameObject scrollViewSerch;
     [SerializeField] Transform contentViewSerch;
     [SerializeField] GameObject inputFieldSerchUserName;
+    [SerializeField] GameObject errorTextSerch;
     #endregion
 
+    [SerializeField] GameObject followingUserUiPrefab;
     TopSceneUIManager topSceneUIManager;
+    List<FollowingUser> followingUsers = new List<FollowingUser>();
+    public List<FollowingUser> FollowingUsers { get { return followingUsers; } set { followingUsers = value; } }
 
     enum CONTENT_TYPE
     {
@@ -64,12 +71,27 @@ public class FollowUIController : MonoBehaviour
     /// <summary>
     /// フォローUIを表示するボタン
     /// </summary>
-    public void OnSelectButton()
+    public async void OnSelectButton()
     {
         if (topSceneUIManager.IsTaskRunning) return;
         topSceneUIManager.IsTaskRunning = true;
 
         topSceneUIManager.OnSelectButton();
+
+        followingUsers.Clear();
+        var followings = await FollowModel.Instance.ShowFollowingUsersAsynk(UserModel.Instance.UserId);
+        if (followings != null)
+        {
+            foreach (var following in followings)
+            {
+                followingUsers.Add(following);
+                var ui = Instantiate(followingUserUiPrefab, contentViewUser);
+                ui.GetComponent<FollowUserUI>().SetupUI(this, topSceneUIManager.SpriteIcons[following.CharacterId - 1], following, true);
+            }
+        }
+
+        errorTextUser.SetActive(followings == null);
+
         ToggleUIVisibility(true);
     }
 
@@ -80,6 +102,12 @@ public class FollowUIController : MonoBehaviour
     {
         if (topSceneUIManager.IsTaskRunning) return;
         topSceneUIManager.IsTaskRunning = true;
+
+        // スクロールビューのコンテンツの中身をクリアする
+        foreach (Transform child in contentViewUser)
+        {
+            Destroy(child.gameObject);
+        }
 
         ToggleUIVisibility(false);
         topSceneUIManager.OnBackButton();
@@ -123,12 +151,13 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ユーザー検索ボタン
+    /// ユーザー検索メニューに切り替えるボタン
     /// </summary>
-    public void OnSerchButton()
+    public void OnChangeSerchUserMenu()
     {
         scrollViewUser.SetActive(false);
         scrollViewSerch.SetActive(true);
+        inputFieldSerchUserName.GetComponent<InputField>().interactable = true;
         inputFieldSerchUserName.SetActive(true);
 
         inputFieldSerchUserName.GetComponent<InputField>().text = "";
@@ -138,5 +167,51 @@ public class FollowUIController : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    /// <summary>
+    /// 名前でユーザーを検索する
+    /// </summary>
+    public async void SerchUserByName()
+    {
+        var inputField = inputFieldSerchUserName.GetComponent<InputField>();
+        inputField.interactable = false;
+
+        // スクロールビューのコンテンツの中身をクリアする
+        foreach (Transform child in contentViewSerch)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (inputField.text == "")
+        {
+            inputField.interactable = true;
+            return;
+        }
+
+        var user = await FollowModel.Instance.ShowUserByNameAsync(inputField.text);
+        inputField.interactable = true;
+        errorTextSerch.SetActive(followingUsers == null);
+        if (user == null)
+        {
+            Debug.Log("ユーザーが見つかりませんでした");
+            return;
+        }
+
+        bool isFollowingUser = false;
+        if (followingUsers.Count > 0)
+        {
+            foreach (var folloing in followingUsers)
+            {
+                if (folloing.UserId == user.UserId)
+                {
+                    isFollowingUser = true;
+                    break;
+                }
+            }
+        }
+
+        var ui = Instantiate(followingUserUiPrefab, contentViewSerch);
+        ui.GetComponent<FollowUserUI>().SetupUI(this, topSceneUIManager.SpriteIcons[user.CharacterId - 1], user, isFollowingUser);
     }
 }

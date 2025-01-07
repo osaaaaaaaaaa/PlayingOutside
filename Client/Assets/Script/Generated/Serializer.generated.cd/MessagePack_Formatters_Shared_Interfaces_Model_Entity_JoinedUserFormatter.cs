@@ -28,7 +28,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(8);
+            writer.WriteArrayHeader(9);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.ConnectionId, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Serialize(ref writer, value.UserData, options);
             writer.Write(value.JoinOrder);
@@ -37,6 +37,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             writer.Write(value.IsGameRunning);
             writer.Write(value.IsMatching);
             writer.Write(value.score);
+            writer.Write(value.rating);
         }
 
         public global::Shared.Interfaces.Model.Entity.JoinedUser Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -78,6 +79,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 7:
                         ____result.score = reader.ReadInt32();
+                        break;
+                    case 8:
+                        ____result.rating = reader.ReadInt32();
                         break;
                     default:
                         reader.Skip();

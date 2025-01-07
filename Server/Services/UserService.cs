@@ -2,6 +2,7 @@
 using MagicOnion.Server;
 using Server.Model.Context;
 using Server.Model.Entity;
+using Shared.Interfaces.Model.Entity;
 using Shared.Interfaces.Services;
 using System.Xml.Linq;
 
@@ -17,7 +18,6 @@ namespace Server.Services
         /// <exception cref="ReturnStatusException"></exception>
         public async UnaryResult<User> RegistUserAsync(string name)
         {
-            Console.WriteLine("Received(RegistUserAsync):" + name);
             using var context = new GameDbContext();
 
             // バリデーションチェック
@@ -49,7 +49,6 @@ namespace Server.Services
         /// <returns></returns>
         public async UnaryResult<User> ShowUserAsync(int id)
         {
-            Console.WriteLine("Received(ShowUserAsync):" + id);
             using var context = new GameDbContext();
 
             // バリデーションチェック
@@ -67,7 +66,6 @@ namespace Server.Services
         /// <returns></returns>
         public async UnaryResult<User[]> ShowAllUserAsync()
         {
-            Console.WriteLine("Received(ShowAllUserAsync)");
             using var context = new GameDbContext();
 
             // バリデーションチェック
@@ -84,9 +82,8 @@ namespace Server.Services
         /// </summary>
         /// <param name="id">ユーザーID</param>
         /// <returns></returns>
-        public async UnaryResult<bool> UpdateUserAsync(User request)
+        public async UnaryResult UpdateUserAsync(User request)
         {
-            Console.WriteLine("Received(UpdateUserAsync):" + request.Id);
             using var context = new GameDbContext();
 
             // バリデーションチェック
@@ -95,14 +92,18 @@ namespace Server.Services
             {
                 throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できません");
             }
-            else if (context.Users.Where(user => user.Name == request.Name).Count() > 0)
+            else if (request.Name != null && context.Users.Where(user => user.Name == request.Name).Count() > 0)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "使用できない名前");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "使用できない名前です");
+            }
+            else if(request.Character_Id != 0 && !Enum.IsDefined(typeof(EnumManager.Character_ID), request.Character_Id))
+            {
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "選択したキャラクターは存在しません");
             }
 
-            user.Name = request.Name;
+            if(request.Name != null) user.Name = request.Name;
+            if(request.Character_Id != 0) user.Character_Id = request.Character_Id;
             await context.SaveChangesAsync();
-            return true;
         }
     }
 }

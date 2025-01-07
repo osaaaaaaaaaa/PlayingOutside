@@ -135,4 +135,31 @@ public class UserModel : BaseModel
         }
 
     }
+
+    /// <summary>
+    /// ユーザー情報更新API
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    public async UniTask<string> UpdateUserAsync(User request)
+    {
+        var handler = new YetAnotherHttpHandler() { Http2Only = true };
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // 通信経路作成
+        var client = MagicOnionClient.Create<IUserService>(channel);
+
+        try
+        {
+            // 取得成功
+            await client.UpdateUserAsync(request);
+            UserName = request.Name;
+            CharacterId = request.Character_Id;
+            return null;
+        }
+        catch (RpcException e)
+        {
+            // 取得失敗
+            Debug.Log(e);
+            return "ユーザー情報を更新できませんでした";
+        }
+    }
 }

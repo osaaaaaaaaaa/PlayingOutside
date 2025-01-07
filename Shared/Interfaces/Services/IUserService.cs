@@ -33,6 +33,6 @@ namespace Shared.Interfaces.Services
         /// </summary>
         /// <param name="request">リクエスト情報</param>
         /// <returns></returns>
-        UnaryResult<bool> UpdateUserAsync(User request);
+        UnaryResult UpdateUserAsync(User request);
     }
 }

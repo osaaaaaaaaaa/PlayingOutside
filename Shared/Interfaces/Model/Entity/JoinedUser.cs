@@ -25,5 +25,7 @@ namespace Shared.Interfaces.Model.Entity
         public bool IsMatching { get; set; }    // 自動マッチングかが完了しているかどうか
         [Key(7)]
         public int score { get; set; }  // 所持ポイント
+        [Key(8)]
+        public int rating { get; set; }
     }
 }

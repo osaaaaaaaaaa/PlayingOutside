@@ -9,6 +9,15 @@ namespace Shared.Interfaces.Model.Entity
     [MessagePackObject]
     public class EnumManager
     {
+        public enum Character_ID
+        {
+            OriginalHiyoko = 1,
+            ChickenHiyoko,
+            BrackHiyoko,
+            StarHiyoko,
+            GoldHiyoko,
+        }
+
         public enum SCENE_ID
         {
             RelayGame = 0,
