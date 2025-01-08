@@ -80,6 +80,12 @@ public class PrivateGameUIController : MonoBehaviour
     public void OnJoinButton()
     {
         if (inputFieldRoomName.text == "") return;
+        if (NGWordModel.Instance.ContainsNGWord(inputFieldRoomName.text))
+        {
+            ErrorUIController.Instance.ShowErrorUI("使用できないワードが含まれています。");
+            return;
+        }
+
         buttonJoinRoom.GetComponent<Button>().interactable = false;
         topSceneDirector.OnJoinRoomButton(inputFieldRoomName.text);
     }

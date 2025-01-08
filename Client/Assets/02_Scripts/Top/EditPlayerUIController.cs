@@ -19,6 +19,7 @@ public class EditPlayerUIController : MonoBehaviour
     [SerializeField] GameObject updateUserNameButton;
     [SerializeField] Text changeButtonText;
     [SerializeField] TopSceneCharacterManager characterManager;
+    [SerializeField] TopSceneDirector topSceneDirector;
     TopSceneUIManager topSceneUIManager;
 
     private void Start()
@@ -105,6 +106,12 @@ public class EditPlayerUIController : MonoBehaviour
     public async void OnUpdateUserNameButtonAsync()
     {
         if (userName.text.Length <= 0 || userName.text == UserModel.Instance.UserName) return;
+        if (NGWordModel.Instance.ContainsNGWord(userName.text))
+        {
+            ErrorUIController.Instance.ShowErrorUI("使用できないワードが含まれています。");
+            return;
+        }
+
         updateUserNameButton.GetComponent<Button>().interactable = false;
         var user = new User()
         {
@@ -121,6 +128,7 @@ public class EditPlayerUIController : MonoBehaviour
             return;
         }
 
+        topSceneDirector.UpdateUserNameText();
         updateUserNameButton.SetActive(false);
         updateUserNameButton.GetComponent<Button>().interactable = true;
         editUserNameButton.SetActive(true);

@@ -1,57 +1,75 @@
 using Server.Model.Entity;
+using Shared.Interfaces.Model.Entity;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TitleSceneDirector : MonoBehaviour
 {
-    [SerializeField] GameObject panelRegistUser;
-    [SerializeField] Button btnRegist;
-    [SerializeField] InputField inputFieldUserName;
     [SerializeField] InputField inputFieldDebugId;
-    [SerializeField] Text textError;
-    bool isDebug;
+    [SerializeField] bool isDebug;
     bool isLocalData;
-    bool a = false;
+    bool isRanning;
 
     private void Start()
     {
         Application.targetFrameRate = 60;
 
-        isDebug = false;
         isLocalData = false;
+        isRanning = false;
         SceneControler.Instance.StopSceneLoad();
-        panelRegistUser.SetActive(false);
     }
 
     // Update is called once per frame
     async void Update()
     {
-        //if (!isDebug && !isLocalData && Input.GetMouseButtonUp(0) && !panelRegistUser.activeSelf)
-        //{
-        //    isLocalData = UserModel.Instance.LoadUserData();
+        if (!isDebug && !isRanning && Input.GetMouseButtonDown(0))
+        {
+            isRanning = true;
+            if(!isLocalData) isLocalData = UserModel.Instance.LoadUserData();
+            UnityAction errorActoin = OnErrorPanelButton;
 
-        //    // ローカルにあるユーザー情報を取得する
-        //    if (isLocalData)
-        //    {
-        //        // ユーザー情報取得処理
-        //        var error = await UserModel.Instance.ShowUserAsync(UserModel.Instance.UserId);
+            // ローカルにあるユーザー情報を取得する
+            if (isLocalData)
+            {
+                // ユーザー情報取得処理
+                var error = await UserModel.Instance.ShowUserAsync(UserModel.Instance.UserId);
 
-        //        if (error != null) 
-        //        {
-        //            ErrorUIController.Instance.ShowErrorUI(error);
-        //            return;
-        //        }
-        //        SceneControler.Instance.StartSceneLoad("TopScene");
-        //    }
-        //    else
-        //    {
-        //        // ユーザー登録用のUIを表示する
-        //        panelRegistUser.SetActive(true);
-        //    }
-        //}
+                if (error != null)
+                {
+                    ErrorUIController.Instance.ShowErrorUI(error, errorActoin);
+                    return;
+                }
+                SceneControler.Instance.StartSceneLoad("TopScene");
+            }
+            else
+            {
+                // ユーザー登録処理
+                var result = await UserModel.Instance.RegistUserAsync(Guid.NewGuid().ToString("N").Substring(0, 8)); // ハイフンなしの8文字
+                if (result != null)
+                {
+                    ErrorUIController.Instance.ShowErrorUI(result, errorActoin);
+                    return;
+                }
+                isLocalData = true;
+
+                // レーティングデータを登録
+                await RatingModel.Instance.UpdateRatingAsync(UserModel.Instance.UserId, ConstantManager.DefaultRating);
+
+                // シーン遷移開始
+                SceneControler.Instance.StartSceneLoad("TopScene");
+            }
+        }
+    }
+
+    public void OnErrorPanelButton()
+    {
+        isRanning = false;
     }
 
     public void OnEnterDebugUI()
@@ -78,24 +96,5 @@ public class TitleSceneDirector : MonoBehaviour
             // シーン遷移開始
             SceneControler.Instance.StartSceneLoad("TopScene");
         }
-    }
-
-    /// <summary>
-    /// ユーザー登録ボタン
-    /// </summary>
-    public async void OnRegistUserButton()
-    {
-        btnRegist.interactable = false;
-        var result = await UserModel.Instance.RegistUserAsync(inputFieldUserName.text);
-
-        if (result != null)
-        {
-            textError.text = result;
-            btnRegist.interactable= true;
-            return;
-        }
-
-        // シーン遷移開始
-        SceneControler.Instance.StartSceneLoad("TopScene");
     }
 }

@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         // マスターデータ(初期データ)挿入
         $this->call(AccountsTableSeeder::class);
         $this->call(UserTableSeeder::class);
-        //$this->call(NGWordTableSeeder::class);
+        $this->call(NGWordTableSeeder::class);
         $this->call(FollowsTableSeeder::class);
         $this->call(RatingsTableSeeder::class);
     }

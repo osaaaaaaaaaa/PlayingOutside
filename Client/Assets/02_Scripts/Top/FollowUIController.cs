@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using Server.Model.Entity;
+using Shared.Interfaces.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -19,6 +20,7 @@ public class FollowUIController : MonoBehaviour
     [SerializeField] Transform contentViewUser;
     [SerializeField] Text changeButtonText;
     [SerializeField] GameObject errorTextUser;
+    [SerializeField] GameObject userCntTextObj;
     #endregion
 
     #region ユーザー検索関係
@@ -88,9 +90,15 @@ public class FollowUIController : MonoBehaviour
                 var ui = Instantiate(followingUserUiPrefab, contentViewUser);
                 ui.GetComponent<FollowUserUI>().SetupUI(this, topSceneUIManager.SpriteIcons[following.CharacterId - 1], following, true);
             }
+            userCntTextObj.GetComponent<Text>().text = followings.Length + "/" + ConstantManager.followingCntMax;
+        }
+        else
+        {
+            userCntTextObj.GetComponent<Text>().text = 0 + "/" + ConstantManager.followingCntMax;
         }
 
         errorTextUser.SetActive(followings == null);
+        userCntTextObj.SetActive(true);
 
         ToggleUIVisibility(true);
     }
@@ -155,6 +163,7 @@ public class FollowUIController : MonoBehaviour
     /// </summary>
     public void OnChangeSerchUserMenu()
     {
+        userCntTextObj.SetActive(false);
         scrollViewUser.SetActive(false);
         scrollViewSerch.SetActive(true);
         inputFieldSerchUserName.GetComponent<InputField>().interactable = true;
@@ -191,7 +200,7 @@ public class FollowUIController : MonoBehaviour
 
         var user = await FollowModel.Instance.ShowUserByNameAsync(inputField.text);
         inputField.interactable = true;
-        errorTextSerch.SetActive(followingUsers == null);
+        errorTextSerch.SetActive(user == null);
         if (user == null)
         {
             Debug.Log("ユーザーが見つかりませんでした");

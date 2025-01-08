@@ -27,7 +27,8 @@ namespace Server.Services
             SELECT ut.name, ut.character_id, rt.rating
             FROM users AS ut
                      LEFT JOIN ratings AS rt ON ut.id = rt.user_id
-            ORDER BY rt.rating DESC;";
+            ORDER BY rt.rating DESC
+            LIMIT 100;";
 
             // SQLクエリを発行し、結果を読み込む
             List<RatingRanking> ratingRankingList = new List<RatingRanking>();
@@ -115,7 +116,9 @@ namespace Server.Services
             }
             else
             {
-                rating.rating = (rating.rating + ratingDelta) <= 0 ? 0 : rating.rating + ratingDelta;
+                rating.rating += ratingDelta;
+                if (rating.rating <= 0) rating.rating = 0;
+                else if(rating.rating >= ConstantManager.MaxRating) rating.rating = ConstantManager.MaxRating;
                 await context.SaveChangesAsync();
             }
         }

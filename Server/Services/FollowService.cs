@@ -173,14 +173,19 @@ namespace Server.Services
 
             // バリデーションチェック
             var users = context.Users.Where(x => x.Id == followingId || x.Id == followeeId).ToList();
-            var follow = context.Follows.Where(x => x.Following_id == followingId && x.Followee_id == followeeId).FirstOrDefault();
+            var followings = context.Follows.Where(x => x.Following_id == followingId).ToList();
             if (users.Count() < 2)
             {
                 throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できません");
             }
-            else if(follow != null)
+            else if(followings.Count >= ConstantManager.followingCntMax)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "フォロー登録済みのユーザーです");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "これ以上はフォロー登録ができません。");
+            }
+            foreach(var follow in followings)
+            {
+                if(follow.Followee_id == followeeId) 
+                    throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "フォロー登録済みのユーザーです");
             }
 
             var followData = new Follow();

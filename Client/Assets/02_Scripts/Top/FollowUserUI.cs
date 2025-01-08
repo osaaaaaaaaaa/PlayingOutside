@@ -35,7 +35,10 @@ public class FollowUserUI : MonoBehaviour
         inserButton.GetComponent<Button>().interactable = false;
 
         // フォロー登録処理
-        await FollowModel.Instance.RegistFollowAsync(UserModel.Instance.UserId, targetUserId);
+        bool isSucsess = await FollowModel.Instance.RegistFollowAsync(UserModel.Instance.UserId, targetUserId);
+        removeButton.GetComponent<Button>().interactable = true;
+        if (!isSucsess) return;
+
         inserButton.SetActive(false);
         removeButton.SetActive(true);
         removeButton.GetComponent<Button>().interactable = true;
@@ -46,10 +49,12 @@ public class FollowUserUI : MonoBehaviour
         removeButton.GetComponent<Button>().interactable = false;
 
         // フォロー解除処理
-        await FollowModel.Instance.RemoveFollowAsync(UserModel.Instance.UserId, targetUserId);
+        bool isSucsess = await FollowModel.Instance.RemoveFollowAsync(UserModel.Instance.UserId, targetUserId);
+        inserButton.GetComponent<Button>().interactable = true;
+        if (!isSucsess) return;
+
         removeButton.SetActive(false);
         inserButton.SetActive(true);
-        inserButton.GetComponent<Button>().interactable = true;
 
         FollowingUser removeUser = new FollowingUser();
         foreach (var followingUser in controller.FollowingUsers) 

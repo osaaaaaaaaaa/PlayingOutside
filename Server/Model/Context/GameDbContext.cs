@@ -8,10 +8,11 @@ namespace Server.Model.Context
     /// </summary>
     public class GameDbContext : DbContext
     {
-        // テーブル数分のプロパティを用意する
+        // テーブル数分のプロパティを用意する[変数名はテーブル名と同じにする]
         public DbSet<User> Users { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<NGWord> NG_Words { get; set; }
 
         // DBの接続先設定
         //readonly string connectionString = "server=db-ge-04.mysql.database.azure.com;database=realtime_game;user=student;password=Yoshidajobi2023;";

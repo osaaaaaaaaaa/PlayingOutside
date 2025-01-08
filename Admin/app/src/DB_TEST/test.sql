@@ -33,7 +33,8 @@ ORDER BY ut.id;
 SELECT ut.id, ut.name, ut.character_id, rt.rating
 FROM users AS ut
          LEFT JOIN ratings AS rt ON ut.id = rt.user_id
-ORDER BY rt.rating DESC;
+ORDER BY rt.rating DESC
+LIMIT 100;
 
 # [フォローしているユーザーのみ対象]レーティングランキング取得
 SELECT ut.id, ut.name, ut.character_id, rt.rating

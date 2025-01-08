@@ -6,7 +6,6 @@ using System.Text;
 
 namespace Shared.Interfaces.Model.Entity
 {
-    [MessagePackObject]
     public class EnumManager
     {
         public enum Character_ID

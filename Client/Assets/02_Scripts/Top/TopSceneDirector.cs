@@ -19,7 +19,9 @@ public class TopSceneDirector : MonoBehaviour
         if (UserModel.Instance.UserId == 0)
         {
             // ÉÜÅ[ÉUÅ[èÓïÒéÊìæèàóù
-            var error = await UserModel.Instance.ShowUserAsync(1);
+            bool isSucsess = UserModel.Instance.LoadUserData();
+            int userId = isSucsess ? UserModel.Instance.UserId : 1;
+            var error = await UserModel.Instance.ShowUserAsync(userId);
             if (error != null)
             {
                 ErrorUIController.Instance.ShowErrorUI(error);
@@ -32,6 +34,11 @@ public class TopSceneDirector : MonoBehaviour
             userNameText.text = UserModel.Instance.UserName;
             await RatingModel.Instance.ShowRatingAsync(UserModel.Instance.UserId);
         }
+        
+       if(NGWordModel.Instance.NGWords == null)
+       {
+           await NGWordModel.Instance.ShowNGWordAsync();
+       }
 
         characterManager.ToggleCharacter(UserModel.Instance.CharacterId);
         if (SceneControler.Instance != null) SceneControler.Instance.StopSceneLoad();
@@ -41,5 +48,10 @@ public class TopSceneDirector : MonoBehaviour
     {
         RoomModel.Instance.ConnectionRoomName = roomName;
         SceneControler.Instance.StartSceneLoad("RoomScene");
+    }
+
+    public void UpdateUserNameText()
+    {
+        userNameText.text = UserModel.Instance.UserName;
     }
 }

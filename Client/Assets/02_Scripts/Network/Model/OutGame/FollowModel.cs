@@ -74,7 +74,6 @@ public class FollowModel : BaseModel
         {
             // éÊìæé∏îs
             Debug.Log(e);
-            Debug.Log(e.Status.Detail);
             return null;
         }
     }
@@ -84,7 +83,7 @@ public class FollowModel : BaseModel
     /// </summary>
     /// <param name="follow"></param>
     /// <returns></returns>
-    public async UniTask RegistFollowAsync(int followingId, int followeeId)
+    public async UniTask<bool> RegistFollowAsync(int followingId, int followeeId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
         var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // í êMåoòHçÏê¨
@@ -93,11 +92,13 @@ public class FollowModel : BaseModel
         try
         {
             await client.RegistFollowAsync(followingId,followeeId);
+            return true;
         }
         catch (RpcException e)
         {
             Debug.Log(e);
-            Debug.Log(e.Status.Detail);
+            ErrorUIController.Instance.ShowErrorUI(e.Status.Detail);
+            return false;
         }
     }
 
@@ -106,7 +107,7 @@ public class FollowModel : BaseModel
     /// </summary>
     /// <param name="follow"></param>
     /// <returns></returns>
-    public async UniTask RemoveFollowAsync(int followingId, int followeeId)
+    public async UniTask<bool> RemoveFollowAsync(int followingId, int followeeId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
         var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // í êMåoòHçÏê¨
@@ -115,11 +116,13 @@ public class FollowModel : BaseModel
         try
         {
             await client.RemoveFollowAsync(followingId, followeeId);
+            return true;
         }
         catch (RpcException e)
         {
             Debug.Log(e);
-            Debug.Log(e.Status.Detail);
+            ErrorUIController.Instance.ShowErrorUI(e.Status.Detail);
+            return false;
         }
     }
 }

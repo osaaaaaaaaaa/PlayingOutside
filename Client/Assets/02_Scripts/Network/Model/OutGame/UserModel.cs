@@ -102,7 +102,7 @@ public class UserModel : BaseModel
         {
             // 登録失敗
             Debug.Log(e);
-            return e.ToString();
+            return "ユーザーの登録に失敗しました。通信環境の良い所で遊ぶか、アプリを再起動してください。";
         }
     }
 
