@@ -21829,6 +21829,7 @@ GameObject:
   - component: {fileID: 4984593908849847987}
   - component: {fileID: 6173713714950599392}
   - component: {fileID: 6861016773129891972}
+  - component: {fileID: 3295008941090740916}
   - component: {fileID: 6200199148806201621}
   - component: {fileID: 9207350334265473140}
   - component: {fileID: 2788955243919924366}
@@ -21911,6 +21912,29 @@ CapsuleCollider:
   m_Height: 1.5323582
   m_Direction: 1
   m_Center: {x: -0, y: 0.7590749, z: -0}
+--- !u!136 &3295008941090740916
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6324321621586697641}
+  m_Material: {fileID: 13400000, guid: 337200f3bc3bfa841ad0ab142a48b869, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1983
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.18
+  m_Height: 0.02
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.14, z: 0}
 --- !u!114 &6200199148806201621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21931,7 +21955,7 @@ MonoBehaviour:
   defaultKnockBackPower1: 5
   defaultKnockBackPower2: 15
   speed: 1
-  jumpPower: 550
+  jumpPower: 500
   objOtherPlayers: []
   isDebug: 0
 --- !u!114 &9207350334265473140

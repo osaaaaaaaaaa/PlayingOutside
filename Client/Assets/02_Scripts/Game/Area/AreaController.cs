@@ -27,9 +27,11 @@ public class AreaController : MonoBehaviour
     public enum AREA_ID
     {
         AREA_1 = 0,
-        AREA_2 = 1,
+        AREA_2,
+        AREA_3,
     }
     public AREA_ID areaId { get; set; } = AREA_ID.AREA_1;
+    AREA_ID lastAreaId = AREA_ID.AREA_3;
 
     private void Awake()
     {
@@ -54,7 +56,7 @@ public class AreaController : MonoBehaviour
     public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
         isClearedArea = false;
-        bool isLastArea = (areaId == AREA_ID.AREA_2);
+        bool isLastArea = (areaId == lastAreaId);
         // サーバーなしの場合のみ使用、最終的にisDebugを削除
         if (gameDirector.isDebug)
         {
@@ -109,7 +111,7 @@ public class AreaController : MonoBehaviour
         isClearedArea = true;
 
         DOTween.Kill(imageBlack);
-        bool isLastArea = (areaId == AREA_ID.AREA_2);
+        bool isLastArea = (areaId == lastAreaId);
         float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
 
         // 操作を無効化する

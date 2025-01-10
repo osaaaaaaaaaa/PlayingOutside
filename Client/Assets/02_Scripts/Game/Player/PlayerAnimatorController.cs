@@ -82,7 +82,6 @@ public class PlayerAnimatorController : MonoBehaviour
 
         // アニメーションの全体フレーム数を計算
         int totalFrames = Mathf.RoundToInt(stateInfo.length * stateInfo.speed * stateInfo.speedMultiplier * 60f);
-        Debug.Log(totalFrames);
 
         // 指定フレームを正規化タイムに変換 (0～1)
         float normalizedTime = targetFlame / totalFrames;
