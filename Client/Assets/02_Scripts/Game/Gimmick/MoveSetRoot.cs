@@ -9,8 +9,11 @@ public class MoveSetRoot : MonoBehaviour
 {
     [SerializeField] List<Vector3> root;
     [SerializeField] float animSec;
+    [SerializeField] bool isSetLookAt;
+    [SerializeField] bool isDebug;
     public Tween pathTween { get; private set; }
     float elapsedTime = 0;
+
 
     void Start()
     {
@@ -20,11 +23,23 @@ public class MoveSetRoot : MonoBehaviour
             path[i] = root[i];
         }
 
-        pathTween = this.transform.DOLocalPath(path, animSec).SetLookAt(0.01f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
-        pathTween.Pause();
-        if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
+        if (isSetLookAt)
         {
-            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient) pathTween.Play();
+            pathTween = this.transform.DOLocalPath(path, animSec).SetLookAt(0.01f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
+        }
+        else
+        {
+            pathTween = this.transform.DOLocalPath(path, animSec).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
+        }
+
+        if (!isDebug)
+        {
+            pathTween.Pause();
+            if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
+            {
+                if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient) pathTween.Play();
+            }
+
         }
     }
 
@@ -37,6 +52,11 @@ public class MoveSetRoot : MonoBehaviour
         if(!pathTween.IsPlaying()) pathTween.Goto(elapsedTime, true);
     }
 
+    /// <summary>
+    /// 現在位置の同期(マスタークライアントから受信)
+    /// </summary>
+    /// <param name="movingObjectState"></param>
+    /// <param name="animSec"></param>
     public void SetPotition(MovingObjectState movingObjectState, float animSec)
     {
         this.gameObject.SetActive(movingObjectState.isActiveSelf);

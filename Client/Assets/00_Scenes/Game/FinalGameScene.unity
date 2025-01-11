@@ -12852,9 +12852,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00007992983
+    y: 0
     width: 1
-    height: 0.99984014
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 70
@@ -14782,6 +14782,8 @@ MonoBehaviour:
   - {x: -25, y: 1, z: -30}
   - {x: 25, y: 1, z: -30}
   animSec: 10
+  isSetLookAt: 1
+  isDebug: 0
 --- !u!114 &1847450144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22925,6 +22927,8 @@ MonoBehaviour:
   - {x: -29, y: 1, z: -35}
   - {x: -29, y: 1, z: 2}
   animSec: 10
+  isSetLookAt: 1
+  isDebug: 0
 --- !u!33 &6912985920961937334
 MeshFilter:
   m_ObjectHideFlags: 0
