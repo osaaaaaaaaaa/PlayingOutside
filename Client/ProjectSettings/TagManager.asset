@@ -12,6 +12,7 @@ TagManager:
   - GoalArea
   - Character
   - Debuff
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

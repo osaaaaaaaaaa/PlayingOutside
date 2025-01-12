@@ -50,7 +50,10 @@ public class PlayerController : MonoBehaviour
     float defaultSpeed = 5f;
     public float DefaultSpeed { get { return defaultSpeed; } set { defaultSpeed = value; } }
     public float pepperSpeed { get; private set; } = 8;
-    [SerializeField] float jumpPower = 600;
+
+    float jumpPower;
+    [SerializeField] float defaultJumpPower;
+
     #endregion
     #endregion
 
@@ -94,7 +97,9 @@ public class PlayerController : MonoBehaviour
         if(FloatingJoystick) floatingJoystick = FloatingJoystick.GetComponent<FloatingJoystick>();
         modelTf = transform.GetChild(0);
 
+
         speed = defaultSpeed;
+        jumpPower = defaultJumpPower;
         hp = hpMax;
         isStandUp = true;
         isInvincible = false;
@@ -261,6 +266,10 @@ public class PlayerController : MonoBehaviour
             var damageCollider = other.GetComponent<DamageCollider>();
             Hit(damageCollider.Damage, damageCollider.SpecifiedKnockback, other.transform);
         }
+        else if(other.gameObject.tag == "Checkpoint")
+        {
+            respawnPoint = other.transform.position;
+        }
     }
 
     /// <summary>
@@ -397,12 +406,16 @@ public class PlayerController : MonoBehaviour
     {
         if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed - 3;
         else speed = defaultSpeed - 2;
+
+        jumpPower = defaultJumpPower / 2;
     }
 
     public void OnColliderMudExit()
     {
         if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
         else speed = defaultSpeed;
+
+        jumpPower = defaultJumpPower;
     }
 
     /// <summary>
@@ -411,7 +424,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf)
     {
-        if(respawnPoint == Vector3.zero) respawnPoint = startPointTf.position;
+        respawnPoint = startPointTf.position;
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
 

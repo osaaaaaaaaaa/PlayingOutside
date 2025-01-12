@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
+using static PlayerAnimatorController;
 
 public class RoomModel : BaseModel, IRoomHubReceiver
 {
@@ -69,6 +70,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Vector3,EnumManager.ITEM_ID,string> OnSpawnItemUser { get; set; }
     // 動的なオブジェクトの生成通知
     public Action<SpawnObject> OnSpawnObjectUser { get; set; }
+    // 動物のギミック発動通知
+    public Action<EnumManager.ANIMAL_GIMMICK_ID, string, Vector3[]> OnPlayAnimalGimmickUser { get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -629,6 +632,27 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnSpawnObject(SpawnObject spawnObject)
     {
         if (userState == USER_STATE.joined) OnSpawnObjectUser(spawnObject);
+    }
+
+    /// <summary>
+    /// 動物のギミック発動処理
+    /// </summary>
+    /// <param name="animalName"></param>
+    /// <param name="optionVec"></param>
+    /// <returns></returns>
+    public async UniTask PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID animalId, string animalName, Vector3[] optionVec)
+    {
+        if (userState == USER_STATE.joined) await roomHub.PlayAnimalGimmickAsynk(animalId, animalName, optionVec);
+    }
+
+    /// <summary>
+    /// 動物のギミック発動通知
+    /// </summary>
+    /// <param name="animalName"></param>
+    /// <param name="optionVec"></param>
+    public void OnPlayAnimalGimmick(EnumManager.ANIMAL_GIMMICK_ID animalId, string animalName, Vector3[] optionVec)
+    {
+        if (userState == USER_STATE.joined) OnPlayAnimalGimmickUser(animalId, animalName, optionVec);
     }
     #endregion
 

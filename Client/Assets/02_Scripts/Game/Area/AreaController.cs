@@ -29,9 +29,10 @@ public class AreaController : MonoBehaviour
         AREA_1 = 0,
         AREA_2,
         AREA_3,
+        AREA_4,
     }
     public AREA_ID areaId { get; set; } = AREA_ID.AREA_1;
-    AREA_ID lastAreaId = AREA_ID.AREA_3;
+    AREA_ID lastAreaId = AREA_ID.AREA_4;
 
     private void Awake()
     {

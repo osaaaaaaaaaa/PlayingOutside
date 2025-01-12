@@ -8,7 +8,7 @@ public class EggWarning : MonoBehaviour
     [SerializeField] GameObject eggBulletPrefab;
     GameObject eggBullet;
     Vector3 eggGeneratePoint;
-    const float jumpPower = 15;
+    const float jumpPower = 10;
     bool isGeneratedEgg;
 
     public void InitParam(Vector3 _eggGeneratePoint)

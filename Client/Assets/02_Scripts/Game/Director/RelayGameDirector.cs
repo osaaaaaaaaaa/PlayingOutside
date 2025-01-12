@@ -34,6 +34,11 @@ public class RelayGameDirector : MonoBehaviour
     Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
     #endregion
 
+    #region 動物のギミック
+    [SerializeField] List<GameObject> animalGimmicks;
+    Dictionary<string,GameObject> animalGimmickList = new Dictionary<string, GameObject>();
+    #endregion
+
     Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
 
     Coroutine coroutineCountDown;
@@ -67,6 +72,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser += this.NotifySpawnObjectUser;
+        RoomModel.Instance.OnPlayAnimalGimmickUser += this.NotifyPlayAnimalGimmickUser;
 
         SetupGame();
     }
@@ -90,6 +96,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser -= this.NotifySpawnObjectUser;
+        RoomModel.Instance.OnPlayAnimalGimmickUser -= this.NotifyPlayAnimalGimmickUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -122,6 +129,18 @@ public class RelayGameDirector : MonoBehaviour
     void SetupGame()
     {
         GenerateCharacters();
+
+        // 動くオブジェクトを設定
+        foreach (var item in movingObjects)
+        {
+            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
+        }
+
+        // 動物のギミックを設定
+        foreach (var item in animalGimmicks)
+        {
+            animalGimmickList.Add(item.name, item);
+        }
 
         // 動くオブジェクトを設定
         foreach (var item in movingObjects)
@@ -547,6 +566,28 @@ public class RelayGameDirector : MonoBehaviour
     void NotifySpawnObjectUser(SpawnObject spawnObject)
     {
         GetComponent<ObjectPrefabController>().Spawn(spawnObject);
+    }
+
+    /// <summary>
+    /// 動物のギミック発動通知
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="option"></param>
+    void NotifyPlayAnimalGimmickUser(EnumManager.ANIMAL_GIMMICK_ID animalId, string name, Vector3[] option)
+    {
+        var animal = animalGimmickList[name];
+        if(animal != null && animal.activeSelf)
+        {
+            switch (animalId)
+            {
+                case EnumManager.ANIMAL_GIMMICK_ID.Bull:
+                    animal.GetComponent<BullGimmick>().PlayEatAnim();
+                    break;
+                case EnumManager.ANIMAL_GIMMICK_ID.Chicken:
+                    animal.transform.GetChild(0).GetComponent<ChickenGimmick>().GenerateEggBulletWarning(option);
+                    break;
+            }
+        }
     }
 
     /// <summary>

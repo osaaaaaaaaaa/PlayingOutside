@@ -133,6 +133,13 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="spawnObject"></param>
         void OnSpawnObject(SpawnObject spawnObject);
+
+        /// <summary>
+        /// 動物のギミック発動通知
+        /// </summary>
+        /// <param name="animalName"></param>
+        /// <param name="optionVec"></param>
+        void OnPlayAnimalGimmick(EnumManager.ANIMAL_GIMMICK_ID animalId ,string animalName, Vector3[] optionVec);
         #endregion
 
         #region 競技『カントリーリレー』の処理

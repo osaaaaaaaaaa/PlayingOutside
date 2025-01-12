@@ -36435,7 +36435,7 @@ MonoBehaviour:
   defaultKnockBackPower1: 5
   defaultKnockBackPower2: 15
   speed: 1
-  jumpPower: 500
+  defaultJumpPower: 500
   objOtherPlayers: []
   isDebug: 0
 --- !u!114 &5524658921998760152

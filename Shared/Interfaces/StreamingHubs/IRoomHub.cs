@@ -105,7 +105,6 @@ namespace Shared.Interfaces.StreamingHubs
         /// <summary>
         /// アイテムの使用
         /// </summary>
-        /// <param name="connectionId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
         Task UseItemAsynk(EnumManager.ITEM_ID itemId);
@@ -117,7 +116,6 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="itemName"></param>
         /// <returns></returns>
         Task DestroyItemAsynk(string itemName);
-
 
         /// <summary>
         /// アイテムの生成
@@ -133,6 +131,14 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="spawnObject"></param>
         /// <returns></returns>
         Task SpawnObjectAsynk(SpawnObject spawnObject);
+
+        /// <summary>
+        /// 動物のギミック発動処理
+        /// </summary>
+        /// <param name="animalName"></param>
+        /// <param name="optionVec"></param>
+        /// <returns></returns>
+        Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID animalId , string animalName, Vector3[] optionVec);
         #endregion
 
         #region 競技『カントリーリレー』の処理

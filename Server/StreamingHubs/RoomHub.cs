@@ -680,6 +680,17 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// 動物のギミック発動処理
+        /// </summary>
+        /// <param name="animalName"></param>
+        /// <param name="optionVec"></param>
+        /// <returns></returns>
+        public async Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID animalId, string animalName, Vector3[] optionVec)
+        {
+            this.Broadcast(this.room).OnPlayAnimalGimmick(animalId, animalName, optionVec);
+        }
+
+        /// <summary>
         /// エリアをクリアした処理
         /// </summary>
         /// <returns></returns>

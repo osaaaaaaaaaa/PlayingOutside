@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BoundaryAreaCollider : MonoBehaviour
 {
@@ -24,7 +26,7 @@ public class BoundaryAreaCollider : MonoBehaviour
             collision.gameObject.transform.position = playerController.respawnPoint;
             collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
-            await RoomModel.Instance.OutOfBoundsAsynk(rangePointA.position, rangePointB.position);
+            if(rangePointA != null && rangePointB != null) await RoomModel.Instance.OutOfBoundsAsynk(rangePointA.position, rangePointB.position);
         }
     }
 }

@@ -40,5 +40,11 @@ namespace Shared.Interfaces.Model.Entity
         {
             Hay = 0,
         }
+
+        public enum ANIMAL_GIMMICK_ID
+        {
+            Bull = 0,
+            Chicken,
+        }
     }
 }
