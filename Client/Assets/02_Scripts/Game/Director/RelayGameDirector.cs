@@ -174,6 +174,7 @@ public class RelayGameDirector : MonoBehaviour
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1]);
+            character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理
             Color colorText = isMyCharacter ? Color.white : Color.green;

@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class TitleSceneDirector : MonoBehaviour
 {
+    [SerializeField] GameObject debugUiParent;
     [SerializeField] InputField inputFieldDebugId;
     [SerializeField] bool isDebug;
     bool isLocalData;
@@ -22,6 +23,8 @@ public class TitleSceneDirector : MonoBehaviour
         isLocalData = false;
         isRanning = false;
         SceneControler.Instance.StopSceneLoad();
+
+        debugUiParent.SetActive(isDebug);
     }
 
     // Update is called once per frame
@@ -44,6 +47,7 @@ public class TitleSceneDirector : MonoBehaviour
                     ErrorUIController.Instance.ShowErrorUI(error, errorActoin);
                     return;
                 }
+
                 SceneControler.Instance.StartSceneLoad("TopScene");
             }
             else

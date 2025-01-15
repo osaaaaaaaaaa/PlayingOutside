@@ -14,16 +14,25 @@ public class FinalResultSceneDirector : MonoBehaviour
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
+    #region パーティクル・UI関係
     [SerializeField] FinalResultSceneParticleController particleController;
     [SerializeField] TotalScoreUIController totalScoreUIController;
     [SerializeField] GameObject crownPrefab;
     [SerializeField] GameObject btnLeave;
     [SerializeField] CharacterControlUI characterControlUI;
+    #endregion
+
+    #region オーディオ関係
+    [SerializeField] AudioClip vuvuzelaSE;
+    AudioSource audioSource;
+    #endregion
 
     const float waitSeconds = 0.1f;
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
@@ -79,6 +88,7 @@ public class FinalResultSceneDirector : MonoBehaviour
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
+            character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理
             Color colorText = isMyCharacter ? Color.white : Color.green;
@@ -212,6 +222,7 @@ public class FinalResultSceneDirector : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);    // 王冠のアニメーションが終了する時間
 
+        GetComponent<AudioSource>().PlayOneShot(vuvuzelaSE);
         foreach (var winnerId in winnerIdList)
         {
             particleController.GenerateSparksParticles(characterList[winnerId].transform);

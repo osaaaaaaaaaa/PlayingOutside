@@ -13,11 +13,11 @@ namespace Server.Model
             UserID = "jobi",
             Password = "jobi",
 #else
-                    Server = "db-ge-04.mysql.database.azure.com",
-                    Database = "realtime_game",
-                    UserID = "student",
-                    Password = "Yoshidajobi2023",
-                    SslMode = MySqlSslMode.Required
+            Server = "db-ge-04.mysql.database.azure.com",
+            Database = "realtime_game",
+            UserID = "student",
+            Password = "Yoshidajobi2023",
+            SslMode = MySqlSslMode.Required
 #endif
         };
 

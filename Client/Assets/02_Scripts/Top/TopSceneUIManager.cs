@@ -6,6 +6,12 @@ using DG.Tweening;
 
 public class TopSceneUIManager : MonoBehaviour
 {
+    #region オーディオ関係
+    [SerializeField] AudioClip selectSE;
+    [SerializeField] AudioClip closeSE;
+    AudioSource audioSource;
+    #endregion
+
     [SerializeField] List<GameObject> selectButtonList;
     [SerializeField] GameObject textUserName;
 
@@ -15,6 +21,11 @@ public class TopSceneUIManager : MonoBehaviour
     // Tweenアニメーション中かどうか
     bool isTaskRunning  = false;
     public bool IsTaskRunning { get { return isTaskRunning; } set { isTaskRunning = value; } }
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void ToggleUIVisibility(bool isVisibility)
     {
@@ -34,11 +45,13 @@ public class TopSceneUIManager : MonoBehaviour
 
     public virtual void OnSelectButton()
     {
+        audioSource.PlayOneShot(selectSE);
         ToggleUIVisibility(false);
     }
 
     public virtual void OnBackButton()
     {
+        audioSource.PlayOneShot(closeSE);
         ToggleUIVisibility(true);
     }
 }

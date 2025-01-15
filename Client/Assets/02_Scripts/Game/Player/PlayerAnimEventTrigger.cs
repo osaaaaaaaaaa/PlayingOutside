@@ -8,6 +8,7 @@ public class PlayerAnimEventTrigger : MonoBehaviour
     PlayerAnimatorController animController;
     PlayerEffectController effectController;
     PlayerSkillController skillController;
+    PlayerAudioController audioController;
 
     bool isPlayStampAnimFall;
     public bool IsPlayStampAnimFall { get { return isPlayStampAnimFall; } set { isPlayStampAnimFall = value; } }
@@ -34,6 +35,7 @@ public class PlayerAnimEventTrigger : MonoBehaviour
         animController = transform.parent.GetComponent<PlayerAnimatorController>();
         effectController = transform.parent.GetComponent<PlayerEffectController>();
         skillController = transform.parent.GetComponent<PlayerSkillController>();
+        audioController = transform.parent.GetComponent<PlayerAudioController>();
         isPlayStampAnimFall = false;
     }
 
@@ -83,6 +85,7 @@ public class PlayerAnimEventTrigger : MonoBehaviour
             case EVENT_ID.OnEndMachAuraChargeAnim:
                 playerController.IsInvincible = false;
                 playerController.IsControlEnabled = true;
+                audioController.StopLoopSkillSourse();
                 break;
             case EVENT_ID.CheckRapidMachKick:
                 if (playerController.enabled && !playerController.IsPressMachKickBtn)
@@ -92,5 +95,20 @@ public class PlayerAnimEventTrigger : MonoBehaviour
                 playerController.IsPressMachKickBtn = false;
                 break;
         }
+    }
+
+    public void PlayAudioOneShot(PlayerAudioController.AudioClipName clipName)
+    {
+        audioController.PlayOneShot(clipName);
+    }
+
+    public void PlayLoopSkillAudio(PlayerAudioController.AudioClipName clipName)
+    {
+        audioController.ResetLoopSkillSourse(clipName);
+    }
+
+    public void StopLoopSkillAudio()
+    {
+        audioController.StopLoopSkillSourse();
     }
 }

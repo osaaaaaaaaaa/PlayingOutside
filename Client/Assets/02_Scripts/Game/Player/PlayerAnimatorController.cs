@@ -13,6 +13,7 @@ public class PlayerAnimatorController : MonoBehaviour
     public Animator Animator { get { return animator; } }
     PlayerController playerController;
     PlayerSkillController skillController;
+    PlayerAudioController audioController;
 
     // ノックバック中かどうか
     bool isKnockBackAnim;
@@ -46,6 +47,7 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         playerController = GetComponent<PlayerController>();
         skillController = GetComponent<PlayerSkillController>();
+        audioController = GetComponent<PlayerAudioController>();
         isKnockBackAnim = false;
     }
 
@@ -144,9 +146,16 @@ public class PlayerAnimatorController : MonoBehaviour
         if(id == ANIM_ID.Kick || id == ANIM_ID.Damage)
         {
             playerController.IsControlEnabled = false;
+            if (id == ANIM_ID.Damage) audioController.PlayDamageClip();
         }
 
+        if (id == ANIM_ID.Run || id == ANIM_ID.RunFast) audioController.PlayRunningSourse();
+        else if(audioController != null) audioController.StopRunningSourse();
+
+        if (GetAnimId() == (int)ANIM_ID.MachKick && id != ANIM_ID.MachKick) audioController.StopLoopSkillSourse();
+
         animator.SetInteger("animation", (int)id);
+
     }
 
     /// <summary>
@@ -173,7 +182,13 @@ public class PlayerAnimatorController : MonoBehaviour
         if (id == (int)ANIM_ID.Damage)
         {
             animator.Play("Damage");
+            audioController.PlayDamageClip();
         }
+
+        if (id == (int)ANIM_ID.Run || id == (int)ANIM_ID.RunFast) audioController.PlayRunningSourse();
+        else audioController.StopRunningSourse();
+
+        if(GetAnimId() == (int)ANIM_ID.MachKick && id != (int)ANIM_ID.MachKick) audioController.StopLoopSkillSourse();
 
         animator.SetInteger("animation", id);
     }

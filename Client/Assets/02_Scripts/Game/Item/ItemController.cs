@@ -24,13 +24,21 @@ public class ItemController : MonoBehaviour
         // プレイヤーに触れた場合
         if (other.gameObject.layer == 3 && !isHit)
         {
+            bool isPlayAudio = false;
+            if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined) isPlayAudio = true;
+            if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined && other.GetComponent<PlayerItemController>().enabled) isPlayAudio = true;
+
             if (ItemId == EnumManager.ITEM_ID.Coin)
             {
                 isHit = true;
                 await RoomModel.Instance.GetItemAsynk(itemID, this.name);
 
                 // チュートリアルで使用する想定
-                if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined) Destroy(this.gameObject);
+                if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
+                {
+                    if (isPlayAudio) other.GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
+                    Destroy(this.gameObject);
+                }
             }
             else if (other.GetComponent<PlayerItemController>().slotItemId == EnumManager.ITEM_ID.None)
             {
@@ -40,6 +48,7 @@ public class ItemController : MonoBehaviour
                 // チュートリアルで使用する想定
                 if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
                 {
+                    if (isPlayAudio) other.GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
                     other.GetComponent<PlayerItemController>().SetItemSlot(ItemId);
                     Destroy(this.gameObject);
                 }

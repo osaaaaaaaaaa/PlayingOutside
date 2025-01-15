@@ -8,13 +8,19 @@ public class GameStartCountDown : MonoBehaviour
     [SerializeField] FinalGameDirector finalGameDirector;
     Animator animator;
 
+    [SerializeField] AudioClip hereweSE;
+    [SerializeField] AudioClip goSE;
+    AudioSource audioSource;
+
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
     }
 
     public void PlayCountDownOverAnim()
     {
+        audioSource.PlayOneShot(goSE);
         animator.Play("CountDownOverAnimation");
     }
 
@@ -25,12 +31,13 @@ public class GameStartCountDown : MonoBehaviour
 
     void PlayAnim()
     {
+        audioSource.PlayOneShot(hereweSE);
         animator.Play("CountDownAnimation");
     }
 
     public void OnEndAnim()
     {
-        if(relayGameDirector != null) relayGameDirector.OnCountdownOver();
-        if(finalGameDirector != null) finalGameDirector.OnCountdownOver();
+        if (relayGameDirector != null) relayGameDirector.OnCountdownOver();
+        if (finalGameDirector != null) finalGameDirector.OnCountdownOver();
     }
 }

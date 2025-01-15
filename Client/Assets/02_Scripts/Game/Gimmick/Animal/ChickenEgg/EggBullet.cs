@@ -6,9 +6,15 @@ using DG.Tweening;
 public class EggBullet : MonoBehaviour
 {
     [SerializeField] GameObject explosionParticle;
+
     public void DoExplosion()
     {
         Instantiate(explosionParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
+    }
+
+    private void OnEnable()
+    {
+        GetComponent<AudioSource>().Play();
     }
 }

@@ -68,15 +68,32 @@ public class SceneControler : MonoBehaviour
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
 
         // ロードが完了するまで待機する
-        while (!async.isDone)
+        while (true)
         {
             yield return null;
+
+            if (!async.isDone)
+            {
+                if(FadeAudioController.Instance != null && !FadeAudioController.Instance.IsFadeing)
+                {
+                    break;
+                }
+                else if(FadeAudioController.Instance == null)
+                {
+                    break;
+                }
+            }
         }
     }
 
     public void StartSceneLoad(string sceneName)
     {
         if (isLoading) return;
+
+        // BGMをフェードアウト
+        var bgmController = Camera.main.gameObject.GetComponent<BGMController>();
+        if( bgmController != null ) bgmController.StopAudio();
+
         isLoading = true;
         InitUI(true);
 

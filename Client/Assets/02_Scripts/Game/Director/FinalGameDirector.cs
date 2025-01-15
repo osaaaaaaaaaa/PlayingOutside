@@ -179,6 +179,7 @@ public class FinalGameDirector : MonoBehaviour
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             Vector3 startPos = characterStartPoints[value.JoinOrder - 1].position;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
+            character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ƒ†[ƒU[–¼‚Ì‰Šú‰»ˆ—
             Color colorText = isMyCharacter ? Color.white : Color.green;

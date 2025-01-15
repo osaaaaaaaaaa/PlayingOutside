@@ -11,6 +11,11 @@ public class QuickGameUIController : MonoBehaviour
     [SerializeField] List<GameObject> uiList;
     #endregion
 
+    #region オーディオ関係
+    [SerializeField] AudioClip joinSE;
+    AudioSource audioSource;
+    #endregion
+
     [SerializeField] List<Image> icons;
     [SerializeField] List<Text> texts;
     [SerializeField] List<GameObject> loadingObjs;
@@ -19,6 +24,8 @@ public class QuickGameUIController : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         InitAllUserFrame();
         foreach (var ui in uiList)
         {
@@ -40,6 +47,7 @@ public class QuickGameUIController : MonoBehaviour
 
     public void SetupUserFrame(int index,string userName,int characterId)
     {
+        audioSource.PlayOneShot(joinSE);
         icons[index].sprite = GetComponent<TopSceneUIManager>().SpriteIcons[characterId];
         icons[index].enabled = true;
         texts[index].text = userName;

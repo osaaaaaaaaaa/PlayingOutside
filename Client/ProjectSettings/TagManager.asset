@@ -13,6 +13,7 @@ TagManager:
   - Character
   - Debuff
   - Checkpoint
+  - Grass
   layers:
   - Default
   - TransparentFX

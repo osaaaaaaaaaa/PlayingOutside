@@ -172,20 +172,18 @@ public class PlayerController : MonoBehaviour
             // ジャンプ処理
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Jump(jumpPower);
+                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.jump);
             }
 
             // スキル発動処理
             if (Input.GetKeyDown(KeyCode.E))
             {
-                animController.SetInt(animController.GetSkillAnimId());
+                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.skill);
             }
 
-            // デバック用、無敵化ON/OFF
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.Q))
             {
-                if(this.gameObject.layer == 3) this.gameObject.layer = 8;
-                else this.gameObject.layer = 3;
+                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.item);
             }
         }
 
@@ -194,17 +192,7 @@ public class PlayerController : MonoBehaviour
             // キック処理
             if (Input.GetKeyDown(KeyCode.K))
             {
-                var target = SerchNearTarget();
-                if (target != null) LookAtPlayer(target);
-                if (isMachAura)
-                {
-                    isPressMachKickBtn = true;
-                    animController.Animator.SetInteger("animation", (int)PlayerAnimatorController.ANIM_ID.MachKick);
-                }
-                else
-                {
-                    animController.SetInt(PlayerAnimatorController.ANIM_ID.Kick);
-                }
+                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.kick);
             }
         }
     }
@@ -438,6 +426,8 @@ public class PlayerController : MonoBehaviour
         this.gameObject.layer = 3;
         defaultSpeed = 5;
         speed = defaultSpeed;
+
+        GetComponent<PlayerAudioController>().ResetRunningSourse(PlayerAudioController.AudioClipName.running_default);
     }
 
     public void InitPlayer()

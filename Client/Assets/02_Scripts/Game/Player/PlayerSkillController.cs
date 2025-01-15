@@ -7,6 +7,7 @@ public class PlayerSkillController : MonoBehaviour
 {
     PlayerController playerController;
     PlayerAnimatorController playerAnimatorController;
+    PlayerAudioController playerAudioController;
     Rigidbody rb;
     [SerializeField] PlayerAnimEventTrigger eventTrigger;
 
@@ -37,6 +38,7 @@ public class PlayerSkillController : MonoBehaviour
         isUseForse = false;
         playerController = GetComponent<PlayerController>();
         playerAnimatorController = GetComponent<PlayerAnimatorController>();
+        playerAudioController = GetComponent<PlayerAudioController>();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -115,9 +117,10 @@ public class PlayerSkillController : MonoBehaviour
     {
         CancelInvoke("OnEndSkillAnim");
         isUseForse = false;
+        isUsedSkill = false;
         skillObj.SetActive(false);
         playerController.InitPlayer();
-        isUsedSkill = false;
+        playerAudioController.StopLoopSkillSourse();
 
         switch (skillID)
         {

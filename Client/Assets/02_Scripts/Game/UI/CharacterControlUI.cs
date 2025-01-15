@@ -17,17 +17,46 @@ public class CharacterControlUI : MonoBehaviour
     [SerializeField] Text textSkillCoolTime;
     [SerializeField] Button btnUseItem;
     [SerializeField] List<Sprite> spriteItemList;   // 0:ãÛ,1:ìÇêhéq...
-    float coolTime;
-    bool isCoolTime = false;
 
     private void Start()
     {
-        if(testCharacter != null) SetupButtonEvent(testCharacter);
+        if (testCharacter != null && RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
+            SetupButtonEvent(testCharacter);
     }
+
+    public enum ButtonType
+    {
+        kick,
+        jump,
+        skill,
+        item
+    }
+
+    float coolTime;
+    bool isCoolTime = false;
 
     public void ToggleUIVisibiliity(bool visibility)
     {
         uiParent.SetActive(visibility);
+    }
+
+    public void ClickEvent(ButtonType buttonType)
+    {
+        switch (buttonType)
+        {
+            case ButtonType.kick:
+                btnKick.onClick.Invoke();
+                break;
+            case ButtonType.jump:
+                btnJump.onClick.Invoke();
+                break;
+            case ButtonType.skill:
+                btnSkill.onClick.Invoke();
+                break;
+            case ButtonType.item:
+                btnUseItem.onClick.Invoke();
+                break;
+        }
     }
 
     public void SetupButtonEvent(GameObject player)

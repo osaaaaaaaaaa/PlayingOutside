@@ -577,6 +577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b1e4f21424bab46b67f7c500e0402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  getItemSE: {fileID: 8300000, guid: d5bcc2b32ef00794a80a044174e6522f, type: 3}
   itemID: 2
   model: {fileID: 485043778817458303}
 --- !u!1 &6687710359230177219

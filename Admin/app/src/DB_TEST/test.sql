@@ -3,8 +3,7 @@ use realtime_game;
 show tables;
 SELECT *
 FROM users
-WHERE id = 1
-   OR id = 6;
+WHERE id = 1;
 
 # name指定でユーザーを取得
 SELECT ut.id, ut.name, ut.character_id, rating

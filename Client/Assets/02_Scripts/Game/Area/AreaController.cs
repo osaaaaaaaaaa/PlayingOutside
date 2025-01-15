@@ -8,20 +8,29 @@ using Unity.VisualScripting;
 
 public class AreaController : MonoBehaviour
 {
+    #region コントローラー関係
     [SerializeField] RelayGameDirector gameDirector;
     [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] List<ItemSpawner> itemSpawnerList;
     public List<ItemSpawner> ItemSpawnerList { get { return itemSpawnerList; } }
+    #endregion
 
     [SerializeField] List<GameObject> startPoints;    // 各エリアのスタート地点
     [SerializeField] List<GameObject> gimmicks;       // エリア毎のギミック
-
+    
+    #region UI関係
     [SerializeField] GameObject finishUI;
     [SerializeField] GameObject spectatingUI;
     [SerializeField] GameObject imageBlackObj;
     Image imageBlack;
-
     const float fadeTime = 0.5f;
+    #endregion
+
+    #region オーディオ関係
+    [SerializeField] AudioClip clearedAreSE;
+    AudioSource audioSource;
+    #endregion
+
     public bool isClearedArea { get; private set; }
 
     public enum AREA_ID
@@ -37,6 +46,7 @@ public class AreaController : MonoBehaviour
     private void Awake()
     {
         imageBlack = imageBlackObj.GetComponent<Image>();
+        audioSource = GetComponent<AudioSource>();
         isClearedArea = false;
 
         foreach (var item in itemSpawnerList)
@@ -56,6 +66,7 @@ public class AreaController : MonoBehaviour
     /// </summary>
     public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
+        audioSource.PlayOneShot(clearedAreSE);
         isClearedArea = false;
         bool isLastArea = (areaId == lastAreaId);
         // サーバーなしの場合のみ使用、最終的にisDebugを削除

@@ -6,17 +6,23 @@ using static Shared.Interfaces.Model.Entity.EnumManager;
 
 public class PlayerItemController : MonoBehaviour
 {
+    #region コントローラー関係
     PlayerController playerController;
     PlayerEffectController effectController;
+    PlayerAudioController audioController;
+    #endregion
 
+    #region アイテム関係
     public EnumManager.ITEM_ID slotItemId = EnumManager.ITEM_ID.None;
     public Dictionary<EnumManager.ITEM_ID, float> itemEffectTimeList { get; private set; } = new Dictionary<EnumManager.ITEM_ID, float>();
     bool isOnUseButton = false; // アイテム使用リクエストが完了するまで連続で押せないようにする
+    #endregion
 
     private void Start()
     {
         playerController = GetComponent<PlayerController>();
         effectController = GetComponent<PlayerEffectController>();
+        audioController = GetComponent<PlayerAudioController>();
     }
 
     private void Update()
@@ -78,6 +84,7 @@ public class PlayerItemController : MonoBehaviour
                 itemEffectTime = (int)EnumManager.ITEM_EFFECT_TIME.Pepper;
                 playerController.speed = playerController.pepperSpeed;
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.PepperFire);
+                audioController.PlayOneShot(PlayerAudioController.AudioClipName.item_pepper);
                 break;
         }
 

@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class FinishUI : MonoBehaviour
 {
+    [SerializeField] AudioClip finishSE;
+
     public float animSec { get; private set; } = 0.5f;
     private void OnDisable()
     {
@@ -19,5 +21,7 @@ public class FinishUI : MonoBehaviour
         sequence.Append(transform.DOScale(new Vector3(1f, 1f, 1f), animSec).SetEase(Ease.OutBack))
             .Join(GetComponent<Image>().DOFade(1f, animSec).SetEase(Ease.Linear));
         sequence.Play();
+
+        GetComponent<AudioSource>().PlayOneShot(finishSE);
     }
 }
