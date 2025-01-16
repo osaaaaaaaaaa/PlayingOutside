@@ -19,6 +19,7 @@ public class WarpController : MonoBehaviour
             }
             else
             {
+                if ((int)areaController.areaId > points.Count) return;
                 gameDirector.characterList[RoomModel.Instance.ConnectionId].transform.position = points[(int)areaController.areaId].position;
             }
         }

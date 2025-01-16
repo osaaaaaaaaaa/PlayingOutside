@@ -18,6 +18,8 @@ public class CharacterControlUI : MonoBehaviour
     [SerializeField] Button btnUseItem;
     [SerializeField] List<Sprite> spriteItemList;   // 0:ãÛ,1:ìÇêhéq...
 
+    public bool IsSetupDone { get; private set; } = false;
+
     private void Start()
     {
         if (testCharacter != null && RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
@@ -72,6 +74,7 @@ public class CharacterControlUI : MonoBehaviour
         btnUseItem.onClick.AddListener(OnUseItemButton);
 
         ToggleButtonInteractable(false);
+        IsSetupDone = true;
     }
 
     public void ToggleButtonInteractable(bool toggle)

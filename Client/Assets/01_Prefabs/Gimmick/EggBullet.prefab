@@ -101,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionParticle: {fileID: 1111754223872130970, guid: 3b973b673ea4e384a9eb6d78e1bfc9aa,
     type: 3}
+  explosionSE: {fileID: 8300000, guid: e2044b5c38b9db84abf4dfd01d0e5843, type: 3}
 --- !u!114 &462777029135539408
 MonoBehaviour:
   m_ObjectHideFlags: 0

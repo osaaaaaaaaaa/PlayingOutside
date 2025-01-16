@@ -18,5 +18,6 @@ public class Crown : MonoBehaviour
         var sequence = DOTween.Sequence();
         sequence.Append(transform.DORotate(new Vector3(angles.x, 360, 0), animSec, RotateMode.FastBeyond360).SetEase(Ease.OutBack))
             .Join(transform.DOScale(scaleEndVal, animSec).SetEase(Ease.OutElastic));
+        if(GetComponent<AudioSource>() != null) GetComponent<AudioSource>().Play();
     }
 }

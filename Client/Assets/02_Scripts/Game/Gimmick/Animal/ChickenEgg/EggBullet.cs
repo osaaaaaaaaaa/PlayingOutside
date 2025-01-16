@@ -13,8 +13,13 @@ public class EggBullet : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    private void OnEnable()
+    void PlayAudio()
     {
         GetComponent<AudioSource>().Play();
+    }
+
+    private void OnEnable()
+    {
+        Invoke("PlayAudio", 1.5f);
     }
 }

@@ -12,8 +12,10 @@ public class BoundaryAreaCollider : MonoBehaviour
 
     private async void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<PlayerController>().enabled)
+        var compornent = collision.gameObject.GetComponent<PlayerController>();
+        if (compornent != null)
         {
+            if (!compornent.enabled) return;
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             PlayerAnimatorController playerAnimatorController = collision.gameObject.GetComponent<PlayerAnimatorController>();
 

@@ -236,5 +236,8 @@ public class FinalResultSceneDirector : MonoBehaviour
 
         // ‘Şº‚ª‚Å‚«‚é‚æ‚¤‚É‚·‚é
         btnLeave.SetActive(true);
+
+        // BGMÄ¶
+        Camera.main.GetComponent<BGMController>().PlayAudio();
     }
 }

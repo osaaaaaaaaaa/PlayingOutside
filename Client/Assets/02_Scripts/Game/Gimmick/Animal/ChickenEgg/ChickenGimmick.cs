@@ -25,7 +25,7 @@ public class ChickenGimmick : MonoBehaviour
 
     private void OnDisable()
     {
-        StopCoroutine(coroutine);
+        if(coroutine != null) StopCoroutine(coroutine);
         targetList.Clear();
         coroutine = null;
     }

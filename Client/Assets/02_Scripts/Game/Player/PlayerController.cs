@@ -172,27 +172,35 @@ public class PlayerController : MonoBehaviour
             // ジャンプ処理
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.jump);
+                if (characterControlUI.IsSetupDone)
+                    characterControlUI.ClickEvent(CharacterControlUI.ButtonType.jump);
+                else OnJumpButton();
             }
 
             // スキル発動処理
             if (Input.GetKeyDown(KeyCode.E))
             {
-                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.skill);
+                if (characterControlUI.IsSetupDone)
+                    characterControlUI.ClickEvent(CharacterControlUI.ButtonType.skill);
+                else OnSkillButton();
             }
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.item);
+                if (characterControlUI.IsSetupDone)
+                    characterControlUI.ClickEvent(CharacterControlUI.ButtonType.item);
             }
         }
 
+        // ↓とりあえず残しておく####################################################
         if (isInteractable || isMachAura)
         {
             // キック処理
             if (Input.GetKeyDown(KeyCode.K))
             {
-                characterControlUI.ClickEvent(CharacterControlUI.ButtonType.kick);
+                if (characterControlUI.IsSetupDone)
+                    characterControlUI.ClickEvent(CharacterControlUI.ButtonType.kick);
+                else OnKickButton();
             }
         }
     }

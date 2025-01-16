@@ -10002,7 +10002,7 @@ GameObject:
   - component: {fileID: 7691758908040414355}
   - component: {fileID: 1017914784626329553}
   - component: {fileID: 5182100906780393158}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Pepper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10067,7 +10067,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 904
+    m_Bits: 3976
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -10090,7 +10090,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 1015
+    m_Bits: 3063
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -10112,7 +10112,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b1e4f21424bab46b67f7c500e0402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  getItemSE: {fileID: 8300000, guid: d5bcc2b32ef00794a80a044174e6522f, type: 3}
   itemID: 3
   model: {fileID: 7173675478758216454}
 --- !u!82 &5182100906780393158
