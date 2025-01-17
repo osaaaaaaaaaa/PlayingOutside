@@ -11,12 +11,14 @@ public class PlayerAudioController : MonoBehaviour
     [SerializeField] AudioSource runningSourse;
     [SerializeField] AudioSource loopSkillSourse;
     [SerializeField] List<AudioClip> audioClips;
+    [SerializeField] float customPitch;
     Dictionary<AudioClipName, AudioClip> audioClipList;
     public AudioClipName runningClipName { get; private set; } = AudioClipName.running_default;
 
     public enum AudioClipName
     {
-        running_default = 0,
+        piyo = 0,
+        running_default,
         running_grass,
         running_mud,
         kick,
@@ -45,8 +47,16 @@ public class PlayerAudioController : MonoBehaviour
         runningSourse.clip = audioClipList[AudioClipName.running_default];
     }
 
+    private void OnEnable()
+    {
+        StopRunningSourse();
+        StopLoopSkillSourse();
+    }
+
     public void PlayOneShot(AudioClip clip)
     {
+        if (clip == audioClipList[AudioClipName.piyo]) oneShotSourse.pitch = customPitch;
+        else oneShotSourse.pitch = 1;
         oneShotSourse.PlayOneShot(clip);
     }
 

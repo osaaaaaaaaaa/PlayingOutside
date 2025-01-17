@@ -18,6 +18,11 @@ public class PlayerItemController : MonoBehaviour
     bool isOnUseButton = false; // アイテム使用リクエストが完了するまで連続で押せないようにする
     #endregion
 
+    private void OnDisable()
+    {
+        ClearAllItemEffects();
+    }
+
     private void Start()
     {
         playerController = GetComponent<PlayerController>();
@@ -63,17 +68,25 @@ public class PlayerItemController : MonoBehaviour
         switch (itemId)
         {
             case EnumManager.ITEM_ID.Pepper:
-                playerController.speed = playerController.DefaultSpeed;
-                effectController.StopParticle(PlayerEffectController.EFFECT_ID.PepperFire);
+                playerController.speed -= playerController.addPepperSpeed;
+                effectController.ClearParticle(PlayerEffectController.EFFECT_ID.PepperFire);
                 break;
         }
     }
 
+    /// <summary>
+    /// アイテムスロットに設定する
+    /// </summary>
+    /// <param name="itemId"></param>
     public void SetItemSlot(EnumManager.ITEM_ID itemId)
     {
         if(itemId != ITEM_ID.None && itemId != ITEM_ID.ItemBox && itemId != ITEM_ID.Coin) slotItemId = itemId;
     }
 
+    /// <summary>
+    /// アイテム使用処理
+    /// </summary>
+    /// <param name="_itemId"></param>
     public void UseItem(EnumManager.ITEM_ID _itemId)
     {
         if(_itemId != ITEM_ID.None) slotItemId = _itemId;
@@ -82,7 +95,7 @@ public class PlayerItemController : MonoBehaviour
         {
             case EnumManager.ITEM_ID.Pepper:
                 itemEffectTime = (int)EnumManager.ITEM_EFFECT_TIME.Pepper;
-                playerController.speed = playerController.pepperSpeed;
+                if (!itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) playerController.speed += playerController.addPepperSpeed;
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.PepperFire);
                 audioController.PlayOneShot(PlayerAudioController.AudioClipName.item_pepper);
                 break;
@@ -105,6 +118,9 @@ public class PlayerItemController : MonoBehaviour
         isOnUseButton = false;
     }
 
+    /// <summary>
+    /// アイテム使用ボタン
+    /// </summary>
     public async void OnUseItemButton()
     {
         if (isOnUseButton) return;

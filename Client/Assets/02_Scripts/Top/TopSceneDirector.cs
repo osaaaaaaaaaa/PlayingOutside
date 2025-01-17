@@ -15,28 +15,29 @@ public class TopSceneDirector : MonoBehaviour
 
     private async void Awake()
     {
-#if UNITY_EDITOR
-        if (UserModel.Instance.UserId == 0)
-        {
-            // ユーザー情報取得処理
-            bool isSucsess = UserModel.Instance.LoadUserData();
-            int userId = isSucsess ? UserModel.Instance.UserId : 1;
-            var error = await UserModel.Instance.ShowUserAsync(userId);
-            if (error != null)
-            {
-                ErrorUIController.Instance.ShowErrorUI(error);
-                return;
-            }
-        }
-#endif
+//#if UNITY_EDITOR
+//        if (UserModel.Instance.UserId == 0)
+//        {
+//            // ユーザー情報取得処理
+//            bool isSucsess = UserModel.Instance.LoadUserData();
+//            int userId = isSucsess ? UserModel.Instance.UserId : 1;
+//            var error = await UserModel.Instance.ShowUserAsync(userId);
+//            if (error != null)
+//            {
+//                ErrorUIController.Instance.ShowErrorUI(error);
+//                return;
+//            }
+//        }
+//#endif
         if (UserModel.Instance.UserId != 0)
         {
             userNameText.text = UserModel.Instance.UserName;
             await RatingModel.Instance.ShowRatingAsync(UserModel.Instance.UserId);
         }
         
-       if(NGWordModel.Instance.NGWords == null)
+       if(NGWordModel.Instance.NGWords.Count == 0)
        {
+            Debug.Log("NGワード取得");
            await NGWordModel.Instance.ShowNGWordAsync();
        }
 

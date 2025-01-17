@@ -21,6 +21,8 @@ namespace TedLab
 
         private void Awake()
         {
+            if(isRoadingPanel) isUpdateRect = false;
+
             if (refRect == null)
             {
                 refRect = GetComponent<RectTransform>();
@@ -30,7 +32,7 @@ namespace TedLab
 
         private void OnEnable()
         {
-            isUpdateRect = false;
+            if(!isRoadingPanel) isUpdateRect = false;
         }
 
         private void Update()

@@ -20,8 +20,7 @@ public class TopSceneCharacterManager : MonoBehaviour
     {
         for (int i = 0; i < characterModels.Count; i++)
         {
-            if (i == characterid - 1)
-                characterModels[i].SetActive(true);
+            if (i == characterid - 1) characterModels[i].SetActive(true);
             else characterModels[i].SetActive(false);
         }
     }

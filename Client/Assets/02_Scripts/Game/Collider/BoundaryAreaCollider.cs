@@ -19,13 +19,12 @@ public class BoundaryAreaCollider : MonoBehaviour
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
             PlayerAnimatorController playerAnimatorController = collision.gameObject.GetComponent<PlayerAnimatorController>();
 
-            playerController.InitPlayer();
+            playerController.Respawn();
             playerController.IsControlEnabled = false;
             playerController.IsStandUp = false;
             playerAnimatorController.SetInt(PlayerAnimatorController.ANIM_ID.Respawn);
 
             collision.gameObject.layer = 8;
-            collision.gameObject.transform.position = playerController.respawnPoint;
             collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             if(rangePointA != null && rangePointB != null) await RoomModel.Instance.OutOfBoundsAsynk(rangePointA.position, rangePointB.position);

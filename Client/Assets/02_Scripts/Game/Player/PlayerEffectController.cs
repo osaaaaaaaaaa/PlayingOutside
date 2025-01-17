@@ -34,9 +34,10 @@ public class PlayerEffectController : MonoBehaviour
         particleSystems = new List<GameObject>();
     }
 
-    private void OnEnable()
+    private void OnDisable()
     {
         isTouchedMud = false;
+        ClearAllParticles();
     }
 
     public void SetEffect(EFFECT_ID efectId)
@@ -108,7 +109,7 @@ public class PlayerEffectController : MonoBehaviour
         return false;
     }
 
-    public void StopAllParticles()
+    public void ClearAllParticles()
     {
         foreach (GameObject particleSystem in particleSystems)
         {
@@ -124,7 +125,7 @@ public class PlayerEffectController : MonoBehaviour
         }
     }
 
-    public void StopParticle(EFFECT_ID efectId)
+    public void ClearParticle(EFFECT_ID efectId)
     {
         string particleName = efectId.ToString();
         GameObject particleToRemove = null;
@@ -149,6 +150,7 @@ public class PlayerEffectController : MonoBehaviour
             SetEffect(EFFECT_ID.MudSplash);
             SetEffect(EFFECT_ID.MudRipples);
         }
+        // ƒfƒoƒt
         if (other.GetComponent<DebuffCollider>() != null)
         {
             if (other.GetComponent<DebuffCollider>().IsSpeedDown)
@@ -169,7 +171,7 @@ public class PlayerEffectController : MonoBehaviour
         if (other.tag == "Mud")
         {
             isTouchedMud = false;
-            StopParticle(EFFECT_ID.MudRipples);
+            ClearParticle(EFFECT_ID.MudRipples);
         }
     }
 
@@ -179,7 +181,7 @@ public class PlayerEffectController : MonoBehaviour
         {
             playerController.Speed -= playerController.DefaultSpeed;
             playerController.DefaultSpeed = 3f;
-            playerController.Speed = playerController.DefaultSpeed;
+            playerController.Speed += playerController.DefaultSpeed;
         }
 
         while (effectTime > 0)
@@ -192,9 +194,9 @@ public class PlayerEffectController : MonoBehaviour
         {
             playerController.Speed -= playerController.DefaultSpeed;
             playerController.DefaultSpeed = 5f;
-            playerController.Speed = playerController.DefaultSpeed;
+            playerController.Speed += playerController.DefaultSpeed;
         }
-        StopParticle(EFFECT_ID.AuraDebuff);
+        ClearParticle(EFFECT_ID.AuraDebuff);
         debuffCoroutine = null;
     }
 }

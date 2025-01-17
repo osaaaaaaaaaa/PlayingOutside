@@ -4,6 +4,7 @@ using Shared.Interfaces.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -49,7 +50,10 @@ public class PlayerController : MonoBehaviour
     public float Speed { get { return speed; } set { speed = value; } }
     float defaultSpeed = 5f;
     public float DefaultSpeed { get { return defaultSpeed; } set { defaultSpeed = value; } }
-    public float pepperSpeed { get; private set; } = 8;
+
+    // 加算するスピード
+    public float addPepperSpeed { get; private set; } = 3f;
+    float addMudSpeed = -2f;
 
     float jumpPower;
     [SerializeField] float defaultJumpPower;
@@ -81,6 +85,8 @@ public class PlayerController : MonoBehaviour
     bool isPressMachKickBtn;
     public bool IsPressMachKickBtn { get { return isPressMachKickBtn; } set { isPressMachKickBtn = value; } }
 
+    bool isMudCollider;
+
     public bool isDebug;
 
     private void Awake()
@@ -103,6 +109,7 @@ public class PlayerController : MonoBehaviour
         hp = hpMax;
         isStandUp = true;
         isInvincible = false;
+        isMudCollider = false;
     }
 
     private void OnEnable()
@@ -189,6 +196,12 @@ public class PlayerController : MonoBehaviour
             {
                 if (characterControlUI.IsSetupDone)
                     characterControlUI.ClickEvent(CharacterControlUI.ButtonType.item);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                itemController.ClearAllItemEffects();
+                effectController.ClearAllParticles();
             }
         }
 
@@ -400,22 +413,46 @@ public class PlayerController : MonoBehaviour
 
     public void OnColliderMudEnter()
     {
-        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed - 3;
-        else speed = defaultSpeed - 2;
-
-        jumpPower = defaultJumpPower / 2;
+        if (isMudCollider) return;
+        speed += addMudSpeed;
+        jumpPower = defaultJumpPower / 1.5f;
+        isMudCollider = true;
     }
 
     public void OnColliderMudExit()
     {
-        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
-        else speed = defaultSpeed;
-
+        if (!isMudCollider) return;
+        speed -= addMudSpeed;
         jumpPower = defaultJumpPower;
+        isMudCollider = false;
+    }
+
+    void InitParam()
+    {
+        // アイテム効果・パーティクルリセット
+        itemController.ClearAllItemEffects();
+        effectController.ClearAllParticles();
+
+        rb.drag = 0;
+        IsStandUp = true;
+        IsControlEnabled = true;
+        IsInvincible = false;
+        isMudCollider = false;
+        this.gameObject.layer = 3;
+        defaultSpeed = 5;
+        speed = defaultSpeed;
+        jumpPower = defaultJumpPower;
+        GetComponent<PlayerAudioController>().ResetRunningSourse(PlayerAudioController.AudioClipName.running_default);
+    }
+
+    public void Respawn()
+    {
+        transform.position = respawnPoint;
+        InitParam();
     }
 
     /// <summary>
-    /// プレイヤーの生成、復活地点に生成するときなど
+    /// 初期設定などに呼び出し
     /// </summary>
     /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf)
@@ -423,21 +460,14 @@ public class PlayerController : MonoBehaviour
         respawnPoint = startPointTf.position;
         transform.position = startPointTf.position;
         transform.eulerAngles += startPointTf.eulerAngles;
-
         modelTf.localPosition = Vector3.zero;
-        itemController.ClearAllItemEffects();
-        effectController.StopAllParticles();
-        rb.drag = 0;
-        IsStandUp = true;
-        IsControlEnabled = true;
-        IsInvincible = false;
-        this.gameObject.layer = 3;
-        defaultSpeed = 5;
-        speed = defaultSpeed;
 
-        GetComponent<PlayerAudioController>().ResetRunningSourse(PlayerAudioController.AudioClipName.running_default);
+        InitParam();
     }
 
+    /// <summary>
+    /// アニメーション終了時などに呼び出し
+    /// </summary>
     public void InitPlayer()
     {
         modelTf.localPosition = Vector3.zero;
@@ -445,7 +475,13 @@ public class PlayerController : MonoBehaviour
         isControlEnabled = true;
         rb.drag = 0;
 
-        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed = pepperSpeed;
-        else  speed = defaultSpeed;
+        speed = defaultSpeed;
+        jumpPower = defaultJumpPower;
+        if (itemController.itemEffectTimeList.ContainsKey(EnumManager.ITEM_ID.Pepper)) speed += addPepperSpeed;
+        if (isMudCollider)
+        {
+            speed += addMudSpeed;
+            jumpPower = defaultJumpPower / 1.5f;
+        }
     }
 }

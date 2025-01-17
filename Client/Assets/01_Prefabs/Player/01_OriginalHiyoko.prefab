@@ -36556,6 +36556,7 @@ MonoBehaviour:
   runningSourse: {fileID: 4691290009776886140}
   loopSkillSourse: {fileID: 798453355656628978}
   audioClips:
+  - {fileID: 8300000, guid: 8ac7ca1497892d148a18dfc3bdc43e7d, type: 3}
   - {fileID: 8300000, guid: 51d4b35b010e5434780ab3e938bc23ec, type: 3}
   - {fileID: 8300000, guid: 40d3eed3a35db7f45b0f15e817d2962b, type: 3}
   - {fileID: 8300000, guid: 7677027a6dec1c14a90c156c2c4916a8, type: 3}
@@ -36572,6 +36573,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a4cac760bbc1af5469f5d027a7e4a9eb, type: 3}
   - {fileID: 8300000, guid: d5bcc2b32ef00794a80a044174e6522f, type: 3}
   - {fileID: 8300000, guid: e95c5f3b17baa8a4ea115d16b8da24f6, type: 3}
+  customPitch: 1.2
 --- !u!81 &541198043161960742
 AudioListener:
   m_ObjectHideFlags: 0
