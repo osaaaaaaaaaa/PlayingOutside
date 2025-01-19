@@ -18,7 +18,7 @@ public class PlayerItemController : MonoBehaviour
     bool isOnUseButton = false; // アイテム使用リクエストが完了するまで連続で押せないようにする
     #endregion
 
-    private void OnDisable()
+    private void OnEnable()
     {
         ClearAllItemEffects();
     }

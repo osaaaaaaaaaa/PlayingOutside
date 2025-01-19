@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] List<GameObject> objOtherPlayers = new List<GameObject>();
 
     // 立ち上がっているかどうか
-    bool isStandUp;
+    public bool isStandUp;
     public bool IsStandUp { get { return isStandUp; } set { isStandUp = value; } }
 
     // 無敵状態かどうか
@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
     public bool IsInvincible { get { return isInvincible; }set { isInvincible = value; } }
 
     // 操作が可能かどうか
-    bool isControlEnabled = true;
+    public bool isControlEnabled = true;
     public bool IsControlEnabled { get { return isControlEnabled; }set { isControlEnabled = value; } }
 
     // マッハキックボタンを押しているかどうか

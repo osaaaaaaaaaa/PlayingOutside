@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 // Cartoon FX  - (c) 2015 Jean Moreno
 
@@ -17,8 +18,8 @@ public class CFX_AutoDestructShuriken : MonoBehaviour
 	{
 		StartCoroutine("CheckIfAlive");
 	}
-	
-	IEnumerator CheckIfAlive ()
+
+    IEnumerator CheckIfAlive ()
 	{
 		ParticleSystem ps = this.GetComponent<ParticleSystem>();
 		

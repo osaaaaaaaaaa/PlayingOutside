@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8227162193244309294}
   - component: {fileID: 3680150920125289642}
   - component: {fileID: 7880899515544624744}
+  - component: {fileID: -7413943568467471717}
   m_Layer: 0
   m_Name: 02_LandingSmoke
   m_TagString: Untagged
@@ -4933,6 +4934,18 @@ MonoBehaviour:
     shakesDelay: 0
   animatedLights: []
   fadeOutReference: {fileID: 0}
+--- !u!114 &-7413943568467471717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3831875568421116924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45229d4e5421e3418ea38be0b12d05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6993641501110529835
 GameObject:
   m_ObjectHideFlags: 0

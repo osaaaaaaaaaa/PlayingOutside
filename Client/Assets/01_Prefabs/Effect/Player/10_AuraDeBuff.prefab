@@ -4841,6 +4841,7 @@ GameObject:
   - component: {fileID: 6830248879745507405}
   - component: {fileID: 350069140513635147}
   - component: {fileID: 6819884966127297903}
+  - component: {fileID: -8073919542927516825}
   m_Layer: 0
   m_Name: 10_AuraDeBuff
   m_TagString: Untagged
@@ -9661,3 +9662,15 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-8073919542927516825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6882876057106214378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45229d4e5421e3418ea38be0b12d05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

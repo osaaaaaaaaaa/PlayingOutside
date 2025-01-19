@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 7988104370719933692}
   - component: {fileID: 6581719487118061478}
   - component: {fileID: 4434589332058621673}
+  - component: {fileID: -6994886300467251040}
   m_Layer: 0
   m_Name: 06_Down
   m_TagString: FxTemporaire
@@ -5023,6 +5024,18 @@ MonoBehaviour:
     perlinColor: 0
     perlinColorSpeed: 1
   fadeOutReference: {fileID: 0}
+--- !u!114 &-6994886300467251040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5047857709023859351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45229d4e5421e3418ea38be0b12d05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7680132549671239735
 GameObject:
   m_ObjectHideFlags: 0

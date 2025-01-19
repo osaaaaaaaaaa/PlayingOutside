@@ -15,7 +15,7 @@ public class WarpController : MonoBehaviour
         {
             if (gameDirector.isDebug)
             {
-                GameObject.Find("Player_Original").transform.position = points[(int)areaController.areaId].position;
+                GameObject.Find("01_OriginalHiyoko").transform.position = points[(int)areaController.areaId].position;
             }
             else
             {

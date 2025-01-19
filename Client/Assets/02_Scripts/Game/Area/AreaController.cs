@@ -127,7 +127,7 @@ public class AreaController : MonoBehaviour
         float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
 
         // ‘€ì‚ğ–³Œø‰»‚·‚é
-        gameDirector.characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = false;
+        gameDirector.characterList[RoomModel.Instance.ConnectionId].SetActive(false);
 
         if (isLastArea)
         {
@@ -159,7 +159,6 @@ public class AreaController : MonoBehaviour
     public IEnumerator RestarningGameCoroutine(GameObject player ,float restarningWaitSec)
     {
         if (!isClearedArea) yield break;
-        player.SetActive(false);
         areaId++;
         Debug.Log("ƒGƒŠƒA‚ÌIDF"+ (int)areaId);
 

@@ -23,7 +23,7 @@ public class PlayerEffectController : MonoBehaviour
         AuraDebuff,     // スピードダウン
     }
 
-    List<GameObject> particleSystems = new List<GameObject>();
+    public List<GameObject> particleSystems = new List<GameObject>();
     bool isTouchedMud;
     Coroutine debuffCoroutine;
 
@@ -34,7 +34,7 @@ public class PlayerEffectController : MonoBehaviour
         particleSystems = new List<GameObject>();
     }
 
-    private void OnDisable()
+    private void OnEnable()
     {
         isTouchedMud = false;
         ClearAllParticles();
@@ -113,9 +113,8 @@ public class PlayerEffectController : MonoBehaviour
     {
         foreach (GameObject particleSystem in particleSystems)
         {
-            if (particleSystem != null) particleSystem.GetComponent<ParticleSystem>().Stop();
+            if (particleSystem) Destroy(particleSystem);
         }
-
         particleSystems.Clear();
 
         if (debuffCoroutine != null)
@@ -131,14 +130,17 @@ public class PlayerEffectController : MonoBehaviour
         GameObject particleToRemove = null;
         foreach (GameObject particleSystem in particleSystems)
         {
-            if (particleSystem != null && particleSystem.name == particleName)
+            if (particleSystem && particleSystem.name == particleName)
             {
                 particleToRemove = particleSystem;
                 particleSystem.GetComponent<ParticleSystem>().Stop();
             }
         }
 
-        if (particleToRemove != null) particleSystems.Remove(particleToRemove);
+        if (particleToRemove != null)
+        {
+            particleSystems.Remove(particleToRemove);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

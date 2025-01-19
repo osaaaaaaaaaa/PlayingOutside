@@ -4841,6 +4841,7 @@ GameObject:
   - component: {fileID: 3331335715736446927}
   - component: {fileID: 8602910865874545490}
   - component: {fileID: 5098830271475420309}
+  - component: {fileID: -221798346942000686}
   m_Layer: 0
   m_Name: 09_AuraBuff
   m_TagString: Untagged
@@ -9661,3 +9662,15 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &-221798346942000686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7358791291892171350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c45229d4e5421e3418ea38be0b12d05f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
