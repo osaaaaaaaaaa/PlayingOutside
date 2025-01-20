@@ -9,7 +9,7 @@ public class TopSceneUIManager : MonoBehaviour
     #region オーディオ関係
     [SerializeField] AudioClip selectSE;
     [SerializeField] AudioClip closeSE;
-    AudioSource audioSource;
+    SEController seController;
     #endregion
 
     [SerializeField] List<GameObject> selectButtonList;
@@ -24,7 +24,7 @@ public class TopSceneUIManager : MonoBehaviour
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
     }
 
     void ToggleUIVisibility(bool isVisibility)
@@ -45,13 +45,13 @@ public class TopSceneUIManager : MonoBehaviour
 
     public virtual void OnSelectButton()
     {
-        audioSource.PlayOneShot(selectSE);
+        seController.PlayAudio(selectSE);
         ToggleUIVisibility(false);
     }
 
     public virtual void OnBackButton()
     {
-        audioSource.PlayOneShot(closeSE);
+        seController.PlayAudio(closeSE);
         ToggleUIVisibility(true);
     }
 }

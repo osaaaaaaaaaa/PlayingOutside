@@ -42,12 +42,15 @@ public class UserModel : BaseModel
     /// <summary>
     /// ユーザー情報をローカルに保存する
     /// </summary>
-    void SaveUserData()
+    public void SaveUserData()
     {
         SaveData saveData = new SaveData();
         saveData.AuthToken = this.AuthToken;
         saveData.Name = this.UserName;
         saveData.UserID = this.UserId;
+        saveData.BGMVolume = AudioVolume.BgmVolume;
+        saveData.SEVolume = AudioVolume.SeVolume;
+
         string json = JsonConvert.SerializeObject(saveData);
         // Application.persistentDataPathはOS毎で保存場所が固定されている
         var writer = new StreamWriter(Application.persistentDataPath + "/saveData.json");
@@ -71,6 +74,8 @@ public class UserModel : BaseModel
         this.UserId = saveData.UserID;
         this.UserName = saveData.Name;
         this.AuthToken = saveData.AuthToken;
+        AudioVolume.BgmVolume = saveData.BGMVolume;
+        AudioVolume.SeVolume = saveData.SEVolume;
         return true;
     }
 

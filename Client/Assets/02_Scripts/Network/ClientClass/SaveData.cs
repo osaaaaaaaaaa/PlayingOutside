@@ -7,4 +7,6 @@ public class SaveData
     public string Name { get; set; }
     public int UserID { get; set; }
     public string AuthToken { get; set; }
+    public float BGMVolume { get; set; }
+    public float SEVolume { get; set; }
 }

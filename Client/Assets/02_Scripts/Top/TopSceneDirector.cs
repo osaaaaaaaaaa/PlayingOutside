@@ -15,20 +15,6 @@ public class TopSceneDirector : MonoBehaviour
 
     private async void Awake()
     {
-//#if UNITY_EDITOR
-//        if (UserModel.Instance.UserId == 0)
-//        {
-//            // ƒ†[ƒU[î•ñæ“¾ˆ—
-//            bool isSucsess = UserModel.Instance.LoadUserData();
-//            int userId = isSucsess ? UserModel.Instance.UserId : 1;
-//            var error = await UserModel.Instance.ShowUserAsync(userId);
-//            if (error != null)
-//            {
-//                ErrorUIController.Instance.ShowErrorUI(error);
-//                return;
-//            }
-//        }
-//#endif
         if (UserModel.Instance.UserId != 0)
         {
             userNameText.text = UserModel.Instance.UserName;

@@ -26,10 +26,7 @@ public class AreaController : MonoBehaviour
     const float fadeTime = 0.5f;
     #endregion
 
-    #region オーディオ関係
-    [SerializeField] AudioClip clearedAreSE;
-    AudioSource audioSource;
-    #endregion
+    SEController seController;
 
     public bool isClearedArea { get; private set; }
 
@@ -46,7 +43,7 @@ public class AreaController : MonoBehaviour
     private void Awake()
     {
         imageBlack = imageBlackObj.GetComponent<Image>();
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
         isClearedArea = false;
 
         foreach (var item in itemSpawnerList)
@@ -66,7 +63,7 @@ public class AreaController : MonoBehaviour
     /// </summary>
     public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
-        audioSource.PlayOneShot(clearedAreSE);
+        seController.PlayAudio();
         isClearedArea = false;
         bool isLastArea = (areaId == lastAreaId);
         // サーバーなしの場合のみ使用、最終的にisDebugを削除

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class SEController : MonoBehaviour
@@ -12,10 +13,33 @@ public class SEController : MonoBehaviour
     {
         sourse = GetComponent<AudioSource>();
         if (sourse == null) sourse = this.gameObject.AddComponent<AudioSource>();
+        SetupAudioVolume();
+    }
+
+    public void SetupAudioVolume()
+    {
+        if(sourse) sourse.volume = AudioVolume.SeVolume;
     }
 
     public void PlayAudio()
     {
-        sourse.PlayOneShot(clip);
+        if(clip != null) sourse.PlayOneShot(clip);
+    }
+
+    public void PlayAudio(AudioClip audioClip)
+    {
+        sourse.PlayOneShot(audioClip);
+    }
+
+    public void PlayAudio(AudioClip audioClip, bool isLoop)
+    {
+        sourse.loop = isLoop;
+        sourse.PlayOneShot(audioClip);
+    }
+
+    public void StopAudio()
+    {
+        sourse.loop = false;
+        sourse.Stop();
     }
 }

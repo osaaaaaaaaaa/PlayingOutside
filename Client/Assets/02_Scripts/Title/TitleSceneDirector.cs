@@ -16,6 +16,14 @@ public class TitleSceneDirector : MonoBehaviour
     bool isLocalData;
     bool isRanning;
 
+    private void Awake()
+    {
+        if (!isDebug)
+        {
+            isLocalData = UserModel.Instance.LoadUserData();
+        }
+    }
+
     private void Start()
     {
         Application.targetFrameRate = 60;
@@ -33,7 +41,6 @@ public class TitleSceneDirector : MonoBehaviour
         if (!isDebug && !isRanning && Input.GetMouseButtonDown(0))
         {
             isRanning = true;
-            if(!isLocalData) isLocalData = UserModel.Instance.LoadUserData();
             UnityAction errorActoin = OnErrorPanelButton;
 
             // ローカルにあるユーザー情報を取得する

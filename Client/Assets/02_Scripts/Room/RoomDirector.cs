@@ -25,17 +25,14 @@ public class RoomDirector : MonoBehaviour
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
-    #region オーディオ関係
-    [SerializeField] AudioClip joinSE;
-    AudioSource audioSource;
-    #endregion
+    SEController seController;
 
     const float waitSeconds = 0.1f;
 
     private async void Start()
     {
         if (RoomModel.Instance.IsMatchingRunning) roomNameObj.SetActive(false);
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
 
         textRoomName.text = RoomModel.Instance.ConnectionRoomName;
 
@@ -119,7 +116,7 @@ public class RoomDirector : MonoBehaviour
         int minRequiredUsers = characterList.Count < 2 ? 2 : characterList.Count;
         textUserCnt.text = "/" + minRequiredUsers + " Ready";
 
-        audioSource.PlayOneShot(joinSE);
+        seController.PlayAudio();
     }
 
     /// <summary>

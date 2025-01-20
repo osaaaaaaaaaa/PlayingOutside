@@ -14,13 +14,25 @@ public class SettingUIController : MonoBehaviour
     [SerializeField] Slider sliderSE;
     TopSceneUIManager topSceneUIManager;
 
+    #region オーディオコントローラー関係
+    BGMController bgmController;
+    List<SEController> seControllers;
+    #endregion
+
     private void Start()
     {
+        // 各オーディオコントローラー関係を取得
+        bgmController = Camera.main.GetComponent<BGMController>();
+        seControllers = new List<SEController>(FindObjectsOfType<SEController>());  // シーン上の全てのSEControllerを取得
+        Debug.Log(seControllers.Count + "取得した");
+
         foreach (var ui in uiList)
         {
             ui.transform.localScale = Vector3.zero;
         }
         topSceneUIManager = GetComponent<TopSceneUIManager>();
+        sliderBGM.value = AudioVolume.BgmVolume;
+        sliderSE.value = AudioVolume.SeVolume;
     }
 
     void ToggleUIVisibility(bool isVisibility)
@@ -65,11 +77,23 @@ public class SettingUIController : MonoBehaviour
 
     public void OnSliderBGM()
     {
-        // 音量変更
+        AudioVolume.BgmVolume = sliderBGM.value;
+        bgmController.SetupAudioVolume();
+        UserModel.Instance.SaveUserData();
     }
 
     public void OnSliderSE()
     {
-        // 音量変更
+        AudioVolume.SeVolume = sliderSE.value;
+        UpdateSEVolumes();
+        UserModel.Instance.SaveUserData();
+    }
+
+    void UpdateSEVolumes()
+    {
+        foreach (var se in seControllers)
+        {
+            se.SetupAudioVolume();
+        }
     }
 }

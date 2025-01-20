@@ -22,17 +22,10 @@ public class FinalResultSceneDirector : MonoBehaviour
     [SerializeField] CharacterControlUI characterControlUI;
     #endregion
 
-    #region オーディオ関係
-    [SerializeField] AudioClip vuvuzelaSE;
-    AudioSource audioSource;
-    #endregion
-
     const float waitSeconds = 0.1f;
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
@@ -222,7 +215,6 @@ public class FinalResultSceneDirector : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);    // 王冠のアニメーションが終了する時間
 
-        GetComponent<AudioSource>().PlayOneShot(vuvuzelaSE);
         foreach (var winnerId in winnerIdList)
         {
             particleController.GenerateSparksParticles(characterList[winnerId].transform);

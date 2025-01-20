@@ -53,6 +53,13 @@ public class PlayerAudioController : MonoBehaviour
         StopLoopSkillSourse();
     }
 
+    void SetupAudioVolume()
+    {
+        oneShotSourse.volume = AudioVolume.SeVolume;
+        runningSourse.volume = AudioVolume.SeVolume;
+        loopSkillSourse.volume = AudioVolume.SeVolume;
+    }
+
     public void PlayOneShot(AudioClip clip)
     {
         if (clip == audioClipList[AudioClipName.piyo]) oneShotSourse.pitch = customPitch;

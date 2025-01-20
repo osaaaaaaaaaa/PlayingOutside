@@ -197,12 +197,6 @@ public class PlayerController : MonoBehaviour
                 if (characterControlUI.IsSetupDone)
                     characterControlUI.ClickEvent(CharacterControlUI.ButtonType.item);
             }
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                itemController.ClearAllItemEffects();
-                effectController.ClearAllParticles();
-            }
         }
 
         // Å´Ç∆ÇËÇ†Ç¶Ç∏écÇµÇƒÇ®Ç≠####################################################

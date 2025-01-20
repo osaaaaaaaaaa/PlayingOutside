@@ -9,7 +9,7 @@ public class TotalScoreUIController : MonoBehaviour
 {
     [SerializeField] AudioClip dramRollSE;
     [SerializeField] AudioClip dramFinishSE;
-    AudioSource audioSource;
+    SEController seController;
 
     [SerializeField] List<GameObject> textParents;
     [SerializeField] List<Text> textScores;
@@ -17,7 +17,7 @@ public class TotalScoreUIController : MonoBehaviour
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
         for (int i = 0; i < textParents.Count; i++)
         {
             textParents[i].SetActive(false);
@@ -36,10 +36,12 @@ public class TotalScoreUIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スコアアニメーション再生
+    /// </summary>
     public void PlayAnim()
     {
-        audioSource.loop = true;
-        audioSource.PlayOneShot(dramRollSE);
+        seController.PlayAudio(dramRollSE, true);
 
         for (int i = 0; i < textParents.Count; i++)
         {
@@ -51,11 +53,12 @@ public class TotalScoreUIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// スコアアニメーションを停止する
+    /// </summary>
     public void StopAnim()
     {
-        audioSource.Stop();
-        audioSource.loop = false;
-        audioSource.PlayOneShot(dramFinishSE);
+        seController.PlayAudio(dramFinishSE, true);
 
         foreach (var result in resultData)
         {

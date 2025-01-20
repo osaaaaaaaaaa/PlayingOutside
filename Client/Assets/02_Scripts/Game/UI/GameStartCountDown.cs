@@ -10,17 +10,17 @@ public class GameStartCountDown : MonoBehaviour
 
     [SerializeField] AudioClip hereweSE;
     [SerializeField] AudioClip goSE;
-    AudioSource audioSource;
+    SEController seController;
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
         animator = GetComponent<Animator>();
     }
 
     public void PlayCountDownOverAnim()
     {
-        audioSource.PlayOneShot(goSE);
+        seController.PlayAudio(goSE);
         animator.Play("CountDownOverAnimation");
     }
 
@@ -31,7 +31,7 @@ public class GameStartCountDown : MonoBehaviour
 
     void PlayAnim()
     {
-        audioSource.PlayOneShot(hereweSE);
+        seController.PlayAudio(hereweSE);
         animator.Play("CountDownAnimation");
     }
 

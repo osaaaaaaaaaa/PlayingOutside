@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class BGMController : MonoBehaviour
 {
@@ -11,12 +12,18 @@ public class BGMController : MonoBehaviour
     {
         bgmSource = GetComponent<AudioSource>();
         bgmSource.loop = true;
+        SetupAudioVolume();
 
         if (isStartPlayBGM)
         {
             if (FadeAudioController.Instance != null) FadeAudioController.Instance.PlayFadeAudio(this.gameObject, true);
             else bgmSource.Play();
         }
+    }
+
+    public void SetupAudioVolume()
+    {
+        if(bgmSource) bgmSource.volume = AudioVolume.BgmVolume;
     }
 
     public void PlayAudio()

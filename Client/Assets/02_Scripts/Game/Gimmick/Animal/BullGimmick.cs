@@ -6,13 +6,13 @@ using UnityEngine;
 public class BullGimmick : MonoBehaviour
 {
     [SerializeField] float waaitSec;
-    AudioSource audioSource;
+    SEController seController;
     Animator animator;
     Coroutine coroutine;
 
     private void OnEnable()
     {
-        audioSource = GetComponent<AudioSource>();
+        seController = GetComponent<SEController>();
         animator = GetComponent<Animator>();
         coroutine = StartCoroutine(PlayAnimalGimmick());
     }
@@ -25,7 +25,7 @@ public class BullGimmick : MonoBehaviour
 
     public void PlayEatAnim()
     {
-        audioSource.Play();
+        seController.PlayAudio();
         animator.Play("Eat", 0, 0);
     }
 

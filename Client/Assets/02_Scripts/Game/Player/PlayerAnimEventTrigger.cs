@@ -97,6 +97,11 @@ public class PlayerAnimEventTrigger : MonoBehaviour
         }
     }
 
+    public void SetAnimId(PlayerAnimatorController.ANIM_ID id)
+    {
+        animController.SetInt(id);
+    }
+
     public void PlayAudioOneShot(PlayerAudioController.AudioClipName clipName)
     {
         audioController.PlayOneShot(clipName);

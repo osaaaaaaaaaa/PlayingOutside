@@ -13,6 +13,8 @@ public class FinalResultSceneParticleController : MonoBehaviour
         var sparks2 = Instantiate(sparksPrefab, character);
         sparks1.transform.localPosition = new Vector3(0.4f, 0, -0.5f);
         sparks2.transform.localPosition = new Vector3(-0.4f, 0, -0.5f);
+
+        sparks1.GetComponent<SEController>().PlayAudio();
     }
 
     public void GenarateConfettiParticle()
