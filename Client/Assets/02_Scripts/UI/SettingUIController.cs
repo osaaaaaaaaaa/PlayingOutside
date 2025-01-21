@@ -19,12 +19,11 @@ public class SettingUIController : MonoBehaviour
     List<SEController> seControllers;
     #endregion
 
-    private void Start()
+    virtual protected void Start()
     {
-        // 各オーディオコントローラー関係を取得
+        // 各コントローラー関係を取得
         bgmController = Camera.main.GetComponent<BGMController>();
         seControllers = new List<SEController>(FindObjectsOfType<SEController>());  // シーン上の全てのSEControllerを取得
-        Debug.Log(seControllers.Count + "取得した");
 
         foreach (var ui in uiList)
         {
@@ -49,25 +48,30 @@ public class SettingUIController : MonoBehaviour
     /// <summary>
     /// 設定UIを表示するボタン
     /// </summary>
-    public void OnSelectButton()
+    public virtual void OnSelectButton()
     {
-        if (topSceneUIManager.IsTaskRunning) return;
-        topSceneUIManager.IsTaskRunning = true;
+        if(topSceneUIManager != null)
+        {
+            if (topSceneUIManager.IsTaskRunning) return;
+            topSceneUIManager.IsTaskRunning = true;
 
-        topSceneUIManager.OnSelectButton();
+            topSceneUIManager.OnSelectButton();
+        }
         ToggleUIVisibility(true);
     }
 
     /// <summary>
     /// 設定UIを非表示するボタン
     /// </summary>
-    public void OnBackButton()
+    public virtual void OnBackButton()
     {
-        if (topSceneUIManager.IsTaskRunning) return;
-        topSceneUIManager.IsTaskRunning = true;
-
+        if(topSceneUIManager != null)
+        {
+            if (topSceneUIManager.IsTaskRunning) return;
+            topSceneUIManager.IsTaskRunning = true;
+            topSceneUIManager.OnBackButton();
+        }
         ToggleUIVisibility(false);
-        topSceneUIManager.OnBackButton();
     }
 
     public void OnTitleButton()

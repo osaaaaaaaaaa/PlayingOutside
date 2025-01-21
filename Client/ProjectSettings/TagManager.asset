@@ -14,6 +14,7 @@ TagManager:
   - Debuff
   - Checkpoint
   - Grass
+  - Obstacle
   layers:
   - Default
   - TransparentFX

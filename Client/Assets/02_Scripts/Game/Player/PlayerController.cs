@@ -427,6 +427,7 @@ public class PlayerController : MonoBehaviour
         itemController.ClearAllItemEffects();
         effectController.ClearAllParticles();
 
+        transform.parent = null;
         rb.drag = 0;
         IsStandUp = true;
         IsControlEnabled = true;

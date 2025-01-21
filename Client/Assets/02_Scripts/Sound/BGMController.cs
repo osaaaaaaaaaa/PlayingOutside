@@ -8,7 +8,7 @@ public class BGMController : MonoBehaviour
     AudioSource bgmSource;
     [SerializeField] bool isStartPlayBGM = true;
 
-    void Start()
+    private void Awake()
     {
         bgmSource = GetComponent<AudioSource>();
         bgmSource.loop = true;
@@ -19,6 +19,7 @@ public class BGMController : MonoBehaviour
             if (FadeAudioController.Instance != null) FadeAudioController.Instance.PlayFadeAudio(this.gameObject, true);
             else bgmSource.Play();
         }
+
     }
 
     public void SetupAudioVolume()

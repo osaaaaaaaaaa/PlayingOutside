@@ -8,6 +8,7 @@ using UnityEngine.Playables;
 public class MoveSetRoot : MonoBehaviour
 {
     [SerializeField] List<Vector3> root;
+    [SerializeField] PathType pathType = PathType.Linear;
     [SerializeField] float animSec;
     [SerializeField] bool isSetLookAt;
     [SerializeField] bool isDebug;
@@ -25,11 +26,11 @@ public class MoveSetRoot : MonoBehaviour
 
         if (isSetLookAt)
         {
-            pathTween = this.transform.DOLocalPath(path, animSec).SetLookAt(0.01f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
+            pathTween = this.transform.DOLocalPath(path, animSec, pathType).SetLookAt(0.01f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
         }
         else
         {
-            pathTween = this.transform.DOLocalPath(path, animSec).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
+            pathTween = this.transform.DOLocalPath(path, animSec, pathType).SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart);
         }
 
         if (!isDebug)

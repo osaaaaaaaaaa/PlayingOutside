@@ -51,11 +51,16 @@ public class AreaController : MonoBehaviour
             item.enabled = false;
         }
         itemSpawnerList[(int)areaId].enabled = true;
-        foreach (var gimmick in gimmicks)
+
+        if (!gameDirector.isDebug)
         {
-            gimmick.SetActive(false);
+            foreach (var gimmick in gimmicks)
+            {
+                gimmick.SetActive(false);
+            }
+            gimmicks[(int)areaId].SetActive(true);
+
         }
-        gimmicks[(int)areaId].SetActive(true);
     }
 
     /// <summary>

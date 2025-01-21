@@ -1,4 +1,5 @@
 using Cinemachine;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,9 +32,9 @@ public class TargetCameraController : MonoBehaviour
         cameraVirtual = GetComponent<CinemachineVirtualCamera>();
         cameraTransposer = cameraVirtual.GetCinemachineComponent<CinemachineTransposer>();
 
-        if(debug_areaId > 0)
+        if (gameDirector.isDebug)
         {
-            InitCamera(null, debug_areaId,new Guid());
+            InitCamera(null, debug_areaId, new Guid());
         }
     }
 
