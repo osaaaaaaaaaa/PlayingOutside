@@ -14,11 +14,9 @@ public class ReverseCollider : MonoBehaviour
 
     public void CreateInvertedMeshCollider()
     {
-        if (removeExistingColliders)
-            RemoveExistingColliders();
+        if (removeExistingColliders) RemoveExistingColliders();
 
         InvertMesh();
-
         gameObject.AddComponent<MeshCollider>();
     }
 

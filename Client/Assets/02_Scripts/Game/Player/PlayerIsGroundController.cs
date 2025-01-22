@@ -30,7 +30,7 @@ public class PlayerIsGroundController : MonoBehaviour
     /// <returns></returns>
     public bool IsGround()
     {
-        Vector3 basePos = transform.position;    // モンスターのピボットが中心にあるため調整する
+        Vector3 basePos = transform.position;    // ピボットが中心にあるため調整する
         Vector3 leftStartPos = basePos - Vector3.right * rayWeight;      // 左側の始点
         Vector3 rightStartPos = basePos + Vector3.right * rayWeight;    // 右側の始点
         Vector3 forwardStartPos = basePos - Vector3.back * rayWeight;   // 前の始点

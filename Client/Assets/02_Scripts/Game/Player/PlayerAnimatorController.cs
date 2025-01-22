@@ -148,6 +148,10 @@ public class PlayerAnimatorController : MonoBehaviour
             playerController.IsControlEnabled = false;
             if (id == ANIM_ID.Damage) audioController.PlayDamageClip();
         }
+        if(id == ANIM_ID.Jump)
+        {
+            animator.Play("Jump", 0, 0); // èâÇﬂÇ©ÇÁçƒê∂Ç∑ÇÈ
+        }
 
         if (id == ANIM_ID.Run || id == ANIM_ID.RunFast) audioController.PlayRunningSourse();
         else if(audioController != null) audioController.StopRunningSourse();
@@ -183,6 +187,10 @@ public class PlayerAnimatorController : MonoBehaviour
         {
             animator.Play("Damage");
             audioController.PlayDamageClip();
+        }
+        if (id == (int)ANIM_ID.Jump)
+        {
+            animator.Play("Jump", 0, 0); // èâÇﬂÇ©ÇÁçƒê∂Ç∑ÇÈ
         }
 
         if (id == (int)ANIM_ID.Run || id == (int)ANIM_ID.RunFast) audioController.PlayRunningSourse();

@@ -1,96 +1,272 @@
 fileFormatVersion: 2
 guid: 4cbeed98283d16542a9448f3a7aeaebf
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Breast.L
-    100002: Breast.R
-    100004: Foot1.L
-    100006: Foot1.R
-    100008: Foot2.L
-    100010: Foot2.L_end
-    100012: Foot2.R
-    100014: Foot2.R_end
-    100016: //RootNode
-    100018: Goose Skeleton
-    100020: Head
-    100022: Head_end
-    100024: Heel.L
-    100026: Heel.R
-    100028: Leg.L
-    100030: Leg.R
-    100032: Neck1
-    100034: Neck2
-    100036: Neck3
-    100038: Plane
-    100040: Shin.L
-    100042: Shin.R
-    100044: Spine1
-    100046: Spine2
-    100048: Tail1
-    100050: Tail2
-    100052: Tail2_end
-    100054: UpperLeg.L
-    100056: UpperLeg.R
-    100058: Wing1.L
-    100060: Wing1.R
-    100062: Wing2.L
-    100064: Wing2.R
-    100066: Wing3.L
-    100068: Wing3.L_end
-    100070: Wing3.R
-    100072: Wing3.R_end
-    400000: Breast.L
-    400002: Breast.R
-    400004: Foot1.L
-    400006: Foot1.R
-    400008: Foot2.L
-    400010: Foot2.L_end
-    400012: Foot2.R
-    400014: Foot2.R_end
-    400016: //RootNode
-    400018: Goose Skeleton
-    400020: Head
-    400022: Head_end
-    400024: Heel.L
-    400026: Heel.R
-    400028: Leg.L
-    400030: Leg.R
-    400032: Neck1
-    400034: Neck2
-    400036: Neck3
-    400038: Plane
-    400040: Shin.L
-    400042: Shin.R
-    400044: Spine1
-    400046: Spine2
-    400048: Tail1
-    400050: Tail2
-    400052: Tail2_end
-    400054: UpperLeg.L
-    400056: UpperLeg.R
-    400058: Wing1.L
-    400060: Wing1.R
-    400062: Wing2.L
-    400064: Wing2.R
-    400066: Wing3.L
-    400068: Wing3.L_end
-    400070: Wing3.R
-    400072: Wing3.R_end
-    2100000: Goose Skin
-    2100002: Goose Beak
-    2100004: Goose Legs
-    2100006: Goose Eyes
-    4300000: Plane
-    7400000: Idle
-    7400002: Walk
-    7400004: Run
-    7400006: Sit Down
-    7400008: Sitting
-    7400010: Eat
-    7400012: Death
-    9500000: //RootNode
-    13700000: Plane
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Breast.L
+  - first:
+      1: 100002
+    second: Breast.R
+  - first:
+      1: 100004
+    second: Foot1.L
+  - first:
+      1: 100006
+    second: Foot1.R
+  - first:
+      1: 100008
+    second: Foot2.L
+  - first:
+      1: 100010
+    second: Foot2.L_end
+  - first:
+      1: 100012
+    second: Foot2.R
+  - first:
+      1: 100014
+    second: Foot2.R_end
+  - first:
+      1: 100016
+    second: //RootNode
+  - first:
+      1: 100018
+    second: Goose Skeleton
+  - first:
+      1: 100020
+    second: Head
+  - first:
+      1: 100022
+    second: Head_end
+  - first:
+      1: 100024
+    second: Heel.L
+  - first:
+      1: 100026
+    second: Heel.R
+  - first:
+      1: 100028
+    second: Leg.L
+  - first:
+      1: 100030
+    second: Leg.R
+  - first:
+      1: 100032
+    second: Neck1
+  - first:
+      1: 100034
+    second: Neck2
+  - first:
+      1: 100036
+    second: Neck3
+  - first:
+      1: 100038
+    second: Plane
+  - first:
+      1: 100040
+    second: Shin.L
+  - first:
+      1: 100042
+    second: Shin.R
+  - first:
+      1: 100044
+    second: Spine1
+  - first:
+      1: 100046
+    second: Spine2
+  - first:
+      1: 100048
+    second: Tail1
+  - first:
+      1: 100050
+    second: Tail2
+  - first:
+      1: 100052
+    second: Tail2_end
+  - first:
+      1: 100054
+    second: UpperLeg.L
+  - first:
+      1: 100056
+    second: UpperLeg.R
+  - first:
+      1: 100058
+    second: Wing1.L
+  - first:
+      1: 100060
+    second: Wing1.R
+  - first:
+      1: 100062
+    second: Wing2.L
+  - first:
+      1: 100064
+    second: Wing2.R
+  - first:
+      1: 100066
+    second: Wing3.L
+  - first:
+      1: 100068
+    second: Wing3.L_end
+  - first:
+      1: 100070
+    second: Wing3.R
+  - first:
+      1: 100072
+    second: Wing3.R_end
+  - first:
+      4: 400000
+    second: Breast.L
+  - first:
+      4: 400002
+    second: Breast.R
+  - first:
+      4: 400004
+    second: Foot1.L
+  - first:
+      4: 400006
+    second: Foot1.R
+  - first:
+      4: 400008
+    second: Foot2.L
+  - first:
+      4: 400010
+    second: Foot2.L_end
+  - first:
+      4: 400012
+    second: Foot2.R
+  - first:
+      4: 400014
+    second: Foot2.R_end
+  - first:
+      4: 400016
+    second: //RootNode
+  - first:
+      4: 400018
+    second: Goose Skeleton
+  - first:
+      4: 400020
+    second: Head
+  - first:
+      4: 400022
+    second: Head_end
+  - first:
+      4: 400024
+    second: Heel.L
+  - first:
+      4: 400026
+    second: Heel.R
+  - first:
+      4: 400028
+    second: Leg.L
+  - first:
+      4: 400030
+    second: Leg.R
+  - first:
+      4: 400032
+    second: Neck1
+  - first:
+      4: 400034
+    second: Neck2
+  - first:
+      4: 400036
+    second: Neck3
+  - first:
+      4: 400038
+    second: Plane
+  - first:
+      4: 400040
+    second: Shin.L
+  - first:
+      4: 400042
+    second: Shin.R
+  - first:
+      4: 400044
+    second: Spine1
+  - first:
+      4: 400046
+    second: Spine2
+  - first:
+      4: 400048
+    second: Tail1
+  - first:
+      4: 400050
+    second: Tail2
+  - first:
+      4: 400052
+    second: Tail2_end
+  - first:
+      4: 400054
+    second: UpperLeg.L
+  - first:
+      4: 400056
+    second: UpperLeg.R
+  - first:
+      4: 400058
+    second: Wing1.L
+  - first:
+      4: 400060
+    second: Wing1.R
+  - first:
+      4: 400062
+    second: Wing2.L
+  - first:
+      4: 400064
+    second: Wing2.R
+  - first:
+      4: 400066
+    second: Wing3.L
+  - first:
+      4: 400068
+    second: Wing3.L_end
+  - first:
+      4: 400070
+    second: Wing3.R
+  - first:
+      4: 400072
+    second: Wing3.R_end
+  - first:
+      21: 2100000
+    second: Goose Skin
+  - first:
+      21: 2100002
+    second: Goose Beak
+  - first:
+      21: 2100004
+    second: Goose Legs
+  - first:
+      21: 2100006
+    second: Goose Eyes
+  - first:
+      43: 4300000
+    second: Plane
+  - first:
+      74: 7400000
+    second: Idle
+  - first:
+      74: 7400002
+    second: Walk
+  - first:
+      74: 7400004
+    second: Run
+  - first:
+      74: 7400006
+    second: Sit Down
+  - first:
+      74: 7400008
+    second: Sitting
+  - first:
+      74: 7400010
+    second: Eat
+  - first:
+      74: 7400012
+    second: Death
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Plane
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -113,7 +289,7 @@ ModelImporter:
       name: Goose Skin
     second: {fileID: 2100000, guid: 07c71194e60b2474882c150bbb52431f, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -122,6 +298,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -142,6 +319,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Idle
       takeName: Idle
+      internalID: 0
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -170,6 +348,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Walk
       takeName: Walk
+      internalID: 0
       firstFrame: 0
       lastFrame: 30
       wrapMode: 0
@@ -198,6 +377,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Run
       takeName: Run
+      internalID: 0
       firstFrame: 0
       lastFrame: 24
       wrapMode: 0
@@ -226,6 +406,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Sit Down
       takeName: Sit Down
+      internalID: 0
       firstFrame: 0
       lastFrame: 15
       wrapMode: 0
@@ -254,6 +435,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Sitting
       takeName: Sitting
+      internalID: 0
       firstFrame: 0
       lastFrame: 24
       wrapMode: 0
@@ -282,6 +464,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Eat
       takeName: Eat
+      internalID: 0
       firstFrame: 0
       lastFrame: 65
       wrapMode: 0
@@ -290,7 +473,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -310,6 +493,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Death
       takeName: Death
+      internalID: 0
       firstFrame: 0
       lastFrame: 25
       wrapMode: 0
@@ -341,34 +525,49 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -378,13 +577,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

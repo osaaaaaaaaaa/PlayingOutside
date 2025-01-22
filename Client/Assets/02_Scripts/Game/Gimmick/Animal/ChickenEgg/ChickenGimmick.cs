@@ -227,8 +227,6 @@ public class ChickenGimmick : MonoBehaviour
             {
                 obstaclesMaxRange.Add(ranges[0]);
                 obstaclesMinRange.Add(ranges[1]);
-                Debug.Log("max:" + ranges[0]);
-                Debug.Log("min:" + ranges[1]);
             }
         }
     }
