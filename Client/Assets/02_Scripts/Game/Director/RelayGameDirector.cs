@@ -28,15 +28,18 @@ public class RelayGameDirector : MonoBehaviour
     public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
-    #region MoveRootスクリプトを適用しているギミック
-    [SerializeField] GameObject gimmicksParent;
-    [SerializeField] List<GameObject> movingObjects;
+    #region マスタークライアントと同期するギミック
+    Dictionary<string, Goose> gooseObjList = new Dictionary<string, Goose>();
     Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
     #endregion
 
     #region 動物のギミック
     [SerializeField] List<GameObject> animalGimmicks;
     Dictionary<string,GameObject> animalGimmickList = new Dictionary<string, GameObject>();
+    #endregion
+
+    #region 植物のギミック関係
+    [SerializeField] List<PlantGroupController> plantGroupControllers;
     #endregion
 
     Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
@@ -47,11 +50,13 @@ public class RelayGameDirector : MonoBehaviour
 
     const float waitSeconds = 0.1f;
 
+    bool isDestroyPlants;
     public bool isDebug = false;
 
     private void Start()
     {
         if (isDebug) return;
+        isDestroyPlants = false;
         isGameStartCountDownOver = false;
         currentTime = 0;
 
@@ -73,6 +78,9 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser += this.NotifySpawnObjectUser;
         RoomModel.Instance.OnPlayAnimalGimmickUser += this.NotifyPlayAnimalGimmickUser;
+
+        RoomModel.Instance.OnDestroyPlantsGimmickUser += this.NotifyDestroyPlantsGimmickUser;
+        RoomModel.Instance.OnTriggeringPlantGimmickUser += this.NotifyTriggeringPlantGimmickUser;
 
         SetupGame();
     }
@@ -97,6 +105,9 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser -= this.NotifySpawnObjectUser;
         RoomModel.Instance.OnPlayAnimalGimmickUser -= this.NotifyPlayAnimalGimmickUser;
+
+        RoomModel.Instance.OnDestroyPlantsGimmickUser -= this.NotifyDestroyPlantsGimmickUser;
+        RoomModel.Instance.OnTriggeringPlantGimmickUser -= this.NotifyTriggeringPlantGimmickUser;
     }
 
     IEnumerator UpdateCoroutine()
@@ -105,6 +116,11 @@ public class RelayGameDirector : MonoBehaviour
         {
             if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
             {
+                if (!isDestroyPlants)
+                {
+                    // まだ植物のギミックを破棄していない場合
+                    DestroyPlantsGimmickAsynk();
+                }
                 UpdateMasterClientAsynk();
             }
             else
@@ -130,22 +146,24 @@ public class RelayGameDirector : MonoBehaviour
     {
         GenerateCharacters();
 
-        // 動くオブジェクトを設定
-        foreach (var item in movingObjects)
+        // マスタークライアントと同期するオブジェクトを取得して設定する
+        areaController.ToggleAllGimmicks(true);
+        var movingRootObjs = new List<MoveSetRoot>(FindObjectsOfType<MoveSetRoot>());
+        var gooseObjs = new List<Goose>(FindObjectsOfType<Goose>());
+        areaController.ToggleAllGimmicks(false);
+        foreach (var item in movingRootObjs)
         {
-            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
+            movingObjectList.Add(item.name, item);
+        }
+        foreach(var item in gooseObjs)
+        {
+            gooseObjList.Add(item.name, item);
         }
 
         // 動物のギミックを設定
         foreach (var item in animalGimmicks)
         {
             animalGimmickList.Add(item.name, item);
-        }
-
-        // 動くオブジェクトを設定
-        foreach (var item in movingObjects)
-        {
-            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
         }
 
         // ロード画面を閉じる
@@ -281,10 +299,11 @@ public class RelayGameDirector : MonoBehaviour
     {
         if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
 
+        // ルートに沿って動くオブジェクトの情報取得
         List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
-        foreach (var obj in movingObjects)
+        foreach (var obj in movingObjectList.Values)
         {
-            if (obj.activeSelf && movingObjectList[obj.name].pathTween != null)
+            if (obj.gameObject.activeSelf && movingObjectList[obj.name].pathTween != null)
             {
                 MovingObjectState movingObjectState = new MovingObjectState()
                 {
@@ -292,9 +311,26 @@ public class RelayGameDirector : MonoBehaviour
                     position = obj.transform.position,
                     angle = obj.transform.eulerAngles,
                     elapsedTimeTween = movingObjectList[obj.name].pathTween.Elapsed(),
-                    isActiveSelf = obj.activeSelf,
+                    isActiveSelf = obj.gameObject.activeSelf,
                 };
                 movingObjectStates.Add(movingObjectState);
+            }
+        }
+
+        // ガチョウの情報取得
+        List<GooseState> gooseObjStates = new List<GooseState>();
+        foreach (var obj in gooseObjList.Values)
+        {
+            if (obj.gameObject.activeSelf)
+            {
+                GooseState gooseState = new GooseState()
+                {
+                    name = obj.name,
+                    position = obj.transform.position,
+                    angle = obj.transform.eulerAngles,
+                    animationId = obj.GetAnimationId(),
+                };
+                gooseObjStates.Add(gooseState);
             }
         }
 
@@ -315,6 +351,7 @@ public class RelayGameDirector : MonoBehaviour
         {
             playerState = playerState,
             objectStates = movingObjectStates,
+            gooseStates = gooseObjStates,
         };
         await RoomModel.Instance.UpdateMasterClientAsynk(masterClient);
     }
@@ -345,6 +382,12 @@ public class RelayGameDirector : MonoBehaviour
         foreach (var obj in masterClient.objectStates)
         {
             movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+        }
+
+        // ガチョウの同期
+        foreach (var goose in masterClient.gooseStates)
+        {
+            gooseObjList[goose.name].UpdateState(goose, waitSeconds);
         }
     }
 
@@ -432,14 +475,14 @@ public class RelayGameDirector : MonoBehaviour
         else
         {
             // 現在のエリアが最後のエリアではない場合
-            await RoomModel.Instance.ReadyNextAreaAsynk();
+            await RoomModel.Instance.ReadyNextAreaAsynk(areaController.currentAreaId);
         }
     }
 
     /// <summary>
     /// 全員が次のエリアに移動する準備が完了した通知
     /// </summary>
-    void NotifyRedyNextAreaAllUsers(float restarningWaitSec)
+    void NotifyRedyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId)
     {
         countDownUI.SetActive(false);
         coroutineCountDown = null;
@@ -449,7 +492,7 @@ public class RelayGameDirector : MonoBehaviour
         myCharacter.SetActive(false);
 
         // ゲーム再開処理
-        StartCoroutine(areaController.RestarningGameCoroutine(myCharacter,restarningWaitSec));
+        StartCoroutine(areaController.RestarningGameCoroutine(nextAreaId, myCharacter,restarningWaitSec));
     }
 
     /// <summary>
@@ -553,9 +596,9 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="itemId"></param>
     void NotifySpawnItemUser(Vector3 spawnPoint, EnumManager.ITEM_ID itemId, string itemName)
     {
-        if (areaController.ItemSpawnerList[(int)areaController.areaId].enabled)
+        if (areaController.ItemSpawnerList[(int)areaController.currentAreaId].enabled)
         {
-            var item = areaController.ItemSpawnerList[(int)areaController.areaId].Spawn(spawnPoint, itemId, itemName);
+            var item = areaController.ItemSpawnerList[(int)areaController.currentAreaId].Spawn(spawnPoint, itemId, itemName);
             if (!itemList.ContainsKey(item.name)) itemList.Add(itemName, item);
         }
     }
@@ -587,6 +630,59 @@ public class RelayGameDirector : MonoBehaviour
                 case EnumManager.ANIMAL_GIMMICK_ID.Chicken:
                     animal.transform.GetChild(0).GetComponent<ChickenGimmick>().GenerateEggBulletWarning(option);
                     break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 植物のギミックを破棄するリクエスト
+    /// (マスタークライアントが実行)
+    /// </summary>
+    async void DestroyPlantsGimmickAsynk()
+    {
+        if (isDestroyPlants) return;
+        isDestroyPlants = true;
+        List<string> destroyNames = new List<string>();
+        foreach(var group in plantGroupControllers)
+        {
+            var names = group.DestroyPlants();
+            foreach(var name in names)
+            {
+                if(name != null)
+                destroyNames.Add(name);
+            }
+        }
+
+        if(destroyNames.Count > 0) await RoomModel.Instance.DestroyPlantsGimmickAsynk(destroyNames.ToArray());
+    }
+
+    /// <summary>
+    /// 植物のギミックを破棄する通知
+    /// </summary>
+    /// <param name="names"></param>
+    void NotifyDestroyPlantsGimmickUser(string[] names)
+    {
+        isDestroyPlants = true;
+        foreach(var name in names)
+        {
+            foreach(var group in plantGroupControllers)
+            {
+                if (group.HidePlants.ContainsKey(name)) Destroy(group.HidePlants[name].gameObject);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 植物のギミックを発動する通知
+    /// </summary>
+    /// <param name="name"></param>
+    void NotifyTriggeringPlantGimmickUser(string name)
+    {
+        foreach (var group in plantGroupControllers)
+        {
+            if (group.HidePlants.ContainsKey(name))
+            {
+                group.HidePlants[name].ShowPlant();
             }
         }
     }

@@ -23,7 +23,6 @@ public class TopSceneDirector : MonoBehaviour
         
        if(NGWordModel.Instance.NGWords.Count == 0)
        {
-            Debug.Log("NGÉèÅ[ÉhéÊìæ");
            await NGWordModel.Instance.ShowNGWordAsync();
        }
 

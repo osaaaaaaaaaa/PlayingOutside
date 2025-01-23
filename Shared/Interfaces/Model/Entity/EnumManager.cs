@@ -23,6 +23,20 @@ namespace Shared.Interfaces.Model.Entity
             FinalGame,
         }
 
+        public enum RELAY_AREA_ID
+        {
+            Area1_Mud,
+            Area2_Hay,
+            Area3_Cow,
+            Area4_Plant,
+            Area5_Goose,
+            Area6_Chicken
+        }
+        public static RELAY_AREA_ID MiddleAreaMinId = RELAY_AREA_ID.Area2_Hay;
+        public static RELAY_AREA_ID MiddleAreaMaxId = RELAY_AREA_ID.Area5_Goose;
+        public static RELAY_AREA_ID LastAreaId { get; private set; } = RELAY_AREA_ID.Area6_Chicken;
+
+
         public enum ITEM_ID
         {
             None = 0,

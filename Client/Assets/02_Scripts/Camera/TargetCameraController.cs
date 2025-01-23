@@ -32,9 +32,12 @@ public class TargetCameraController : MonoBehaviour
         cameraVirtual = GetComponent<CinemachineVirtualCamera>();
         cameraTransposer = cameraVirtual.GetCinemachineComponent<CinemachineTransposer>();
 
-        if (gameDirector.isDebug)
+        if(gameDirector != null)
         {
-            InitCamera(null, debug_areaId, new Guid());
+            if (gameDirector.isDebug)
+            {
+                InitCamera(null, debug_areaId, new Guid());
+            }
         }
     }
 

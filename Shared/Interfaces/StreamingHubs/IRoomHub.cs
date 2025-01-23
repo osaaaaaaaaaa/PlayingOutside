@@ -143,6 +143,20 @@ namespace Shared.Interfaces.StreamingHubs
 
         #region 競技『カントリーリレー』の処理
         /// <summary>
+        /// 植物のギミックを破棄するリクエスト
+        /// (マスタークライアントが呼び出す)
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        Task DestroyPlantsGimmickAsynk(string[] names);
+
+        /// <summary>
+        /// 植物のギミックを発動するリクエスト
+        /// </summary>
+        /// <returns></returns>
+        Task TriggeringPlantGimmickAsynk(string name);
+
+        /// <summary>
         /// エリアをクリアした処理
         /// </summary>
         /// <returns></returns>
@@ -152,7 +166,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        Task ReadyNextAreaAsynk();
+        Task ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId);
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

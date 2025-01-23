@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant クライアントA
+participant クライアントB
+participant クライアントC
+participant サーバー
+
+autonumber
+title 14_(ギミック)植物のギミックを発動するシーケンス図
+rnote over クライアントA:植物のOnTriggerが実行される
+クライアントA -> サーバー:ギミックを発動する植物の名前を送信
+クライアントB <-- サーバー:植物の名前を受信
+クライアントC <-- サーバー:植物の名前を受信
+rnote over クライアントA,クライアントC:植物の名前を参照し、ギミックを発動する
+@enduml

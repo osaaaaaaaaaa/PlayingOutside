@@ -1231,7 +1231,6 @@ MonoBehaviour:
     type: 3}
   minRange: {fileID: 7724523522371530610}
   maxRange: {fileID: 2158125214641224075}
-  maxEggNum: 5
 --- !u!65 &4708347689404531285
 BoxCollider:
   m_ObjectHideFlags: 0

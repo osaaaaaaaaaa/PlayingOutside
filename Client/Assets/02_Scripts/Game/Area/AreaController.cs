@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using static AreaController;
 using Unity.VisualScripting;
+using Shared.Interfaces.Model.Entity;
 
 public class AreaController : MonoBehaviour
 {
@@ -30,15 +31,8 @@ public class AreaController : MonoBehaviour
 
     public bool isClearedArea { get; private set; }
 
-    public enum AREA_ID
-    {
-        AREA_1 = 0,
-        AREA_2,
-        AREA_3,
-        AREA_4,
-    }
-    public AREA_ID areaId { get; set; } = AREA_ID.AREA_1;
-    AREA_ID lastAreaId = AREA_ID.AREA_4;
+
+    public EnumManager.RELAY_AREA_ID currentAreaId { get; set; } = EnumManager.RELAY_AREA_ID.Area1_Mud;
 
     private void Awake()
     {
@@ -50,16 +44,20 @@ public class AreaController : MonoBehaviour
         {
             item.enabled = false;
         }
-        itemSpawnerList[(int)areaId].enabled = true;
+        itemSpawnerList[(int)currentAreaId].enabled = true;
 
         if (!gameDirector.isDebug)
         {
-            foreach (var gimmick in gimmicks)
-            {
-                gimmick.SetActive(false);
-            }
-            gimmicks[(int)areaId].SetActive(true);
+            ToggleAllGimmicks(false);
+            gimmicks[(int)currentAreaId].SetActive(true);
+        }
+    }
 
+    public void ToggleAllGimmicks(bool isActive)
+    {
+        foreach(var gimmick in gimmicks)
+        {
+            gimmick.SetActive(isActive);
         }
     }
 
@@ -70,7 +68,7 @@ public class AreaController : MonoBehaviour
     {
         seController.PlayAudio();
         isClearedArea = false;
-        bool isLastArea = (areaId == lastAreaId);
+        bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
         // サーバーなしの場合のみ使用、最終的にisDebugを削除
         if (gameDirector.isDebug)
         {
@@ -81,7 +79,7 @@ public class AreaController : MonoBehaviour
             else
             {
                 isClearedArea = true;
-                StartCoroutine(RestarningGameCoroutine(player, 1));
+                StartCoroutine(RestarningGameCoroutine(currentAreaId++,player, 1));
             }
 
             // このコルーチンを停止
@@ -121,11 +119,11 @@ public class AreaController : MonoBehaviour
     public IEnumerator ReadyNextAreaCoroutine()
     {
         if(isClearedArea) yield break;
-        Debug.Log(areaId + "エリア移動準備");
+        Debug.Log(currentAreaId + "エリア移動準備");
         isClearedArea = true;
 
         DOTween.Kill(imageBlack);
-        bool isLastArea = (areaId == lastAreaId);
+        bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
         float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
 
         // 操作を無効化する
@@ -147,8 +145,8 @@ public class AreaController : MonoBehaviour
             spectatingUI.GetComponent<SpectatingUI>().InitUI(false);
 
             // 現在のエリアを撤去
-            itemSpawnerList[(int)areaId].enabled = false;
-            gimmicks[(int)areaId].SetActive(false);
+            itemSpawnerList[(int)currentAreaId].enabled = false;
+            gimmicks[(int)currentAreaId].SetActive(false);
 
             // 次のエリアに移動する準備が完了したリクエスト
             gameDirector.OnReadyNextArea(isLastArea);
@@ -158,19 +156,19 @@ public class AreaController : MonoBehaviour
     /// <summary>
     /// フェードアウト後にゲーム再開
     /// </summary>
-    public IEnumerator RestarningGameCoroutine(GameObject player ,float restarningWaitSec)
+    public IEnumerator RestarningGameCoroutine(EnumManager.RELAY_AREA_ID nextAreaId,GameObject player ,float restarningWaitSec)
     {
         if (!isClearedArea) yield break;
-        areaId++;
-        Debug.Log("エリアのID："+ (int)areaId);
+        currentAreaId = nextAreaId;
+        Debug.Log("エリアのID："+ (int)currentAreaId);
 
         // 次のエリアの準備
-        itemSpawnerList[(int)areaId].enabled = true;
-        gimmicks[(int)areaId].SetActive(true);
+        itemSpawnerList[(int)currentAreaId].enabled = true;
+        gimmicks[(int)currentAreaId].SetActive(true);
 
         // 次のエリアに移動する && カメラをセットアップ
-        player.GetComponent<PlayerController>().InitPlayer(startPoints[(int)areaId].transform);
-        targetCameraController.InitCamera(player.transform, (int)areaId,RoomModel.Instance.ConnectionId);
+        player.GetComponent<PlayerController>().InitPlayer(startPoints[(int)currentAreaId].transform);
+        targetCameraController.InitCamera(player.transform, (int)currentAreaId,RoomModel.Instance.ConnectionId);
 
         // フェードアウト
         imageBlack.DOFade(0f, fadeTime).SetEase(Ease.Linear).OnComplete(() =>

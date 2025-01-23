@@ -12,7 +12,9 @@ namespace Shared.Interfaces.Model.Entity
     {
         [Key(0)]
         public PlayerState playerState { get; set; }    // ユーザーの情報
+        [Key(1)]
+        public List<MovingObjectState> objectStates { get; set; } = new List<MovingObjectState>(); // Rootに沿って動くオブジェクトの更新情報
         [Key(2)]
-        public List<MovingObjectState> objectStates { get; set; } = new List<MovingObjectState>(); // 消えない動くオブジェクトの情報
+        public List<GooseState> gooseStates { get; set; } = new List<GooseState>(); // ガチョウの更新情報
     }
 }

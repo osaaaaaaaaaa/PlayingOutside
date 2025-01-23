@@ -16,4 +16,9 @@ public class GooseAnimTrigger : MonoBehaviour
     {
         goose.InitParam();
     }
+
+    public void OnAttack()
+    {
+        goose.IsControllEnable = true;
+    }
 }

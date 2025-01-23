@@ -15,12 +15,12 @@ public class WarpController : MonoBehaviour
         {
             if (gameDirector.isDebug)
             {
-                GameObject.Find("01_OriginalHiyoko").transform.position = points[(int)areaController.areaId].position;
+                GameObject.Find("01_OriginalHiyoko").transform.position = points[(int)areaController.currentAreaId].position;
             }
             else
             {
-                if ((int)areaController.areaId > points.Count) return;
-                gameDirector.characterList[RoomModel.Instance.ConnectionId].transform.position = points[(int)areaController.areaId].position;
+                if ((int)areaController.currentAreaId > points.Count) return;
+                gameDirector.characterList[RoomModel.Instance.ConnectionId].transform.position = points[(int)areaController.currentAreaId].position;
             }
         }
     }

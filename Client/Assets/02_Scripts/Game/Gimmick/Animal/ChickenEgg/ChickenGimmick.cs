@@ -14,8 +14,8 @@ public class ChickenGimmick : MonoBehaviour
     #endregion
 
     #region è·äQï®ÇÃÇ†ÇÈîÕàÕ
-    public List<Vector3> obstaclesMaxRange = new List<Vector3>();
-    public List<Vector3> obstaclesMinRange = new List<Vector3>();
+    List<Vector3> obstaclesMaxRange = new List<Vector3>();
+    List<Vector3> obstaclesMinRange = new List<Vector3>();
     #endregion
 
     List<GameObject> targetList = new List<GameObject>();
@@ -47,7 +47,6 @@ public class ChickenGimmick : MonoBehaviour
         foreach (var point in points)
         {
             var eggWarning = Instantiate(eggWarningPrefab);
-            eggWarning.transform.localRotation = transform.localRotation;
             eggWarning.transform.position = point;
             eggWarning.GetComponent<EggWarning>().InitParam(transform.position + Vector3.up * jumpHeight);
         }

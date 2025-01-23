@@ -691,6 +691,31 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// 植物のギミックを破棄するリクエスト
+        /// (マスタークライアントが呼び出す)
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        public async Task DestroyPlantsGimmickAsynk(string[] names)
+        {
+            foreach (string name in names)
+            {
+                Console.WriteLine("破棄する植物：" + name);
+            }
+            this.BroadcastExceptSelf(this.room).OnDestroyPlantsGimmick(names);
+        }
+
+        /// <summary>
+        /// 植物のギミックを発動するリクエスト
+        /// </summary>
+        /// <returns></returns>
+        public async Task TriggeringPlantGimmickAsynk(string name)
+        {
+            Console.WriteLine("発動する植物：" + name);
+            this.Broadcast(this.room).OnTriggeringPlantGimmick(name);
+        }
+
+        /// <summary>
         /// エリアをクリアした処理
         /// </summary>
         /// <returns></returns>
@@ -782,7 +807,7 @@ namespace Server.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        public async Task ReadyNextAreaAsynk()
+        public async Task ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
@@ -821,12 +846,14 @@ namespace Server.StreamingHubs
                     // 次のエリアに移動させる準備
                     Console.WriteLine("再開通知");
                     const float baseWaitSec = 0.8f;
+
+                    var nextAreaId = GetNextAreaId(currentAreaId);
                     foreach (var roomData in roomDataList)
                     {
                         float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
 
                         // ゲーム再開通知を個別に配る
-                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec);
+                        this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec, nextAreaId);
 
                         // 情報をリセット
                         roomData.UserState.isAreaCleared = false;
@@ -834,6 +861,37 @@ namespace Server.StreamingHubs
                         roomData.UserState.isReadyNextArea = false;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// 次のエリアIDの取得処理
+        /// </summary>
+        /// <returns></returns>
+        EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId)
+        {
+            if (currentAreaId == RELAY_AREA_ID.Area1_Mud)
+            {
+                return RELAY_AREA_ID.Area4_Plant;
+                // 中間エリアを抽選する
+                var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
+                switch (rnd)
+                {
+                    case (int)EnumManager.RELAY_AREA_ID.Area2_Hay:
+                        return RELAY_AREA_ID.Area2_Hay;
+                    case (int)EnumManager.RELAY_AREA_ID.Area3_Cow:
+                        return RELAY_AREA_ID.Area3_Cow;
+                    case (int)EnumManager.RELAY_AREA_ID.Area4_Plant:
+                        return RELAY_AREA_ID.Area4_Plant;
+                    case (int)EnumManager.RELAY_AREA_ID.Area5_Goose:
+                        return RELAY_AREA_ID.Area5_Goose;
+                    default:
+                        return RELAY_AREA_ID.Area2_Hay;
+                }
+            }
+            else
+            {
+                return RELAY_AREA_ID.Area6_Chicken;
             }
         }
 

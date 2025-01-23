@@ -23,7 +23,16 @@ public class SEController : MonoBehaviour
 
     public void PlayAudio()
     {
-        if(clip != null) sourse.PlayOneShot(clip);
+        if (clip != null)
+        {
+            if(sourse == null)
+            {
+                sourse = GetComponent<AudioSource>();
+                if (sourse == null) sourse = this.gameObject.AddComponent<AudioSource>();
+                SetupAudioVolume();
+            }
+            sourse.PlayOneShot(clip);
+        }
     }
 
     public void PlayAudio(AudioClip audioClip)

@@ -75,10 +75,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region 競技『カントリーリレー』の処理
+    // 植物のギミックを破棄する通知
+    public Action<string[]> OnDestroyPlantsGimmickUser { get; set; }
+    // 植物のギミックを発動する通知
+    public Action<string> OnTriggeringPlantGimmickUser { get; set; }
     // 現在のエリアをクリアした通知
     public Action<Guid,string,bool> OnAreaClearedUser { get; set; }
     // 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
-    public Action<float> OnReadyNextAreaUser { get; set; }
+    public Action<float, EnumManager.RELAY_AREA_ID> OnReadyNextAreaUser { get; set; }
     // カウントダウン開始通知
     public Action OnStartCountDownUser { get; set; }
     #endregion
@@ -658,6 +662,44 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #region 競技『カントリーリレー』の処理
     /// <summary>
+    /// 植物のギミックを破棄するリクエスト
+    /// (マスタークライアントが呼び出す)
+    /// </summary>
+    /// <param name="names"></param>
+    /// <returns></returns>
+    public async UniTask DestroyPlantsGimmickAsynk(string[] names)
+    {
+        if (userState == USER_STATE.joined) await this.roomHub.DestroyPlantsGimmickAsynk(names);
+    }
+
+    /// <summary>
+    /// 植物のギミックを破棄する通知
+    /// </summary>
+    /// <param name="names"></param>
+    public void OnDestroyPlantsGimmick(string[] names)
+    {
+        if (userState == USER_STATE.joined) OnDestroyPlantsGimmickUser(names);
+    }
+
+    /// <summary>
+    /// 植物のギミックを発動するリクエスト
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask TriggeringPlantGimmickAsynk(string name)
+    {
+        if (userState == USER_STATE.joined) await this.roomHub.TriggeringPlantGimmickAsynk(name);
+    }
+
+    /// <summary>
+    /// 植物のギミックを発動する通知
+    /// </summary>
+    /// <param name="name"></param>
+    public void OnTriggeringPlantGimmick(string name)
+    {
+        if (userState == USER_STATE.joined) OnTriggeringPlantGimmickUser(name);
+    }
+
+    /// <summary>
     /// エリアをクリアした処理
     /// </summary>
     /// <param name="isLastArea"></param>
@@ -680,9 +722,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 次のエリアに移動する準備が完了した処理
     /// </summary>
     /// <returns></returns>
-    public async UniTask ReadyNextAreaAsynk()
+    public async UniTask ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId)
     {
-        if (userState == USER_STATE.joined) await roomHub.ReadyNextAreaAsynk();
+        if (userState == USER_STATE.joined) await roomHub.ReadyNextAreaAsynk(currentAreaId);
     }
 
     /// <summary>
@@ -690,9 +732,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 全員が次のエリアに移動する準備が完了した通知 (ゲーム再開通知)
     /// </summary>
     /// <param name="restarningWaitSec"></param>
-    public void OnReadyNextAreaAllUsers(float restarningWaitSec)
+    public void OnReadyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId)
     {
-        if (userState == USER_STATE.joined) OnReadyNextAreaUser(restarningWaitSec);
+        if (userState == USER_STATE.joined) OnReadyNextAreaUser(restarningWaitSec,nextAreaId);
     }
 
     /// <summary>

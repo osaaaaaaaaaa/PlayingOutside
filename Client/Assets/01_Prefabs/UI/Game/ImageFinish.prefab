@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1120053862639100024}
   - component: {fileID: 6161799264815978936}
   - component: {fileID: 3646655061698861310}
+  - component: {fileID: 7850538244571653782}
   m_Layer: 5
   m_Name: ImageFinish
   m_TagString: Untagged
@@ -89,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5314df45432fec4e955fdbb4cbacc09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finishSE: {fileID: 8300000, guid: 36ece254203d7cb4b9e2920396f2316d, type: 3}
 --- !u!82 &3646655061698861310
 AudioSource:
   m_ObjectHideFlags: 0
@@ -186,3 +186,16 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7850538244571653782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523761610326723762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c743f42ca6a91408f772e19a2dd7e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clip: {fileID: 8300000, guid: 36ece254203d7cb4b9e2920396f2316d, type: 3}

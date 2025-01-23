@@ -6485,9 +6485,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.07427937
+    x: 0.13439271
     y: 0
-    width: 0.85144126
+    width: 0.7312146
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -14607,7 +14607,7 @@ MonoBehaviour:
   textUserCnt: {fileID: 515884495}
   roomNameObj: {fileID: 1540079723}
   textRoomName: {fileID: 1498245803}
-  btnLeave: {fileID: 0}
+  btnLeave: {fileID: 8253828406195343213}
   targetCameraController: {fileID: 737439418}
   characterControlUI: {fileID: 607198092}
   characterStartPoints:
@@ -38767,6 +38767,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8253828406195343211}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8253828406195343213 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9028306058317209376, guid: 67eecf3476514f04d82672c16f6c1f18,
+    type: 3}
+  m_PrefabInstance: {fileID: 8253828406195343211}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &8349958904746548105
 MeshRenderer:
   m_ObjectHideFlags: 0

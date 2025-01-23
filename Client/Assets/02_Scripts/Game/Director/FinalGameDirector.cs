@@ -30,19 +30,17 @@ public class FinalGameDirector : MonoBehaviour
     [SerializeField] CinemachineTargetGroup targetGroup;
     #endregion
 
-    #region コントローラー関係
+    #region アイテム関係
     [SerializeField] ItemSpawner itemSpawner;
-    #endregion
-
+    Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
     [SerializeField] GameObject coinPrefab;
-
-    #region MoveRootスクリプトを適用しているギミック
-    [SerializeField] GameObject gimmicksParent;
-    [SerializeField] List<GameObject> movingObjects;
-    Dictionary<string,MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
     #endregion
 
-    Dictionary<string,GameObject> itemList = new Dictionary<string, GameObject>();
+    #region マスタークライアントと同期するギミック
+    [SerializeField] GameObject gimmicksParent;
+    Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
+    Dictionary<string, Goose> gooseObjList = new Dictionary<string, Goose>();
+    #endregion
 
     Coroutine coroutineCountDown;
     int currentTime;
@@ -132,10 +130,18 @@ public class FinalGameDirector : MonoBehaviour
     {
         GenerateCharacters();
 
-        // 動くオブジェクトを設定
-        foreach(var item in movingObjects)
+        // マスタークライアントと同期するオブジェクトを取得して設定する
+        gimmicksParent.SetActive(true);
+        var movingRootObjs = new List<MoveSetRoot>(FindObjectsOfType<MoveSetRoot>());
+        var gooseObjs = new List<Goose>(FindObjectsOfType<Goose>());
+        gimmicksParent.SetActive(false);
+        foreach (var item in movingRootObjs)
         {
-            movingObjectList.Add(item.name, item.GetComponent<MoveSetRoot>());
+            movingObjectList.Add(item.name, item);
+        }
+        foreach (var item in gooseObjs)
+        {
+            gooseObjList.Add(item.name, item);
         }
 
         // カメラのターゲットグループを設定する
@@ -285,10 +291,11 @@ public class FinalGameDirector : MonoBehaviour
     {
         if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // プレイヤーの存在チェック
 
+        // ルートに沿って動くオブジェクトの情報取得
         List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
-        foreach (var obj in movingObjects)
+        foreach (var obj in movingObjectList.Values)
         {
-            if (obj.activeSelf && movingObjectList[obj.name].pathTween != null)
+            if (obj.gameObject.activeSelf && movingObjectList[obj.name].pathTween != null)
             {
                 MovingObjectState movingObjectState = new MovingObjectState()
                 {
@@ -296,9 +303,26 @@ public class FinalGameDirector : MonoBehaviour
                     position = obj.transform.position,
                     angle = obj.transform.eulerAngles,
                     elapsedTimeTween = movingObjectList[obj.name].pathTween.Elapsed(),
-                    isActiveSelf = obj.activeSelf,
+                    isActiveSelf = obj.gameObject.activeSelf,
                 };
                 movingObjectStates.Add(movingObjectState);
+            }
+        }
+
+        // ガチョウの情報取得
+        List<GooseState> gooseObjStates = new List<GooseState>();
+        foreach (var obj in gooseObjList.Values)
+        {
+            if (obj.gameObject.activeSelf)
+            {
+                GooseState gooseState = new GooseState()
+                {
+                    name = obj.name,
+                    position = obj.transform.position,
+                    angle = obj.transform.eulerAngles,
+                    animationId = obj.GetAnimationId(),
+                };
+                gooseObjStates.Add(gooseState);
             }
         }
 
@@ -319,6 +343,7 @@ public class FinalGameDirector : MonoBehaviour
         {
             playerState = playerState,
             objectStates = movingObjectStates,
+            gooseStates = gooseObjStates,
         };
         await RoomModel.Instance.UpdateMasterClientAsynk(masterClient);
     }
@@ -349,6 +374,12 @@ public class FinalGameDirector : MonoBehaviour
         foreach (var obj in masterClient.objectStates)
         {
             movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+        }
+
+        // ガチョウの同期
+        foreach (var goose in masterClient.gooseStates)
+        {
+            gooseObjList[goose.name].UpdateState(goose, waitSeconds);
         }
     }
 

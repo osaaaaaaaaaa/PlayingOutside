@@ -145,6 +145,18 @@ namespace Shared.Interfaces.StreamingHubs
         #region 競技『カントリーリレー』の処理
 
         /// <summary>
+        /// 植物のギミックを破棄する通知
+        /// </summary>
+        /// <param name="names"></param>
+        void OnDestroyPlantsGimmick(string[] names);
+
+        /// <summary>
+        /// 植物のギミックを発動する通知
+        /// </summary>
+        /// <param name="name"></param>
+        void OnTriggeringPlantGimmick(string name);
+
+        /// <summary>
         /// 現在のエリアをクリアした通知
         /// </summary>
         /// <param name="connectionId"></param>
@@ -155,7 +167,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// 全員が次のエリアに移動する準備が完了した通知(ゲーム再開通知)
         /// </summary>
         /// <param name="restarningWaitSec">ゲーム再開までの待機時間(順位によって変動)</param>
-        void OnReadyNextAreaAllUsers(float restarningWaitSec);
+        void OnReadyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId);
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

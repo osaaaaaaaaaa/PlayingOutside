@@ -1,0 +1,18 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+participant クライアントA
+participant クライアントB
+participant クライアントC
+participant サーバー
+
+autonumber
+title 14_(ギミック)植物を破棄するシーケンス図
+rnote over クライアントA:マスタークライアントにする
+rnote over クライアントA:ランダムで植物を破棄する
+クライアントA -> サーバー:破棄した植物のユニークな名前を送信する
+クライアントB <-- サーバー:植物の名前を受信
+クライアントC <-- サーバー:植物の名前を受信
+rnote over クライアントB,クライアントC:植物の名前を参照し、破棄する
+@enduml

@@ -47,25 +47,27 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(17)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(19)
             {
-                { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>), 0 },
-                { typeof(global::System.Collections.Generic.List<string>), 1 },
-                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID), 2 },
-                { typeof(global::Server.Model.Entity.Follow), 3 },
-                { typeof(global::Server.Model.Entity.FollowingUser), 4 },
-                { typeof(global::Server.Model.Entity.NGWord), 5 },
-                { typeof(global::Server.Model.Entity.RatingRanking), 6 },
-                { typeof(global::Server.Model.Entity.User), 7 },
-                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 8 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 9 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 10 },
-                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 11 },
-                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 12 },
-                { typeof(global::Shared.Interfaces.Model.Entity.SpawnObject), 13 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 14 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 15 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 16 },
+                { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.GooseState>), 0 },
+                { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>), 1 },
+                { typeof(global::System.Collections.Generic.List<string>), 2 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID), 3 },
+                { typeof(global::Server.Model.Entity.Follow), 4 },
+                { typeof(global::Server.Model.Entity.FollowingUser), 5 },
+                { typeof(global::Server.Model.Entity.NGWord), 6 },
+                { typeof(global::Server.Model.Entity.RatingRanking), 7 },
+                { typeof(global::Server.Model.Entity.User), 8 },
+                { typeof(global::Shared.Interfaces.Model.Entity.GooseState), 9 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 10 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 11 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 12 },
+                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 13 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 14 },
+                { typeof(global::Shared.Interfaces.Model.Entity.SpawnObject), 15 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 16 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 17 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 18 },
             };
         }
 
@@ -79,23 +81,25 @@ namespace MessagePack.Resolvers
 
             switch (key)
             {
-                case 0: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>();
-                case 1: return new global::MessagePack.Formatters.ListFormatter<string>();
-                case 2: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_SPAWN_OBJECT_IDFormatter();
-                case 3: return new MessagePack.Formatters.Server.Model.Entity.FollowFormatter();
-                case 4: return new MessagePack.Formatters.Server.Model.Entity.FollowingUserFormatter();
-                case 5: return new MessagePack.Formatters.Server.Model.Entity.NGWordFormatter();
-                case 6: return new MessagePack.Formatters.Server.Model.Entity.RatingRankingFormatter();
-                case 7: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
-                case 8: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
-                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
-                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
-                case 11: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 12: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
-                case 13: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.SpawnObjectFormatter();
-                case 14: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
-                case 15: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 16: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 0: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.GooseState>();
+                case 1: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>();
+                case 2: return new global::MessagePack.Formatters.ListFormatter<string>();
+                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_SPAWN_OBJECT_IDFormatter();
+                case 4: return new MessagePack.Formatters.Server.Model.Entity.FollowFormatter();
+                case 5: return new MessagePack.Formatters.Server.Model.Entity.FollowingUserFormatter();
+                case 6: return new MessagePack.Formatters.Server.Model.Entity.NGWordFormatter();
+                case 7: return new MessagePack.Formatters.Server.Model.Entity.RatingRankingFormatter();
+                case 8: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GooseStateFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
+                case 14: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 15: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.SpawnObjectFormatter();
+                case 16: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
+                case 17: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 18: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }
@@ -502,6 +506,64 @@ namespace MessagePack.Formatters.Server.Model.Entity
 
 namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
 {
+    public sealed class GooseStateFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.GooseState>
+    {
+
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Shared.Interfaces.Model.Entity.GooseState value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(4);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.name, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.position, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Serialize(ref writer, value.angle, options);
+            writer.Write(value.animationId);
+        }
+
+        public global::Shared.Interfaces.Model.Entity.GooseState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var ____result = new global::Shared.Interfaces.Model.Entity.GooseState();
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        ____result.name = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 1:
+                        ____result.position = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        ____result.angle = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::UnityEngine.Vector3>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        ____result.animationId = reader.ReadInt32();
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
     public sealed class JoinedUserFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.JoinedUser>
     {
 
@@ -594,8 +656,8 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteArrayHeader(3);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.PlayerState>(formatterResolver).Serialize(ref writer, value.playerState, options);
-            writer.WriteNil();
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>>(formatterResolver).Serialize(ref writer, value.objectStates, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.GooseState>>(formatterResolver).Serialize(ref writer, value.gooseStates, options);
         }
 
         public global::Shared.Interfaces.Model.Entity.MasterClient Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -617,8 +679,11 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                     case 0:
                         ____result.playerState = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.PlayerState>(formatterResolver).Deserialize(ref reader, options);
                         break;
-                    case 2:
+                    case 1:
                         ____result.objectStates = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 2:
+                        ____result.gooseStates = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.GooseState>>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();

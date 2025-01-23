@@ -264,6 +264,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (!this.enabled) return;
+
         if (other.GetComponent<DamageCollider>())
         {
             var damageCollider = other.GetComponent<DamageCollider>();
