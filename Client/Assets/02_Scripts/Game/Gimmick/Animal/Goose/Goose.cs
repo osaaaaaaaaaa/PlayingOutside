@@ -15,8 +15,11 @@ public class Goose : MonoBehaviour
     [SerializeField] float speed;
     [SerializeField] float rayHeight = 2f;
     [SerializeField] float rayWeight = 2.5f;
+    [SerializeField] AudioClip walkSE;
+    [SerializeField] AudioClip runSE;
 
     Rigidbody rb;
+    AudioSource audioSource;
     Animator animator;
     public List<GameObject> targetList = new List<GameObject>();
 
@@ -38,6 +41,7 @@ public class Goose : MonoBehaviour
     private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
         animator = transform.GetChild(0).GetComponent<Animator>();
         startPos = transform.position;
         isControllEnable = false;
@@ -211,6 +215,27 @@ public class Goose : MonoBehaviour
 
     public void SetAnimId(ANIM_ID id)
     {
+        switch (id) {
+            case ANIM_ID.walk:
+                if(audioSource.clip != walkSE)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = walkSE;
+                    audioSource.Play();
+                }
+                break;
+            case ANIM_ID.run:
+                if (audioSource.clip != runSE)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = runSE;
+                    audioSource.Play();
+                }
+                break;
+            default:
+                audioSource.Stop();
+                break;
+        }
         animator.SetInteger("animation_id", (int)id);
     }
 

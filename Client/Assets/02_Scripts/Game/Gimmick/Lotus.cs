@@ -1,10 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Lotus : MonoBehaviour
 {
     [SerializeField] float addPower;
+    const float jumpPower = -1f;
+    const float duration = 0.5f;
+    SEController controller;
+    Vector3 startPos;
+
+    private void OnEnable()
+    {
+        controller = GetComponent<SEController>();
+        startPos = transform.position;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -29,5 +40,22 @@ public class Lotus : MonoBehaviour
                 }
             }
         }
+
+        if(collision.gameObject.tag == "Character")
+        {
+            PlayTween();
+            controller.PlayAudio();
+        }
+    }
+
+    void PlayTween()
+    {
+        if (DOTween.IsTweening(this.gameObject))
+        {
+            DOTween.Kill(this.gameObject);
+            transform.position = startPos;
+        }
+
+        transform.DOJump(startPos, jumpPower, 1, duration).SetEase(Ease.OutElastic);
     }
 }

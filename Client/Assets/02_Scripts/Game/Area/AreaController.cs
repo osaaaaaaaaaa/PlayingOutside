@@ -79,7 +79,7 @@ public class AreaController : MonoBehaviour
             else
             {
                 isClearedArea = true;
-                StartCoroutine(RestarningGameCoroutine(currentAreaId++,player, 1));
+                StartCoroutine(RestarningGameCoroutine(currentAreaId + 1, player, 1));
             }
 
             // ‚±‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~

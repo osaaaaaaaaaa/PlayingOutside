@@ -903,7 +903,6 @@ namespace Server.StreamingHubs
         {
             if (currentAreaId == RELAY_AREA_ID.Area1_Mud)
             {
-                return RELAY_AREA_ID.Area4_Plant;
                 // 中間エリアを抽選する
                 var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
                 switch (rnd)

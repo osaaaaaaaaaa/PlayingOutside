@@ -7,13 +7,15 @@ public class HidePlant : MonoBehaviour
 {
     [SerializeField] float animSec;
     [SerializeField] GameObject damageColliderObj;
+    [SerializeField] GameObject particleParent;
+    SEController controller;
     const float endPointY = 0.3f;
     bool isSentRequest;
     bool isActive;
 
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
+        controller = GetComponent<SEController>();
         isSentRequest = false;
         isActive = false;
     }
@@ -45,6 +47,8 @@ public class HidePlant : MonoBehaviour
         var localPos = transform.localPosition;
         if (!DOTween.IsTweening(transform))
         {
+            controller.PlayAudio();
+            particleParent.SetActive(true);
             transform.DOLocalMove(new Vector3(localPos.x, endPointY, localPos.z), animSec).SetEase(Ease.OutElastic)
                     .OnComplete(() => { Destroy(damageColliderObj); });
         }
