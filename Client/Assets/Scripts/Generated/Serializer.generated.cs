@@ -998,7 +998,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(9);
+            writer.WriteArrayHeader(11);
             writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
             writer.Write(value.isAreaCleared);
@@ -1008,6 +1008,8 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             writer.Write(value.FinishGameCnt);
             writer.Write(value.isFinishGame);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.usedItemNameList, options);
+            writer.Write(value.isDestroyPlantsRequest);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.triggeringPlantGimmickList, options);
         }
 
         public global::Shared.Interfaces.Model.Entity.UserState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -1052,6 +1054,12 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 8:
                         ____result.usedItemNameList = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 9:
+                        ____result.isDestroyPlantsRequest = reader.ReadBoolean();
+                        break;
+                    case 10:
+                        ____result.triggeringPlantGimmickList = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();

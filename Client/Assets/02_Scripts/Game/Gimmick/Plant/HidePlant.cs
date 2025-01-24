@@ -28,7 +28,7 @@ public class HidePlant : MonoBehaviour
             if (!compornent.enabled) return;
             if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
             {
-                if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient) ShowPlantAsynk();
+                ShowPlantAsynk();
             }
             else
             {
@@ -55,12 +55,9 @@ public class HidePlant : MonoBehaviour
     /// </summary>
     public async void ShowPlantAsynk()
     {
+        if(isSentRequest) return;
         isSentRequest = true;
-        if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
-        {
-            // マスタークライアントが植物のギミックを破棄する処理をリクエスト
-            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
-                await RoomModel.Instance.TriggeringPlantGimmickAsynk(this.gameObject.name);
-        }
+        if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined) 
+            await RoomModel.Instance.TriggeringPlantGimmickAsynk(this.gameObject.name);
     }
 }

@@ -40,6 +40,8 @@ public class RelayGameDirector : MonoBehaviour
 
     #region êAï®ÇÃÉMÉ~ÉbÉNä÷åW
     [SerializeField] List<PlantGroupController> plantGroupControllers;
+    bool isDestroyPlantRequest;
+    bool isDestroyedPlants;
     #endregion
 
     Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
@@ -49,14 +51,13 @@ public class RelayGameDirector : MonoBehaviour
     bool isGameStartCountDownOver;
 
     const float waitSeconds = 0.1f;
-
-    bool isDestroyPlants;
     public bool isDebug = false;
 
     private void Start()
     {
         if (isDebug) return;
-        isDestroyPlants = false;
+        isDestroyPlantRequest = false;
+        isDestroyedPlants = false;
         isGameStartCountDownOver = false;
         currentTime = 0;
 
@@ -116,7 +117,7 @@ public class RelayGameDirector : MonoBehaviour
         {
             if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
             {
-                if (!isDestroyPlants)
+                if (!isDestroyPlantRequest)
                 {
                     // Ç‹ÇæêAï®ÇÃÉMÉ~ÉbÉNÇîjä¸ÇµÇƒÇ¢Ç»Ç¢èÍçá
                     DestroyPlantsGimmickAsynk();
@@ -640,17 +641,13 @@ public class RelayGameDirector : MonoBehaviour
     /// </summary>
     async void DestroyPlantsGimmickAsynk()
     {
-        if (isDestroyPlants) return;
-        isDestroyPlants = true;
+        if (isDestroyPlantRequest) return;
+        isDestroyPlantRequest = true;
         List<string> destroyNames = new List<string>();
         foreach(var group in plantGroupControllers)
         {
-            var names = group.DestroyPlants();
-            foreach(var name in names)
-            {
-                if(name != null)
-                destroyNames.Add(name);
-            }
+            var names = group.GetDestroyPlantNames();
+            if (names.Length > 0) destroyNames.AddRange(names);
         }
 
         if(destroyNames.Count > 0) await RoomModel.Instance.DestroyPlantsGimmickAsynk(destroyNames.ToArray());
@@ -662,13 +659,13 @@ public class RelayGameDirector : MonoBehaviour
     /// <param name="names"></param>
     void NotifyDestroyPlantsGimmickUser(string[] names)
     {
-        isDestroyPlants = true;
-        foreach(var name in names)
+        if(isDestroyedPlants) return;
+        isDestroyPlantRequest = true;
+        isDestroyedPlants = true;
+
+        foreach (var group in plantGroupControllers)
         {
-            foreach(var group in plantGroupControllers)
-            {
-                if (group.HidePlants.ContainsKey(name)) Destroy(group.HidePlants[name].gameObject);
-            }
+            group.DestroyPlants(names);
         }
     }
 
@@ -680,9 +677,9 @@ public class RelayGameDirector : MonoBehaviour
     {
         foreach (var group in plantGroupControllers)
         {
-            if (group.HidePlants.ContainsKey(name))
+            if (group.HidePlantList.ContainsKey(name))
             {
-                group.HidePlants[name].ShowPlant();
+                group.HidePlantList[name].ShowPlant();
             }
         }
     }

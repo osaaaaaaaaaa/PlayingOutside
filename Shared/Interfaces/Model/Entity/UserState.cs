@@ -17,7 +17,7 @@ namespace Shared.Interfaces.Model.Entity
         [Key(2)]
         public bool isAreaCleared { get; set; } // [競技：カントリーリレー]現在のエリアをクリアしたかどうか
         [Key(3)]
-        public int areaGoalRank {  get; set; }  // [競技：カントリーリレー]現在のエリアをクリアしたときの順位
+        public int areaGoalRank { get; set; }  // [競技：カントリーリレー]現在のエリアをクリアしたときの順位
         [Key(4)]
         public bool isReadyNextArea { get; set; }   // [競技：カントリーリレー]次のエリアに進む準備完了したかどうか
         [Key(5)]
@@ -28,5 +28,9 @@ namespace Shared.Interfaces.Model.Entity
         public bool isFinishGame { get; set; }    // 現在のゲームが終了したかどうか
         [Key(8)]
         public List<string> usedItemNameList { get; set; } = new List<string>();    // アイテムの使用履歴
+        [Key(9)]
+        public bool isDestroyPlantsRequest { get; set; } = false;    // [競技：カントリーリレー]植物のギミックを破棄するリクエスト(送信or受信)をしたかどうか
+        [Key(10)]
+        public List<string> triggeringPlantGimmickList { get; set; } = new List<string>();    // [競技：カントリーリレー]植物のギミックを発動した履歴
     }
 }

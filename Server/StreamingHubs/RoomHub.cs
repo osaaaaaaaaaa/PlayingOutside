@@ -698,11 +698,25 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task DestroyPlantsGimmickAsynk(string[] names)
         {
-            foreach (string name in names)
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
             {
-                Console.WriteLine("破棄する植物：" + name);
+                // リクエスト済みかどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                if (dataSelf.UserState.isDestroyPlantsRequest) return;
+
+                foreach (var roomData in roomDataList)
+                {
+                    roomData.UserState.isDestroyPlantsRequest = true;
+                }
+
+                foreach (string name in names)
+                {
+                    Console.WriteLine("破棄する植物：" + name);
+                }
+                this.Broadcast(this.room).OnDestroyPlantsGimmick(names);
             }
-            this.BroadcastExceptSelf(this.room).OnDestroyPlantsGimmick(names);
         }
 
         /// <summary>
@@ -711,8 +725,25 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task TriggeringPlantGimmickAsynk(string name)
         {
-            Console.WriteLine("発動する植物：" + name);
-            this.Broadcast(this.room).OnTriggeringPlantGimmick(name);
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                // リクエスト済みかどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+
+                foreach (var roomData in roomDataList)
+                {
+                    // 既に発動済みかどうかチェック
+                    if (roomData.UserState.triggeringPlantGimmickList.Contains(name)) return;
+                }
+
+                // ギミックの発動履歴を追加
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                dataSelf.UserState.triggeringPlantGimmickList.Add(name);
+
+                Console.WriteLine("発動する植物：" + name);
+                this.Broadcast(this.room).OnTriggeringPlantGimmick(name);
+            }
         }
 
         /// <summary>

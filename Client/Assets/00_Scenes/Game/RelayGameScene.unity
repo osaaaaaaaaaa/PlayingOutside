@@ -373,7 +373,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (2)
+      value: PlantGroup1_HidePlant3
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -4083,7 +4083,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (1)
+      value: PlantGroup1_HidePlant2
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -11913,7 +11913,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (3)
+      value: PlantGroup4_HidePlant3
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -14691,7 +14691,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (1)
+      value: PlantGroup5_HidePlant1
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -22373,7 +22373,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (1)
+      value: PlantGroup3_HidePlant2
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -23271,7 +23271,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (2)
+      value: PlantGroup5_HidePlant2
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -26582,7 +26582,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (3)
+      value: PlantGroup1_HidePlant4
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -29107,7 +29107,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant
+      value: PlantGroup2_HidePlant1
       objectReference: {fileID: 0}
     - target: {fileID: 4517978671055435056, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -32839,7 +32839,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (1)
+      value: PlantGroup4_HidePlant1
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -33322,7 +33322,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant
+      value: PlantGroup3_HidePlant1
       objectReference: {fileID: 0}
     - target: {fileID: 4517978671055435056, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -34533,7 +34533,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (2)
+      value: PlantGroup3_HidePlant3
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -42074,7 +42074,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (3)
+      value: PlantGroup2_HidePlant4
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -42472,7 +42472,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (2)
+      value: PlantGroup4_HidePlant2
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -43754,7 +43754,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (1)
+      value: PlantGroup2_HidePlant2
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -48747,7 +48747,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant (2)
+      value: PlantGroup2_HidePlant3
       objectReference: {fileID: 0}
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
@@ -72211,7 +72211,7 @@ PrefabInstance:
     - target: {fileID: 3557635651165942525, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
       propertyPath: m_Name
-      value: HidePlant
+      value: PlantGroup1_HidePlant1
       objectReference: {fileID: 0}
     - target: {fileID: 4517978671055435056, guid: 8eb3daf398d88534f85f35bdc59321b2,
         type: 3}
