@@ -17,6 +17,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Xml.Linq;
 using UnityEngine;
 using static Shared.Interfaces.Model.Entity.EnumManager;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Server.StreamingHubs
 {
@@ -56,8 +57,11 @@ namespace Server.StreamingHubs
             }
             else
             {
-                // 自分のデータを グループデータから削除する
-                this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
+                if(this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
+                {
+                    // 自分のデータを グループデータから削除する
+                    this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
+                }
 
                 // ルーム内のメンバーから削除
                 room.RemoveAsync(this.Context);
@@ -166,7 +170,8 @@ namespace Server.StreamingHubs
                     IsGameRunning = false,
                     IsMatching = isMatching,
                     score = 0,
-                    rating = userRating.rating
+                    rating = userRating.rating,
+                    IsFinishMasterCountDown = false,
                 };
                 var roomData = new RoomData() { JoinedUser = joinedUser, PlayerState = new PlayerState(), UserState = new UserState() };
                 roomStorage.Set(this.ConnectionId, roomData);    // 自動で割り当てされるユーザーごとの接続IDに紐づけて保存したいデータを格納する
@@ -222,26 +227,106 @@ namespace Server.StreamingHubs
         public async Task LeaveAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
-            var user = roomStorage.Get(this.ConnectionId).JoinedUser;
+            var dataSelf = roomStorage.Get(this.ConnectionId);
             var dataList = roomStorage.AllValues.ToArray<RoomData>();
-            Console.WriteLine(user.UserData.Name + "が退室しました");
+            Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "が退室しました");
 
             // 自分がマスタークライアントの場合は、新しくマスタークライアントを選ぶ
             lock (roomStorage)
             {
-                if (user.IsMasterClient) AssignNewMasterClient(dataList, user.ConnectionId);
+                if (dataSelf.JoinedUser.IsMasterClient) AssignNewMasterClient(dataList, dataSelf.JoinedUser.ConnectionId);
+
+                CheckReadys(dataList, dataSelf);
+
+                foreach (var latestData in dataList)
+                {
+                    // ルーム参加者にユーザーの退室通知を送信
+                    this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
+                }
+
+                // 自分のデータを グループデータから削除する
+                this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
             }
 
-            foreach (var latestData in dataList)
-            {
-                // ルーム参加者にユーザーの退室通知を送信
-                this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
-            }
-
-            // 自分のデータを グループデータから削除する
-            this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
             // ルーム内のメンバーから自分を削除
             await room.RemoveAsync(this.Context);
+        }
+
+        /// <summary>
+        /// 準備完了系のリクエストを完了しているかどうかチェック
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="dataSelf"></param>
+        void CheckReadys(RoomData[] dataList, RoomData dataSelf)
+        {
+            // 自動マッチング完了後、準備完了をする前に退室した場合
+            if (!dataSelf.UserState.isReadyRoom && dataSelf.JoinedUser.IsMatching)
+            {
+                foreach (var data in dataList)
+                {
+                    // 他の参加しているユーザーが既に準備完了していた場合
+                    if (data.UserState.isReadyRoom)
+                    {
+                        ReadyAsynk(true);
+                        break;
+                    }
+                }
+            }
+
+            // ゲーム中の場合
+            if (dataSelf.JoinedUser.IsGameRunning)
+            {
+                // ゲーム開始前のカウントダウンが終了していない場合
+                if (!dataSelf.UserState.isCountdownOver)
+                {
+                    foreach (var data in dataList)
+                    {
+                        // 現在がカウントダウンが終了したかのチェック中の場合
+                        if (data.UserState.isCountdownOver)
+                        {
+                            CountdownOverAsynk();
+                            break;
+                        }
+                    }
+                }
+                if (!dataSelf.UserState.isReadyNextArea)
+                {
+                    foreach (var data in dataList)
+                    {
+                        // 現在が次のエリアに進む準備の完了チェック中の場合
+                        if (data.UserState.isReadyNextArea)
+                        {
+                            ReadyNextAreaAsynk();
+                            break;
+                        }
+                    }
+                }
+                if (!dataSelf.UserState.isFinishGame)
+                {
+                    foreach (var data in dataList)
+                    {
+                        // 現在がゲーム(一つの競技)終了したかどうかの準備完了チェック中の場合
+                        if (data.UserState.isFinishGame)
+                        {
+                            FinishGameAsynk();
+                            break;
+                        }
+                    }
+                }
+                if (!dataSelf.UserState.isTransitionFinalResultScene)
+                {
+                    foreach (var data in dataList)
+                    {
+                        // 現在がリザルトシーンに遷移したかどうかのチェック中の場合
+                        if (data.UserState.isTransitionFinalResultScene)
+                        {
+                            TransitionFinalResultSceneAsynk();
+                            break;
+                        }
+                    }
+                }
+            }
+
         }
 
         /// <summary>
@@ -330,7 +415,7 @@ namespace Server.StreamingHubs
 
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
-            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(lockの手前)");
+            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信");
             // [排他制御] 準備完了チェックが複数同時に処理すると、データの整合性に異常がでるため
             lock (roomStorage)
             {
@@ -386,7 +471,10 @@ namespace Server.StreamingHubs
             lock (roomStorage)
             {
                 var data = roomStorage.Get(this.ConnectionId);
+                if (data.UserState.isCountdownOver) return;
                 data.UserState.isCountdownOver = true;
+
+                Console.WriteLine(data.JoinedUser.UserData.Name + "がゲーム開始前のカウントダウン終了した");
 
                 // 全員がカウントダウン終了したかどうかチェック
                 roomDataList = roomStorage.AllValues.ToArray<RoomData>();
@@ -408,6 +496,7 @@ namespace Server.StreamingHubs
                     if (master != null && !master.JoinedUser.IsStartMasterCountDown)
                     {
                         master.JoinedUser.IsStartMasterCountDown = true;
+                        master.JoinedUser.IsFinishMasterCountDown = false;
                         this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
                         Console.WriteLine("最終競技でカウントダウン開始通知");
                     }
@@ -770,6 +859,7 @@ namespace Server.StreamingHubs
                 if (master != null && !master.JoinedUser.IsStartMasterCountDown)
                 {
                     master.JoinedUser.IsStartMasterCountDown = true;
+                    master.JoinedUser.IsFinishMasterCountDown = false;
 
                     // マスタークライアントにカウントダウン開始通知を配る
                     this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
@@ -838,7 +928,7 @@ namespace Server.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        public async Task ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId)
+        public async Task ReadyNextAreaAsynk()
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
@@ -878,10 +968,11 @@ namespace Server.StreamingHubs
                     Console.WriteLine("再開通知");
                     const float baseWaitSec = 0.8f;
 
-                    var nextAreaId = GetNextAreaId(currentAreaId);
+                    var nextAreaId = GetNextAreaId(data.UserState.currentAreaId);
                     foreach (var roomData in roomDataList)
                     {
                         float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
+                        roomData.UserState.currentAreaId = nextAreaId;
 
                         // ゲーム再開通知を個別に配る
                         this.BroadcastTo(room, roomData.JoinedUser.ConnectionId).OnReadyNextAreaAllUsers(waitSec, nextAreaId);
@@ -901,7 +992,7 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId)
         {
-            if (currentAreaId == RELAY_AREA_ID.Area1_Mud)
+            if (currentAreaId == EnumManager.FirstAreaId)
             {
                 // 中間エリアを抽選する
                 var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
@@ -933,6 +1024,16 @@ namespace Server.StreamingHubs
         /// <returns></returns>
         public async Task CountDownAsynk(int currentTime)
         {
+            if(currentTime == 0)
+            {
+                var roomStorage = room.GetInMemoryStorage<RoomData>();
+                lock (roomStorage)
+                {
+                    var data = roomStorage.Get(this.ConnectionId);
+                    if (data.JoinedUser.IsFinishMasterCountDown) return;
+                    data.JoinedUser.IsFinishMasterCountDown = true;
+                }
+            }
             this.Broadcast(room).OnCountDown(currentTime);
         }
 

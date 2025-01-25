@@ -32,5 +32,7 @@ namespace Shared.Interfaces.Model.Entity
         public bool isDestroyPlantsRequest { get; set; } = false;    // [競技：カントリーリレー]植物のギミックを破棄するリクエスト(送信or受信)をしたかどうか
         [Key(10)]
         public List<string> triggeringPlantGimmickList { get; set; } = new List<string>();    // [競技：カントリーリレー]植物のギミックを発動した履歴
+        [Key(11)]
+        public EnumManager.RELAY_AREA_ID currentAreaId { get; set; } = EnumManager.FirstAreaId;    // [競技：カントリーリレー]現在のエリアのID
     }
 }

@@ -43,6 +43,7 @@ public class FinalGameDirector : MonoBehaviour
     #endregion
 
     Coroutine coroutineCountDown;
+    const int maxTime = 21;
     int currentTime;
     bool isGameStartCountDownOver;
 
@@ -54,6 +55,7 @@ public class FinalGameDirector : MonoBehaviour
     {
         if (isDebug) return;
         isGameStartCountDownOver = false;
+        currentTime = maxTime;
 
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -64,6 +66,7 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser += this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
+        RoomModel.Instance.OnAssignedMasterClient += this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnUpdateScoreUser += this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
@@ -88,6 +91,7 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser -= this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
+        RoomModel.Instance.OnAssignedMasterClient -= this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnUpdateScoreUser -= this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
@@ -103,11 +107,16 @@ public class FinalGameDirector : MonoBehaviour
     {
         while (true)
         {
-            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+            bool isMasterClient = false;
+            if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
             {
-                UpdateMasterClientAsynk();
+                if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+                {
+                    isMasterClient = true;
+                    UpdateMasterClientAsynk();
+                }
             }
-            else
+            if(!isMasterClient)
             {
                 UpdatePlayerState();
             }
@@ -117,13 +126,13 @@ public class FinalGameDirector : MonoBehaviour
 
     IEnumerator CountDownCoroutine()
     {
-        if (currentTime == 0) currentTime = 61;
         while (currentTime > 0)
         {
             currentTime--;
             OnCountDown();
             yield return new WaitForSeconds(1f);
         }
+        coroutineCountDown = null;
     }
 
     void SetupGame()
@@ -233,17 +242,29 @@ public class FinalGameDirector : MonoBehaviour
         else
         {
             // 該当のキャラクター削除&リストから削除
+            DOTween.Kill(characterList[connectionId]);
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
         }
 
         if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
         {
-            foreach(var obj in movingObjectList)
+            foreach (var obj in movingObjectList)
             {
-                obj.Value.ResumeTween();
+                if (obj.Value != null)
+                {
+                    if (obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// マスタークライアントとして指名されたときに、カウントダウンを引き継ぐ
+    /// </summary>
+    void NotifyOnAssignedMasterClient()
+    {
+        if (coroutineCountDown == null) coroutineCountDown = StartCoroutine(CountDownCoroutine());
     }
 
     /// <summary>
@@ -477,6 +498,9 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     public IEnumerator FinishGameCoroutine()
     {
+        if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
+        coroutineCountDown = null;
+
         // 操作を無効化する
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = false;
         characterList[RoomModel.Instance.ConnectionId].layer = 8;   // ギミックなどの当たり判定を無くす

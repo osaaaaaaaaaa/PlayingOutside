@@ -50,6 +50,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム共通の処理
+    // 新しくマスタークライアントとして指名されたかどうか
+    public Action OnAssignedMasterClient {  get; set; }
     // ユーザーの所持ポイント更新通知
     public Action<Guid,int> OnUpdateScoreUser { get; set; }
     // カウントダウン通知
@@ -256,7 +258,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             // 自動マッチング時は入室できたら準備完了リクエストを送信
             if (IsMatchingRunning)
             {
-                await ReadyAsynk(true);
+                //await ReadyAsynk(true);
             }
         }
     }
@@ -299,6 +301,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
         // 自分のユーザー情報を更新
         JoinedUsers[this.ConnectionId] = latestData;
+        if (latestData.IsMasterClient)
+        {
+            if (userState == USER_STATE.joined) OnAssignedMasterClient();
+        }
 
         // アクション実行
         OnLeavedUser(connectionId);
@@ -722,9 +728,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 次のエリアに移動する準備が完了した処理
     /// </summary>
     /// <returns></returns>
-    public async UniTask ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId)
+    public async UniTask ReadyNextAreaAsynk()
     {
-        if (userState == USER_STATE.joined) await roomHub.ReadyNextAreaAsynk(currentAreaId);
+        if (userState == USER_STATE.joined) await roomHub.ReadyNextAreaAsynk();
     }
 
     /// <summary>

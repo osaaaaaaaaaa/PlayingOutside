@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class RoomDirector : MonoBehaviour
 {
@@ -27,6 +28,12 @@ public class RoomDirector : MonoBehaviour
 
     SEController seController;
 
+    #region 自動マッチングのタイムアウト関係
+    Coroutine coroutineTimeout;
+    DateTime startMatchingTime;
+    const float timeoutSec = 5f;
+    #endregion
+
     const float waitSeconds = 0.1f;
 
     private async void Start()
@@ -43,7 +50,14 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnReadyUser += this.NotifyReadyUser;
 
         // 接続処理
-        if(!RoomModel.Instance.IsMatchingRunning) await RoomModel.Instance.ConnectAsync();
+        if (!RoomModel.Instance.IsMatchingRunning)
+        {
+            await RoomModel.Instance.ConnectAsync();
+        }
+        else
+        {
+            coroutineTimeout = StartCoroutine(TimeOutCoroutine());
+        }
         // 入室処理をリクエスト
         JoinRoom();
     }
@@ -64,6 +78,38 @@ public class RoomDirector : MonoBehaviour
             UpdatePlayerState();
             yield return new WaitForSeconds(waitSeconds);
         }
+    }
+
+    IEnumerator TimeOutCoroutine()
+    {
+        bool isTimeOut = false;
+        startMatchingTime = DateTime.Now;
+        while (!isTimeOut)
+        {
+            yield return new WaitForSeconds(waitSeconds);
+            var currentTime = DateTime.Now;
+            if((currentTime - startMatchingTime).TotalSeconds > timeoutSec)
+            {
+                isTimeOut = true;
+            }
+        }
+
+        OnTimeOut();
+    }
+
+    async void OnTimeOut()
+    {
+        StopCoroutine(UpdateCoroutine());
+        await RoomModel.Instance.LeaveAsync();
+
+        UnityAction errorActoin = CallSceneLoadMethod;
+        ErrorUIController.Instance.ShowErrorUI("タイムアウトが発生しました。ルームから退室します。", errorActoin);
+    }
+
+    public void CallSceneLoadMethod()
+    {
+        if (SceneControler.Instance.isLoading) SceneManager.LoadScene("TopScene");
+        else SceneControler.Instance.StartSceneLoad("TopScene");
     }
 
     /// <summary>
@@ -149,6 +195,7 @@ public class RoomDirector : MonoBehaviour
             if (characterList.ContainsKey(connectionId))
             {
                 // 該当のキャラクター削除&リストから削除
+                DOTween.Kill(characterList[connectionId]);
                 Destroy(characterList[connectionId]);
                 characterList.Remove(connectionId);
             }
@@ -203,6 +250,7 @@ public class RoomDirector : MonoBehaviour
         textReadyCnt.text = readyCnt.ToString();
         if (isTransitionGameScene)
         {
+            if(coroutineTimeout != null) StopCoroutine(coroutineTimeout);
             StopCoroutine(UpdateCoroutine());
             RoomModel.Instance.IsMatchingRunning = false;
 

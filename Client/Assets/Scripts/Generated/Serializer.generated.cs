@@ -47,27 +47,28 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(19)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(20)
             {
                 { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.GooseState>), 0 },
                 { typeof(global::System.Collections.Generic.List<global::Shared.Interfaces.Model.Entity.MovingObjectState>), 1 },
                 { typeof(global::System.Collections.Generic.List<string>), 2 },
-                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID), 3 },
-                { typeof(global::Server.Model.Entity.Follow), 4 },
-                { typeof(global::Server.Model.Entity.FollowingUser), 5 },
-                { typeof(global::Server.Model.Entity.NGWord), 6 },
-                { typeof(global::Server.Model.Entity.RatingRanking), 7 },
-                { typeof(global::Server.Model.Entity.User), 8 },
-                { typeof(global::Shared.Interfaces.Model.Entity.GooseState), 9 },
-                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 10 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 11 },
-                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 12 },
-                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 13 },
-                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 14 },
-                { typeof(global::Shared.Interfaces.Model.Entity.SpawnObject), 15 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 16 },
-                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 17 },
-                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 18 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID), 3 },
+                { typeof(global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID), 4 },
+                { typeof(global::Server.Model.Entity.Follow), 5 },
+                { typeof(global::Server.Model.Entity.FollowingUser), 6 },
+                { typeof(global::Server.Model.Entity.NGWord), 7 },
+                { typeof(global::Server.Model.Entity.RatingRanking), 8 },
+                { typeof(global::Server.Model.Entity.User), 9 },
+                { typeof(global::Shared.Interfaces.Model.Entity.GooseState), 10 },
+                { typeof(global::Shared.Interfaces.Model.Entity.JoinedUser), 11 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MasterClient), 12 },
+                { typeof(global::Shared.Interfaces.Model.Entity.MovingObjectState), 13 },
+                { typeof(global::Shared.Interfaces.Model.Entity.PlayerState), 14 },
+                { typeof(global::Shared.Interfaces.Model.Entity.ResultData), 15 },
+                { typeof(global::Shared.Interfaces.Model.Entity.SpawnObject), 16 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserScore), 17 },
+                { typeof(global::Shared.Interfaces.Model.Entity.UserState), 18 },
+                { typeof(global::Shared.Interfaces.Services.IMyFirstService.Number), 19 },
             };
         }
 
@@ -84,22 +85,23 @@ namespace MessagePack.Resolvers
                 case 0: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.GooseState>();
                 case 1: return new global::MessagePack.Formatters.ListFormatter<global::Shared.Interfaces.Model.Entity.MovingObjectState>();
                 case 2: return new global::MessagePack.Formatters.ListFormatter<string>();
-                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_SPAWN_OBJECT_IDFormatter();
-                case 4: return new MessagePack.Formatters.Server.Model.Entity.FollowFormatter();
-                case 5: return new MessagePack.Formatters.Server.Model.Entity.FollowingUserFormatter();
-                case 6: return new MessagePack.Formatters.Server.Model.Entity.NGWordFormatter();
-                case 7: return new MessagePack.Formatters.Server.Model.Entity.RatingRankingFormatter();
-                case 8: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
-                case 9: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GooseStateFormatter();
-                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
-                case 11: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
-                case 12: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
-                case 13: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
-                case 14: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
-                case 15: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.SpawnObjectFormatter();
-                case 16: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
-                case 17: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
-                case 18: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
+                case 3: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_RELAY_AREA_IDFormatter();
+                case 4: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.EnumManager_SPAWN_OBJECT_IDFormatter();
+                case 5: return new MessagePack.Formatters.Server.Model.Entity.FollowFormatter();
+                case 6: return new MessagePack.Formatters.Server.Model.Entity.FollowingUserFormatter();
+                case 7: return new MessagePack.Formatters.Server.Model.Entity.NGWordFormatter();
+                case 8: return new MessagePack.Formatters.Server.Model.Entity.RatingRankingFormatter();
+                case 9: return new MessagePack.Formatters.Server.Model.Entity.UserFormatter();
+                case 10: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.GooseStateFormatter();
+                case 11: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.JoinedUserFormatter();
+                case 12: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MasterClientFormatter();
+                case 13: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.MovingObjectStateFormatter();
+                case 14: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.PlayerStateFormatter();
+                case 15: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.ResultDataFormatter();
+                case 16: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.SpawnObjectFormatter();
+                case 17: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserScoreFormatter();
+                case 18: return new MessagePack.Formatters.Shared.Interfaces.Model.Entity.UserStateFormatter();
+                case 19: return new MessagePack.Formatters.Shared.Interfaces.Services.IMyFirstService_NumberFormatter();
                 default: return null;
             }
         }
@@ -130,6 +132,19 @@ namespace MessagePack.Resolvers
 
 namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
 {
+
+    public sealed class EnumManager_RELAY_AREA_IDFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID>
+    {
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            writer.Write((global::System.Int32)value);
+        }
+
+        public global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            return (global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID)reader.ReadInt32();
+        }
+    }
 
     public sealed class EnumManager_SPAWN_OBJECT_IDFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Shared.Interfaces.Model.Entity.EnumManager.SPAWN_OBJECT_ID>
     {
@@ -576,7 +591,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(9);
+            writer.WriteArrayHeader(10);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Guid>(formatterResolver).Serialize(ref writer, value.ConnectionId, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Server.Model.Entity.User>(formatterResolver).Serialize(ref writer, value.UserData, options);
             writer.Write(value.JoinOrder);
@@ -586,6 +601,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             writer.Write(value.IsMatching);
             writer.Write(value.score);
             writer.Write(value.rating);
+            writer.Write(value.IsFinishMasterCountDown);
         }
 
         public global::Shared.Interfaces.Model.Entity.JoinedUser Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -630,6 +646,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 8:
                         ____result.rating = reader.ReadInt32();
+                        break;
+                    case 9:
+                        ____result.IsFinishMasterCountDown = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();
@@ -998,7 +1017,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(11);
+            writer.WriteArrayHeader(12);
             writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
             writer.Write(value.isAreaCleared);
@@ -1010,6 +1029,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.usedItemNameList, options);
             writer.Write(value.isDestroyPlantsRequest);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.triggeringPlantGimmickList, options);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID>(formatterResolver).Serialize(ref writer, value.currentAreaId, options);
         }
 
         public global::Shared.Interfaces.Model.Entity.UserState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -1060,6 +1080,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 10:
                         ____result.triggeringPlantGimmickList = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 11:
+                        ____result.currentAreaId = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();

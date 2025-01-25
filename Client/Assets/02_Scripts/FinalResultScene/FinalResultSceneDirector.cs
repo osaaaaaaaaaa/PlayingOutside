@@ -12,6 +12,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] List<GameObject> characterPrefabList;
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
+    List<Guid> leavedUserIdList = new List<Guid>(); // 途中退出したユーザーID
     #endregion
 
     #region パーティクル・UI関係
@@ -22,6 +23,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     [SerializeField] CharacterControlUI characterControlUI;
     #endregion
 
+    bool isResultAnnounced = false;
     const float waitSeconds = 0.1f;
 
     private void Start()
@@ -128,9 +130,17 @@ public class FinalResultSceneDirector : MonoBehaviour
         }
         else
         {
-            // 該当のキャラクター削除&リストから削除
-            Destroy(characterList[connectionId]);
-            characterList.Remove(connectionId);
+            if (isResultAnnounced)
+            {
+                // 該当のキャラクター削除&リストから削除
+                DOTween.Kill(characterList[connectionId]);
+                Destroy(characterList[connectionId]);
+                characterList.Remove(connectionId);
+            }
+            else
+            {
+                leavedUserIdList.Add(connectionId);
+            }
         }
     }
 
@@ -223,6 +233,15 @@ public class FinalResultSceneDirector : MonoBehaviour
         yield return new WaitForSeconds(2f);  // パーティクルの生存時間
 
         StartCoroutine(UpdateCoroutine());
+        // 途中退出したユーザーを削除する
+        isResultAnnounced = true;
+        foreach (var id in leavedUserIdList)
+        {
+            DOTween.Kill(characterList[id]);
+            Destroy(characterList[id]);
+            characterList.Remove(id);
+        }
+
         // プレイヤーの操作をできるようにする
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
 

@@ -50,6 +50,7 @@ public class MoveSetRoot : MonoBehaviour
     /// <param name="_elapsedTime"></param>
     public void ResumeTween()
     {
+        if (pathTween == null) return;
         if(!pathTween.IsPlaying()) pathTween.Goto(elapsedTime, true);
     }
 

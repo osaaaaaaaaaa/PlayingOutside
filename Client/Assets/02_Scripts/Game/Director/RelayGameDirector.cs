@@ -47,11 +47,13 @@ public class RelayGameDirector : MonoBehaviour
     Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
 
     Coroutine coroutineCountDown;
+    const int maxTime = 21;
     int currentTime;
     bool isGameStartCountDownOver;
 
     const float waitSeconds = 0.1f;
     public bool isDebug = false;
+    public bool stop = false;
 
     private void Start()
     {
@@ -59,7 +61,7 @@ public class RelayGameDirector : MonoBehaviour
         isDestroyPlantRequest = false;
         isDestroyedPlants = false;
         isGameStartCountDownOver = false;
-        currentTime = 0;
+        currentTime = maxTime;
 
         // 関数を登録する
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -73,6 +75,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnFinishGameUser += this.NotifyFinishGameUser;
         RoomModel.Instance.OnUpdateScoreUser += this.NotifyUpdateScore;
 
+        RoomModel.Instance.OnAssignedMasterClient += this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnGetItemUser += this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser += this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
@@ -100,6 +103,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnFinishGameUser -= this.NotifyFinishGameUser;
         RoomModel.Instance.OnUpdateScoreUser -= this.NotifyUpdateScore;
 
+        RoomModel.Instance.OnAssignedMasterClient -= this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnGetItemUser -= this.NotifyGetItemUser;
         RoomModel.Instance.OnUseItemUser -= this.NotifyUseItemUser;
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
@@ -115,16 +119,22 @@ public class RelayGameDirector : MonoBehaviour
     {
         while (true)
         {
-            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+            bool isMasterClient = false;
+            if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
             {
-                if (!isDestroyPlantRequest)
+                if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
                 {
-                    // まだ植物のギミックを破棄していない場合
-                    DestroyPlantsGimmickAsynk();
+                    isMasterClient = true;
+                    if (!isDestroyPlantRequest)
+                    {
+                        // まだ植物のギミックを破棄していない場合
+                        DestroyPlantsGimmickAsynk();
+                    }
+                    UpdateMasterClientAsynk();
                 }
-                UpdateMasterClientAsynk();
             }
-            else
+
+            if(!isMasterClient)
             {
                 UpdatePlayerState();
             }
@@ -134,13 +144,13 @@ public class RelayGameDirector : MonoBehaviour
 
     IEnumerator CountDownCoroutine()
     {
-        if (currentTime == 0) currentTime = 11;
         while (currentTime > 0)
         {
             currentTime--;
             OnCountDown();
             yield return new WaitForSeconds(1f);
         }
+        coroutineCountDown = null;
     }
 
     void SetupGame()
@@ -242,6 +252,7 @@ public class RelayGameDirector : MonoBehaviour
         else
         {
             // 該当のキャラクター削除&リストから削除
+            DOTween.Kill(characterList[connectionId]);
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
         }
@@ -250,9 +261,20 @@ public class RelayGameDirector : MonoBehaviour
         {
             foreach (var obj in movingObjectList)
             {
-                obj.Value.ResumeTween();
+                if(obj.Value != null)
+                {
+                    if(obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// マスタークライアントとして指名されたときに、カウントダウンを引き継ぐ
+    /// </summary>
+    void NotifyOnAssignedMasterClient()
+    {
+        if (coroutineCountDown == null) coroutineCountDown = StartCoroutine(CountDownCoroutine());
     }
 
     /// <summary>
@@ -476,7 +498,7 @@ public class RelayGameDirector : MonoBehaviour
         else
         {
             // 現在のエリアが最後のエリアではない場合
-            await RoomModel.Instance.ReadyNextAreaAsynk(areaController.currentAreaId);
+            await RoomModel.Instance.ReadyNextAreaAsynk();
         }
     }
 
@@ -486,8 +508,9 @@ public class RelayGameDirector : MonoBehaviour
     void NotifyRedyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId)
     {
         countDownUI.SetActive(false);
+        if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         coroutineCountDown = null;
-        currentTime = 0;
+        currentTime = maxTime;
 
         var myCharacter = characterList[RoomModel.Instance.ConnectionId];
         myCharacter.SetActive(false);

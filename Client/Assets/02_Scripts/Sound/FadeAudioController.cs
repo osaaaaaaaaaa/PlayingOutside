@@ -34,21 +34,24 @@ public class FadeAudioController : MonoBehaviour
 
     IEnumerator FadeCoroutine(AudioSource source, bool isFadeIn)
     {
-        float maxVolume = source.volume;
-        source.volume = isFadeIn ? 0 : maxVolume;
-
-        IsFadeing = true;
-        const float waitSec = 0.1f;
-        int fadeMaxCnt = (int)(fadeDuration / waitSec);
-        for (int i = 0; i < fadeMaxCnt; i++)
+        if (source != null)
         {
-            float value = (1f / fadeMaxCnt);
-            source.volume += isFadeIn ? value : -value;
+            float maxVolume = source.volume;
+            if (source != null) source.volume = isFadeIn ? 0 : maxVolume;
 
-            yield return new WaitForSeconds(waitSec);
+            IsFadeing = true;
+            const float waitSec = 0.1f;
+            int fadeMaxCnt = (int)(fadeDuration / waitSec);
+            for (int i = 0; i < fadeMaxCnt; i++)
+            {
+                float value = (1f / fadeMaxCnt);
+                if (source != null) source.volume += isFadeIn ? value : -value;
+
+                yield return new WaitForSeconds(waitSec);
+            }
+
+            if (source != null) source.volume = isFadeIn ? maxVolume : 0;
+            IsFadeing = false;
         }
-
-        source.volume = isFadeIn ? maxVolume : 0;
-        IsFadeing = false;
     }
 }

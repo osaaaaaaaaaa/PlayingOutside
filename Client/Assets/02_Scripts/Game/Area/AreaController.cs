@@ -32,7 +32,7 @@ public class AreaController : MonoBehaviour
     public bool isClearedArea { get; private set; }
 
 
-    public EnumManager.RELAY_AREA_ID currentAreaId { get; set; } = EnumManager.RELAY_AREA_ID.Area1_Mud;
+    public EnumManager.RELAY_AREA_ID currentAreaId { get; set; } = EnumManager.FirstAreaId;
 
     private void Awake()
     {

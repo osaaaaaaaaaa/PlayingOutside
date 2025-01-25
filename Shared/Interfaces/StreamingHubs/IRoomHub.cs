@@ -166,7 +166,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// 次のエリアに移動する準備が完了した処理
         /// </summary>
         /// <returns></returns>
-        Task ReadyNextAreaAsynk(EnumManager.RELAY_AREA_ID currentAreaId);
+        Task ReadyNextAreaAsynk();
         #endregion
 
         #region ゲーム終了までの処理(最終結果発表シーンの処理)

@@ -27,5 +27,7 @@ namespace Shared.Interfaces.Model.Entity
         public int score { get; set; }  // 所持ポイント
         [Key(8)]
         public int rating { get; set; }
+        [Key(9)]
+        public bool IsFinishMasterCountDown { get; set; }   // マスタークライアントのカウントダウンが終了しているかどうか
     }
 }
