@@ -82,7 +82,7 @@ public class FinalResultSceneDirector : MonoBehaviour
 
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
-            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
+            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1], isMyCharacter);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理

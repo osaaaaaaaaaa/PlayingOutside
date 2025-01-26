@@ -9,14 +9,12 @@ public class AreaGoal : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == 3 || collision.gameObject.layer == 7 || collision.gameObject.layer == 8)
+        var compornent = collision.gameObject.GetComponent<PlayerController>();
+        if (compornent != null)
         {
-            collision.gameObject.GetComponent<PlayerEffectController>().SetEffect(EFFECT_ID.AreaCleared);
-        }
-        if (collision.gameObject.GetComponent<PlayerController>())
-        {
-            if (collision.gameObject.GetComponent<PlayerController>().enabled)
+            if (compornent.enabled)
             {
+                collision.gameObject.GetComponent<PlayerEffectController>().SetEffect(EFFECT_ID.AreaCleared);
                 this.GetComponent<BoxCollider>().enabled = false;
                 collision.gameObject.SetActive(false);
                 StartCoroutine(controller.CurrentAreaClearCoroutine(collision.gameObject));

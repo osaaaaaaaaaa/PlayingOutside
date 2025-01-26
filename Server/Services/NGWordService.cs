@@ -22,7 +22,7 @@ namespace Server.Services
             // バリデーションチェック
             if (ngWords == null)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "NGワードを取得できません");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "NGワードを取得できませんでした。");
             }
 
             return ngWords;

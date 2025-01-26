@@ -123,13 +123,13 @@ public class PlayerItemController : MonoBehaviour
     /// </summary>
     public async void OnUseItemButton()
     {
-        if (isOnUseButton) return;
+        if (isOnUseButton || slotItemId == ITEM_ID.None || slotItemId == ITEM_ID.ItemBox || slotItemId == ITEM_ID.Coin) return;
         isOnUseButton = true;
         // アイテム使用リクエスト送信
         await RoomModel.Instance.UseItemAsynk(slotItemId);
 
 
-        // 一旦
+        // サーバーに接続していない場合
         if(RoomModel.Instance.userState != RoomModel.USER_STATE.joined) UseItem(slotItemId);
     }
 }

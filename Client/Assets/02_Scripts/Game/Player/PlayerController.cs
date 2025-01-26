@@ -230,6 +230,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnJumpButton()
     {
+        animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
         Jump(jumpPower);
     }
 
@@ -242,7 +243,6 @@ public class PlayerController : MonoBehaviour
     public void Jump(float _jumpPower)
     {
         transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
-        animController.SetInt(PlayerAnimatorController.ANIM_ID.Jump);
         rb.AddForce(transform.up * _jumpPower);
     }
 
@@ -444,12 +444,37 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
+        rb.velocity = Vector3.zero;
         transform.position = respawnPoint;
         InitParam();
     }
 
     /// <summary>
     /// 初期設定などに呼び出し
+    /// </summary>
+    /// <param name="startPointTf"></param>
+    public void InitPlayer(Transform startPointTf, bool isMyCharacter)
+    {
+        respawnPoint = startPointTf.position;
+        transform.position = startPointTf.position;
+        transform.eulerAngles += startPointTf.eulerAngles;
+        modelTf.localPosition = Vector3.zero;
+
+        if (!isMyCharacter)
+        {
+            GetComponent<Rigidbody>().constraints = 
+                RigidbodyConstraints.FreezeRotationX |
+                RigidbodyConstraints.FreezeRotationY |
+                RigidbodyConstraints.FreezeRotationZ |
+                RigidbodyConstraints.FreezePositionY;
+        }
+
+        InitParam();
+    }
+
+    /// <summary>
+    /// [競技カントリーリレー]
+    /// エリア移動の際に呼び出し
     /// </summary>
     /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf)

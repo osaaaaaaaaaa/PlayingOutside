@@ -42,18 +42,30 @@ public class FinalGameDirector : MonoBehaviour
     Dictionary<string, Goose> gooseObjList = new Dictionary<string, Goose>();
     #endregion
 
+    #region ゲーム終了関係
+    Coroutine coroutineFinishGame;
+    bool isFinishedGame;
+    #endregion
+
+    #region カウントダウン関係
     Coroutine coroutineCountDown;
-    const int maxTime = 21;
+    const int maxTime = 121;
     int currentTime;
     bool isGameStartCountDownOver;
+    #endregion
 
     const float waitSeconds = 0.1f;
-
+    bool isStartGame = false;
     public bool isDebug = false;
 
     private void Start()
     {
-        if (isDebug) return;
+        if (isDebug)
+        {
+            itemSpawner.enabled = true;
+            return;
+        }
+        itemSpawner.enabled = false;
         isGameStartCountDownOver = false;
         currentTime = maxTime;
 
@@ -66,7 +78,6 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser += this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser += this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
-        RoomModel.Instance.OnAssignedMasterClient += this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnUpdateScoreUser += this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser += this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser += this.NotifyCountDownUser;
@@ -91,7 +102,6 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDropCoinsUser -= this.NotifyDropCoinsUser;
         RoomModel.Instance.OnDropCoinsAtRandomPositionsUser -= this.NotifyDropCoinsAtRandomPositions;
         #region ゲーム共通の通知処理
-        RoomModel.Instance.OnAssignedMasterClient -= this.NotifyOnAssignedMasterClient;
         RoomModel.Instance.OnUpdateScoreUser -= this.NotifyUpdateScore;
         RoomModel.Instance.OnStartCountDownUser -= this.NotifyStartCountDown;
         RoomModel.Instance.OnCountDownUser -= this.NotifyCountDownUser;
@@ -193,7 +203,7 @@ public class FinalGameDirector : MonoBehaviour
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             Vector3 startPos = characterStartPoints[value.JoinOrder - 1].position;
-            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1]);
+            character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1], isMyCharacter);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理
@@ -220,6 +230,7 @@ public class FinalGameDirector : MonoBehaviour
     public async void LeaveRoom()
     {
         StopCoroutine(UpdateCoroutine());
+        if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         await RoomModel.Instance.LeaveAsync();
 
         SceneControler.Instance.StartSceneLoad("TopScene");
@@ -245,6 +256,16 @@ public class FinalGameDirector : MonoBehaviour
             DOTween.Kill(characterList[connectionId]);
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
+
+            // 自分が最後の一人になった場合はゲームを終了する
+            if (characterList.Count == 1 && isStartGame && !isFinishedGame)
+            {
+                if (coroutineFinishGame == null) coroutineFinishGame = StartCoroutine(FinishGameCoroutine());
+            }
+            else if (characterList.Count == 1 && !isStartGame)
+            {
+                isFinishedGame = true;
+            }
         }
 
         if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
@@ -257,14 +278,6 @@ public class FinalGameDirector : MonoBehaviour
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// マスタークライアントとして指名されたときに、カウントダウンを引き継ぐ
-    /// </summary>
-    void NotifyOnAssignedMasterClient()
-    {
-        if (coroutineCountDown == null) coroutineCountDown = StartCoroutine(CountDownCoroutine());
     }
 
     /// <summary>
@@ -421,6 +434,15 @@ public class FinalGameDirector : MonoBehaviour
         // ゲーム開始前のカウントダウンを非表示にする
         gameStartCountDown.PlayCountDownOverAnim();
 
+        isStartGame = true;
+
+        // ゲーム終了処理
+        if (isFinishedGame)
+        {
+            if (coroutineFinishGame == null) coroutineFinishGame = StartCoroutine(FinishGameCoroutine());
+            return;
+        }
+
         // プレイヤーの操作をできるようにする
         characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
@@ -428,6 +450,9 @@ public class FinalGameDirector : MonoBehaviour
 
         // ギミックを起動
         gimmicksParent.SetActive(true);
+
+        // アイテムスポーン開始
+        itemSpawner.enabled = true;
     }
 
     /// <summary>
@@ -446,7 +471,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     void NotifyStartCountDown()
     {
-        if (coroutineCountDown == null) coroutineCountDown = StartCoroutine(CountDownCoroutine());
+        if (!isFinishedGame && coroutineCountDown == null && currentTime > 0) coroutineCountDown = StartCoroutine(CountDownCoroutine());
     }
 
     /// <summary>
@@ -455,7 +480,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     public async void OnCountDown()
     {
-        if (currentTime >= 0) await RoomModel.Instance.CountDownAsynk(currentTime);
+        if (currentTime >= 0 && !isFinishedGame) await RoomModel.Instance.CountDownAsynk(currentTime);
     }
 
     /// <summary>
@@ -464,6 +489,7 @@ public class FinalGameDirector : MonoBehaviour
     /// <param name="currentTime"></param>
     void NotifyCountDownUser(int currentTime)
     {
+        if (isFinishedGame) return;
         if (coroutineCountDown == null) this.currentTime = currentTime;
         countDownUI.SetActive(true);
         countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);
@@ -471,7 +497,7 @@ public class FinalGameDirector : MonoBehaviour
         // カウントダウンが0になった場合
         if (currentTime == 0)
         {
-            StartCoroutine(FinishGameCoroutine());
+            if(coroutineFinishGame == null) coroutineFinishGame = StartCoroutine(FinishGameCoroutine());
         }
     }
 
@@ -498,6 +524,7 @@ public class FinalGameDirector : MonoBehaviour
     /// </summary>
     public IEnumerator FinishGameCoroutine()
     {
+        isFinishedGame = true;
         if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         coroutineCountDown = null;
 

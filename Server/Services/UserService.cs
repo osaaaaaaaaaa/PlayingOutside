@@ -55,7 +55,7 @@ namespace Server.Services
             var user = context.Users.FirstOrDefault(user => user.Id == id);
             if (user == null)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できません");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できませんでした。");
             }
             return user;
         }
@@ -72,7 +72,7 @@ namespace Server.Services
             var users = context.Users.ToArray();
             if (users.Count() <= 0)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できません");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できませんでした。");
             }
             return users;
         }
@@ -90,15 +90,15 @@ namespace Server.Services
             var user = context.Users.FirstOrDefault(user => user.Id == request.Id);
             if (user == null)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できません");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "ユーザーを取得できませんでした。");
             }
             else if (request.Name != null && context.Users.Where(user => user.Name == request.Name).Count() > 0)
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "使用できない名前です");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "使用できない名前です。");
             }
             else if(request.Character_Id != 0 && !Enum.IsDefined(typeof(EnumManager.Character_ID), request.Character_Id))
             {
-                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "選択したキャラクターは存在しません");
+                throw new ReturnStatusException(Grpc.Core.StatusCode.InvalidArgument, "選択したキャラクターは存在しません。");
             }
 
             if(request.Name != null) user.Name = request.Name;

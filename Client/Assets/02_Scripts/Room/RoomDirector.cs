@@ -12,13 +12,15 @@ using UnityEngine.Events;
 
 public class RoomDirector : MonoBehaviour
 {
+    #region UI関係
     [SerializeField] Text textReadyCnt;
     [SerializeField] Text textUserCnt;
     [SerializeField] GameObject roomNameObj;
     [SerializeField] Text textRoomName;
     [SerializeField] Button btnLeave;
-    [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] CharacterControlUI characterControlUI;
+    [SerializeField] Dropdown dropdown;
+    #endregion
 
     #region キャラクター関係
     [SerializeField] List<Transform> characterStartPoints;
@@ -26,12 +28,13 @@ public class RoomDirector : MonoBehaviour
     Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ユーザーのキャラクター情報
     #endregion
 
+    [SerializeField] TargetCameraController targetCameraController;
     SEController seController;
 
     #region 自動マッチングのタイムアウト関係
     Coroutine coroutineTimeout;
     DateTime startMatchingTime;
-    const float timeoutSec = 5f;
+    const float timeoutSec = 30f;
     #endregion
 
     const float waitSeconds = 0.1f;
@@ -48,6 +51,7 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnReadyUser += this.NotifyReadyUser;
+        RoomModel.Instance.OnSelectMidAreaIdUser += this.NotifySelectMidAreaId;
 
         // 接続処理
         if (!RoomModel.Instance.IsMatchingRunning)
@@ -69,6 +73,7 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnReadyUser -= this.NotifyReadyUser;
+        RoomModel.Instance.OnSelectMidAreaIdUser -= this.NotifySelectMidAreaId;
     }
 
     IEnumerator UpdateCoroutine()
@@ -137,7 +142,7 @@ public class RoomDirector : MonoBehaviour
         character.name = user.UserData.Name;
 
         // プレイヤーの初期化処理
-        character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1]);
+        character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1], isMyCharacter);
         character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
         // ユーザー名の初期化処理
@@ -159,6 +164,15 @@ public class RoomDirector : MonoBehaviour
             StartCoroutine(UpdateCoroutine());
         }
 
+        // 自分がマスタークライアントの場合はエリアを選択できるようにする
+        if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
+        {
+            bool isMasterClientSelf = RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient;
+            dropdown.interactable = isMasterClientSelf;
+
+            if (!isMasterClientSelf) dropdown.value = (int)user.selectMidAreaId;
+        }
+
         int minRequiredUsers = characterList.Count < 2 ? 2 : characterList.Count;
         textUserCnt.text = "/" + minRequiredUsers + " Ready";
 
@@ -170,6 +184,7 @@ public class RoomDirector : MonoBehaviour
     /// </summary>
     public async void LeaveRoom()
     {
+        dropdown.interactable = false;
         StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.LeaveAsync();
 
@@ -198,6 +213,13 @@ public class RoomDirector : MonoBehaviour
                 DOTween.Kill(characterList[connectionId]);
                 Destroy(characterList[connectionId]);
                 characterList.Remove(connectionId);
+            }
+
+            // 自分がマスタークライアントの場合はエリアを選択できるようにする
+            if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
+            {
+                bool isMasterClientSelf = RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient;
+                dropdown.interactable = isMasterClientSelf;
             }
         }
     }
@@ -231,6 +253,48 @@ public class RoomDirector : MonoBehaviour
         characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
+    }
+
+    /// <summary>
+    /// 競技カントリーリレーの中間エリアを選択したリクエスト
+    /// </summary>
+    public async void OnSelectDropDown()
+    {
+        if (btnLeave.interactable)
+        {
+            EnumManager.SELECT_MID_AREA_ID id;
+            switch (dropdown.value)
+            {
+                case 0:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Random;
+                    break;
+                case 1:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Hay;
+                    break;
+                case 2:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Cow;
+                    break;
+                case 3:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Plant;
+                    break;
+                case 4:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Goose;
+                    break;
+                default:
+                    id = EnumManager.SELECT_MID_AREA_ID.Course_Random;
+                    break;
+            }
+
+            await RoomModel.Instance.SelectMidAreaAsynk(id);
+        }
+    }
+
+    /// <summary>
+    /// 競技カントリーリレーの中間エリアを選択した通知
+    /// </summary>
+    void NotifySelectMidAreaId(EnumManager.SELECT_MID_AREA_ID selectId)
+    {
+        dropdown.value = (int)selectId;
     }
 
     /// <summary>

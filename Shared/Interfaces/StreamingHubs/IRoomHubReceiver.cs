@@ -50,6 +50,12 @@ namespace Shared.Interfaces.StreamingHubs
 
         #region ゲーム開始までの処理
         /// <summary>
+        /// 競技カントリーリレーの中間エリアIDを受信
+        /// </summary>
+        /// <param name="selectMidAreaId"></param>
+        void OnSelectMidArea(EnumManager.SELECT_MID_AREA_ID selectMidAreaId);
+
+        /// <summary>
         /// 準備完了したかどうかの通知
         /// </summary>
         /// <param name="readyCnt">準備完了しているユーザー数</param>

@@ -97,7 +97,7 @@ public class FollowModel : BaseModel
         catch (RpcException e)
         {
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI(e.Status.Detail);
+            ErrorUIController.Instance.ShowErrorUI("ユーザーのフォロー登録に失敗しました。");
             return false;
         }
     }
@@ -121,7 +121,7 @@ public class FollowModel : BaseModel
         catch (RpcException e)
         {
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI(e.Status.Detail);
+            ErrorUIController.Instance.ShowErrorUI("ユーザーのフォロー解除に失敗しました。");
             return false;
         }
     }

@@ -136,7 +136,7 @@ public class UserModel : BaseModel
         {
             // 取得失敗
             Debug.Log(e);
-            return "ユーザー情報を取得できませんでした";
+            return e.Status.Detail;
         }
 
     }
@@ -164,7 +164,7 @@ public class UserModel : BaseModel
         {
             // 取得失敗
             Debug.Log(e);
-            return "ユーザー情報を更新できませんでした";
+            return "ユーザー情報を更新できませんでした。";
         }
     }
 }

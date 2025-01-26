@@ -12,6 +12,12 @@ public class GameStartCountDown : MonoBehaviour
     [SerializeField] AudioClip goSE;
     SEController seController;
 
+    public enum SE_TYPE 
+    {
+        hereweSE,
+        goSE,
+    }
+
     private void Awake()
     {
         seController = GetComponent<SEController>();
@@ -20,7 +26,7 @@ public class GameStartCountDown : MonoBehaviour
 
     public void PlayCountDownOverAnim()
     {
-        seController.PlayAudio(goSE);
+        PlayAudio(SE_TYPE.goSE);
         animator.Play("CountDownOverAnimation");
     }
 
@@ -31,7 +37,6 @@ public class GameStartCountDown : MonoBehaviour
 
     void PlayAnim()
     {
-        seController.PlayAudio(hereweSE);
         animator.Play("CountDownAnimation");
     }
 
@@ -39,5 +44,18 @@ public class GameStartCountDown : MonoBehaviour
     {
         if (relayGameDirector != null) relayGameDirector.OnCountdownOver();
         if (finalGameDirector != null) finalGameDirector.OnCountdownOver();
+    }
+
+    public void PlayAudio(SE_TYPE se)
+    {
+        switch (se)
+        {
+            case SE_TYPE.hereweSE:
+                seController.PlayAudio(hereweSE);
+                break;
+            case SE_TYPE.goSE:
+                seController.PlayAudio(goSE);
+                break;
+        }
     }
 }

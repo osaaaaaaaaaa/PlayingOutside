@@ -50,6 +50,7 @@ public class RatingModel : BaseModel
         {
             // 取得失敗
             Debug.Log(e);
+            ErrorUIController.Instance.ShowErrorUI("ランキングの取得に失敗しました。");
             return null;
         }
     }
@@ -74,6 +75,7 @@ public class RatingModel : BaseModel
         {
             // 取得失敗
             Debug.Log(e);
+            ErrorUIController.Instance.ShowErrorUI("ランキングの取得に失敗しました。");
             return null;
         }
     }

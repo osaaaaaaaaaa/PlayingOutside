@@ -190,7 +190,7 @@ public class PlayerAnimatorController : MonoBehaviour
         }
         if (id == (int)ANIM_ID.Jump)
         {
-            animator.Play("Jump", 0, 0); // èâÇﬂÇ©ÇÁçƒê∂Ç∑ÇÈ
+            animator.Play("Jump");
         }
 
         if (id == (int)ANIM_ID.Run || id == (int)ANIM_ID.RunFast) audioController.PlayRunningSourse();

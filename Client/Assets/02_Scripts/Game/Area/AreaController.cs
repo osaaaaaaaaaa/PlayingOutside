@@ -23,6 +23,7 @@ public class AreaController : MonoBehaviour
     [SerializeField] GameObject finishUI;
     [SerializeField] GameObject spectatingUI;
     [SerializeField] GameObject imageBlackObj;
+    public GameObject FinishUI { get { return finishUI; } }
     Image imageBlack;
     const float fadeTime = 0.5f;
     #endregion
@@ -44,13 +45,22 @@ public class AreaController : MonoBehaviour
         {
             item.enabled = false;
         }
-        itemSpawnerList[(int)currentAreaId].enabled = true;
+        if(gameDirector.isDebug) itemSpawnerList[0].enabled = true;
 
         if (!gameDirector.isDebug)
         {
             ToggleAllGimmicks(false);
             gimmicks[(int)currentAreaId].SetActive(true);
         }
+    }
+
+    public void ActiveItemSpawner()
+    {
+        foreach (var item in itemSpawnerList)
+        {
+            item.enabled = false;
+        }
+        itemSpawnerList[(int)currentAreaId].enabled = true;
     }
 
     public void ToggleAllGimmicks(bool isActive)
@@ -119,8 +129,8 @@ public class AreaController : MonoBehaviour
     public IEnumerator ReadyNextAreaCoroutine()
     {
         if(isClearedArea) yield break;
-        Debug.Log(currentAreaId + "エリア移動準備");
         isClearedArea = true;
+        Debug.Log(currentAreaId + "エリア移動準備");
 
         DOTween.Kill(imageBlack);
         bool isLastArea = (currentAreaId == EnumManager.LastAreaId);

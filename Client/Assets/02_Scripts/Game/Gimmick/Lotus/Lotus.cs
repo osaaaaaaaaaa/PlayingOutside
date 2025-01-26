@@ -40,12 +40,18 @@ public class Lotus : MonoBehaviour
                 }
             }
         }
+    }
 
-        if(collision.gameObject.tag == "Character")
+    public void OnAnimTrigger(GameObject character)
+    {
+        if (character.layer != 8)
         {
-            PlayTween();
-            controller.PlayAudio();
+            // ノックダウン状態以外の場合はジャンプアニメーション
+            character.GetComponent<PlayerAnimatorController>().SetInt(PlayerAnimatorController.ANIM_ID.Jump);
         }
+
+        PlayTween();
+        controller.PlayAudio();
     }
 
     void PlayTween()

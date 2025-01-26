@@ -32,7 +32,7 @@ namespace Server.StreamingHubs
         // ゲーム開始可能人数
         const int minRequiredUsers = 2;
         // 加算するスコアのベース
-        const int baseAddScore = 100;
+        const int baseAddScore = 20;
         // 最大ゲーム数
         const int maxGameCnt = 2;
         // コイン１枚あたりのポイント数
@@ -183,6 +183,14 @@ namespace Server.StreamingHubs
                 // ルームデータ(グループストレージ内のデータ)情報取得
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
 
+                // 既にマスタークライアントがいるなら、選択しているカントリーリレーの中間エリアIDを取得する
+                var master = GetMasterClient(roomDataList);
+                if(master != null)
+                {
+                    var dataSelf = roomStorage.Get(this.ConnectionId);
+                    dataSelf.JoinedUser.selectMidAreaId = master.JoinedUser.selectMidAreaId;
+                }
+
                 // 参加中のユーザー情報を返す
                 JoinedUser[] joinedUserList = new JoinedUser[roomDataList.Length];
                 for (int i = 0; i < joinedUserList.Length; i++)
@@ -234,7 +242,8 @@ namespace Server.StreamingHubs
             // 自分がマスタークライアントの場合は、新しくマスタークライアントを選ぶ
             lock (roomStorage)
             {
-                if (dataSelf.JoinedUser.IsMasterClient) AssignNewMasterClient(dataList, dataSelf.JoinedUser.ConnectionId);
+                bool isCountdownActive = dataSelf.JoinedUser.IsStartMasterCountDown && !dataSelf.JoinedUser.IsFinishMasterCountDown;
+                if (dataSelf.JoinedUser.IsMasterClient) AssignNewMasterClient(dataList, dataSelf.JoinedUser.ConnectionId, dataSelf.JoinedUser.IsStartMasterCountDown);
 
                 CheckReadys(dataList, dataSelf);
 
@@ -246,10 +255,23 @@ namespace Server.StreamingHubs
 
                 // 自分のデータを グループデータから削除する
                 this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
-            }
 
-            // ルーム内のメンバーから自分を削除
-            await room.RemoveAsync(this.Context);
+                // ルーム内のメンバーから自分を削除
+                room.RemoveAsync(this.Context); // 元々はlockの外にあり、awaitで待機してたやつ
+
+                if (isCountdownActive)
+                {
+                    var master = GetMasterClient(dataList);
+                    if (master != null && !master.JoinedUser.IsStartMasterCountDown)
+                    {
+                        // 新しいマスタークライアントにカウントダウン処理を引き継がせる
+                        master.JoinedUser.IsStartMasterCountDown = true;
+                        master.JoinedUser.IsFinishMasterCountDown = false;
+                        this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
+                        Console.WriteLine(master.JoinedUser.UserData.Name + "にカウントダウン処理を引継ぎ");
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -332,7 +354,7 @@ namespace Server.StreamingHubs
         /// <summary>
         /// 新しくマスタークライアントを任命する
         /// </summary>
-        void AssignNewMasterClient(RoomData[] roomDatas, Guid exclusionId)
+        void AssignNewMasterClient(RoomData[] roomDatas, Guid exclusionId, bool isCountdownActive)
         {
             Guid connectionId = Guid.Empty;
             foreach (RoomData roomData in roomDatas)
@@ -405,6 +427,31 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// 競技カントリーリレーの中間エリアを選択する
+        /// (マスタークライアントが処理)
+        /// </summary>
+        /// <param name="selectMidAreaId"></param>
+        /// <returns></returns>
+        public async Task SelectMidAreaAsynk(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                // 既に準備完了している場合は無効
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                if (dataSelf.UserState.isReadyRoom) return;
+
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var data in roomDataList)
+                {
+                    data.JoinedUser.selectMidAreaId = selectMidAreaId;
+                }
+
+                this.BroadcastExceptSelf(this.room).OnSelectMidArea(selectMidAreaId);
+            }
+        }
+
+        /// <summary>
         /// 準備完了したかどうか
         /// </summary>
         /// <returns></returns>
@@ -421,6 +468,7 @@ namespace Server.StreamingHubs
             {
                 // 送信したユーザーのデータを更新
                 var data = roomStorage.Get(this.ConnectionId);
+                if (data.UserState.isReadyRoom) return;
                 data.UserState.isReadyRoom = isReady;
 
                 if (data.JoinedUser.IsGameRunning) return;
@@ -514,6 +562,7 @@ namespace Server.StreamingHubs
             lock (roomStorage)
             {
                 var dataSelf = roomStorage.Get(this.ConnectionId);
+                if (dataSelf.UserState.isFinishGame) return;
                 dataSelf.UserState.isFinishGame = true;
                 Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "がゲーム終了を迎えた");
 
@@ -535,8 +584,8 @@ namespace Server.StreamingHubs
 
                 Console.WriteLine("現在の終了したゲーム数：" + dataSelf.UserState.FinishGameCnt);
 
-                // 現在の競技が最終競技だった場合
-                if (dataSelf.UserState.FinishGameCnt == maxGameCnt)
+                // 現在の競技が最終競技だった || 参加人数が一人になった場合
+                if (dataSelf.UserState.FinishGameCnt == maxGameCnt || roomDataList.Length == 1)
                 {
                     // 全ての競技が終了した通知を配る
                     this.Broadcast(room).OnAfterFinalGame();
@@ -848,12 +897,12 @@ namespace Server.StreamingHubs
             {
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 var dataSelf = roomStorage.Get(this.ConnectionId);
-                if (dataSelf.UserState.isAreaCleared) return;
+                if (dataSelf.UserState.isAreaCleared || dataSelf.UserState.isFinishGame) return;
 
                 // 送信したユーザーのデータを更新
                 dataSelf.UserState.isAreaCleared = true;
                 dataSelf.UserState.areaGoalRank = GetAreaClearRank(roomDataList);
-                dataSelf.JoinedUser.score += baseAddScore / dataSelf.UserState.areaGoalRank;
+                dataSelf.JoinedUser.score += baseAddScore * ((roomDataList.Length + 1) - dataSelf.UserState.areaGoalRank);
 
                 RoomData master = GetMasterClient(roomDataList);
                 if (master != null && !master.JoinedUser.IsStartMasterCountDown)
@@ -937,6 +986,7 @@ namespace Server.StreamingHubs
             {
                 // 送信したユーザーのデータを更新
                 var data = roomStorage.Get(this.ConnectionId);
+                if (data.UserState.isReadyNextArea || data.UserState.isFinishGame) return;
                 data.UserState.isReadyNextArea = true;
                 Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
 
@@ -945,7 +995,7 @@ namespace Server.StreamingHubs
                 if (!data.UserState.isAreaCleared)
                 {
                     data.UserState.areaGoalRank = GetAreaClearedUsersCount(roomDataList) + 1;
-                    data.JoinedUser.score += baseAddScore / data.UserState.areaGoalRank;
+                    data.JoinedUser.score += baseAddScore * ((roomDataList.Length + 1) - data.UserState.areaGoalRank);
                 }
 
                 // 全員次のエリアに移動する準備が完了したかチェック
@@ -968,7 +1018,7 @@ namespace Server.StreamingHubs
                     Console.WriteLine("再開通知");
                     const float baseWaitSec = 0.8f;
 
-                    var nextAreaId = GetNextAreaId(data.UserState.currentAreaId);
+                    var nextAreaId = GetNextAreaId(data.UserState.currentAreaId, data.JoinedUser.selectMidAreaId);
                     foreach (var roomData in roomDataList)
                     {
                         float waitSec = (roomData.UserState.areaGoalRank + 1) * baseWaitSec;
@@ -990,24 +1040,44 @@ namespace Server.StreamingHubs
         /// 次のエリアIDの取得処理
         /// </summary>
         /// <returns></returns>
-        EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId)
+        EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId, EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
         {
+
             if (currentAreaId == EnumManager.FirstAreaId)
             {
-                // 中間エリアを抽選する
-                var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
-                switch (rnd)
+                if(selectMidAreaId == SELECT_MID_AREA_ID.Course_Random)
                 {
-                    case (int)EnumManager.RELAY_AREA_ID.Area2_Hay:
-                        return RELAY_AREA_ID.Area2_Hay;
-                    case (int)EnumManager.RELAY_AREA_ID.Area3_Cow:
-                        return RELAY_AREA_ID.Area3_Cow;
-                    case (int)EnumManager.RELAY_AREA_ID.Area4_Plant:
-                        return RELAY_AREA_ID.Area4_Plant;
-                    case (int)EnumManager.RELAY_AREA_ID.Area5_Goose:
-                        return RELAY_AREA_ID.Area5_Goose;
-                    default:
-                        return RELAY_AREA_ID.Area2_Hay;
+                    // 中間エリアをランダム抽選する
+                    var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
+                    switch (rnd)
+                    {
+                        case (int)EnumManager.RELAY_AREA_ID.Area2_Hay:
+                            return RELAY_AREA_ID.Area2_Hay;
+                        case (int)EnumManager.RELAY_AREA_ID.Area3_Cow:
+                            return RELAY_AREA_ID.Area3_Cow;
+                        case (int)EnumManager.RELAY_AREA_ID.Area4_Plant:
+                            return RELAY_AREA_ID.Area4_Plant;
+                        case (int)EnumManager.RELAY_AREA_ID.Area5_Goose:
+                            return RELAY_AREA_ID.Area5_Goose;
+                        default:
+                            return RELAY_AREA_ID.Area2_Hay;
+                    }
+                }
+                else
+                {
+                    switch (selectMidAreaId)
+                    {
+                        case SELECT_MID_AREA_ID.Course_Hay:
+                            return RELAY_AREA_ID.Area2_Hay;
+                        case SELECT_MID_AREA_ID.Course_Cow:
+                            return RELAY_AREA_ID.Area3_Cow;
+                        case SELECT_MID_AREA_ID.Course_Plant:
+                            return RELAY_AREA_ID.Area4_Plant;
+                        case SELECT_MID_AREA_ID.Course_Goose:
+                            return RELAY_AREA_ID.Area5_Goose;
+                        default:
+                            return RELAY_AREA_ID.Area2_Hay;
+                    }
                 }
             }
             else
@@ -1050,6 +1120,7 @@ namespace Server.StreamingHubs
             {
                 // 送信したユーザーのデータを更新
                 var data = roomStorage.Get(this.ConnectionId);
+                if (data.UserState.isTransitionFinalResultScene) return;
                 data.UserState.isTransitionFinalResultScene = true;
                 Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
 
@@ -1126,12 +1197,17 @@ namespace Server.StreamingHubs
                     Guid winnerConnectionId = targetData.rank < resultData.rank ? targetData.connectionId : resultData.connectionId;
                     Guid loserConnectionId = targetData.rank > resultData.rank ? targetData.connectionId : resultData.connectionId;
 
-                    int ratingDelta = (int)(k_ratingDeltaMax / (MathF.Pow(10f, ((GetUserRating(winnerConnectionId, roomData) - GetUserRating(loserConnectionId, roomData)) / 400f)) + 1));  // イロレーティング計算
+                    // イロレーティング方式でレーティングを更新
+                    int ratingDelta = (int)(k_ratingDeltaMax / (MathF.Pow(10f, ((GetUserRating(winnerConnectionId, roomData) - GetUserRating(loserConnectionId, roomData)) / 400f)) + 1));
                     ratingDelta = ratingDelta < 2 ? 2 : ratingDelta;    // 最低保証
                     result += winnerConnectionId == targetData.connectionId ? ratingDelta : -ratingDelta;
                 }
             }
 
+            if(resultDatas.Length == 1)
+            {
+                result = 8; // 他のユーザーがいなくなり、不戦勝になった場合
+            }
             return result;
         }
 

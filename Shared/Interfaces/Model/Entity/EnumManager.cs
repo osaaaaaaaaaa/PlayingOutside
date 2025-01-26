@@ -23,6 +23,9 @@ namespace Shared.Interfaces.Model.Entity
             FinalGame,
         }
 
+        /// <summary>
+        /// カントリーリレーのエリアID
+        /// </summary>
         public enum RELAY_AREA_ID
         {
             Area1_Mud,
@@ -36,6 +39,18 @@ namespace Shared.Interfaces.Model.Entity
         public static RELAY_AREA_ID MiddleAreaMinId = RELAY_AREA_ID.Area2_Hay;
         public static RELAY_AREA_ID MiddleAreaMaxId = RELAY_AREA_ID.Area5_Goose;
         public static RELAY_AREA_ID LastAreaId { get; private set; } = RELAY_AREA_ID.Area6_Chicken;
+
+        /// <summary>
+        /// カントリーリレーのコース選択
+        /// </summary>
+        public enum SELECT_MID_AREA_ID
+        {
+            Course_Random,
+            Course_Hay,
+            Course_Cow,
+            Course_Plant,
+            Course_Goose
+        }
 
 
         public enum ITEM_ID

@@ -102,9 +102,11 @@ public class ChickenGimmick : MonoBehaviour
                 continue;
             }
 
-            int eggNum = Random.Range(2, maxEggNum);
+            const int roopMacCnt = 100;
+int eggNum = Random.Range(2, maxEggNum);
             for (int i = 0; i < eggNum; i++)
             {
+                int roopCnt = 0;
                 bool isSucsess = false;
                 while (!isSucsess)
                 {
@@ -122,15 +124,14 @@ public class ChickenGimmick : MonoBehaviour
                         isSucsess = true;
                         points.Add(pointVec);
                     }
-                    //else
-                    //{
-                    //    if(pointVec.x <= minRange.position.x) pointVec.x = minRange.position.x;
-                    //    if(pointVec.x >= maxRange.position.x) pointVec.x = maxRange.position.x;
-                    //    if(pointVec.z <= minRange.position.z) pointVec.z = minRange.position.z;
-                    //    if(pointVec.z >= maxRange.position.z) pointVec.z = maxRange.position.z;
-                    //    isSucsess = true;
-                    //    points.Add(pointVec);
-                    //}
+                    else if(roopCnt == roopMacCnt)
+                    {
+                        pointVec = target.transform.position;
+                        isSucsess = true;
+                        points.Add(pointVec);
+                    }
+
+                    roopCnt++;
                 }
             }
         }

@@ -29,5 +29,7 @@ namespace Shared.Interfaces.Model.Entity
         public int rating { get; set; }
         [Key(9)]
         public bool IsFinishMasterCountDown { get; set; }   // マスタークライアントのカウントダウンが終了しているかどうか
+        [Key(10)]
+        public EnumManager.SELECT_MID_AREA_ID selectMidAreaId { get; set; } = EnumManager.SELECT_MID_AREA_ID.Course_Random; // [競技：カントリーリレー]事前に選択した中間エリアのID
     }
 }

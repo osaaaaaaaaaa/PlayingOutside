@@ -43,6 +43,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid, MasterClient> OnUpdateMasterClientUser { get; set; }
 
     #region ゲーム開始までの処理
+    // カントリーリレーの中間エリアを選択した通知
+    public Action<EnumManager.SELECT_MID_AREA_ID> OnSelectMidAreaIdUser { get; set; }
     // 準備が完了したかどうかの通信
     public Action<int,bool> OnReadyUser { get; set; }
     // 全員がゲーム開始前のカウントダウン終了通知
@@ -50,8 +52,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム共通の処理
-    // 新しくマスタークライアントとして指名されたかどうか
-    public Action OnAssignedMasterClient {  get; set; }
     // ユーザーの所持ポイント更新通知
     public Action<Guid,int> OnUpdateScoreUser { get; set; }
     // カウントダウン通知
@@ -165,6 +165,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         await DisconnectAsync();
     }
 
+    void OnError()
+    {
+        if (SceneControler.Instance.isLoading) SceneManager.LoadScene("TopScene");
+        else SceneControler.Instance.StartSceneLoad("TopScene");
+    }
+
     /// <summary>
     /// ロビー入室処理
     /// </summary>
@@ -175,13 +181,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         JoinedUsers.Clear();
         JoinedUser[] users = await roomHub.JoinLobbyAsynk(userId);
-        Debug.Log("ユーザー数" + users.Length);
+        if(users != null) Debug.Log("ユーザー数" + users.Length);
 
         if (users == null)
         {
             await DisconnectAsync();
+
             // 入室に失敗した場合はTopSceneに戻る
-            SceneManager.LoadScene("TopScene");
+            ErrorUIController.Instance.ShowErrorUI("入室に失敗しました。もう一度お試しください。", OnError);
         }
         else
         {
@@ -218,7 +225,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         Debug.Log("マッチング完了通知");
         OnmatchingUser();
         ConnectionRoomName = roomName;
-        if(userState == USER_STATE.joined) await LeaveAsync();  // 4番目のユーザー以外が処理するはず
+        if (userState == USER_STATE.joined) await LeaveAsync();  // 4番目のユーザー以外が処理するはず
     }
 
     /// <summary>
@@ -235,8 +242,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         if (users == null)
         {
             await DisconnectAsync();
+
             // 入室に失敗した場合はTopSceneに戻る
-            SceneManager.LoadScene("TopScene");
+            ErrorUIController.Instance.ShowErrorUI("入室に失敗しました。もう一度お試しください。", OnError);
             return;
         }
         else
@@ -258,7 +266,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             // 自動マッチング時は入室できたら準備完了リクエストを送信
             if (IsMatchingRunning)
             {
-                //await ReadyAsynk(true);
+                await ReadyAsynk(true);
             }
         }
     }
@@ -301,10 +309,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
         // 自分のユーザー情報を更新
         JoinedUsers[this.ConnectionId] = latestData;
-        if (latestData.IsMasterClient)
-        {
-            if (userState == USER_STATE.joined) OnAssignedMasterClient();
-        }
 
         // アクション実行
         OnLeavedUser(connectionId);
@@ -374,14 +378,35 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #region ゲーム開始までの処理
     /// <summary>
+    /// 競技カントリーリレーの中間エリアを選択する
+    /// (マスタークライアントが処理)
+    /// </summary>
+    /// <param name="selectMidAreaId"></param>
+    /// <returns></returns>
+    public async UniTask SelectMidAreaAsynk(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+    {
+        if(userState == USER_STATE.joined) await roomHub.SelectMidAreaAsynk(selectMidAreaId);
+    }
+
+    /// <summary>
+    /// [IRoomHubReceiverのインターフェイス]
+    /// 競技カントリーリレーの中間エリアを選択した通知
+    /// </summary>
+    public void OnSelectMidArea(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+    {
+        Debug.Log(selectMidAreaId.ToString());
+        if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
+
+        OnSelectMidAreaIdUser(selectMidAreaId);
+    }
+
+    /// <summary>
     /// 自分の準備が完了したかどうか
     /// </summary>
     /// <returns></returns>
     public async UniTask ReadyAsynk(bool isReady)
     {
-        Debug.Log("準備完了リクエストを送信");
-        // サーバーに準備が完了したかどうかをリクエスト
-        await roomHub.ReadyAsynk(isReady);
+        if(userState == USER_STATE.joined) await roomHub.ReadyAsynk(isReady);
     }
 
     /// <summary>
