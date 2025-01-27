@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;
@@ -17,6 +18,8 @@ public class CharacterControlUI : MonoBehaviour
     [SerializeField] Text textSkillCoolTime;
     [SerializeField] Button btnUseItem;
     [SerializeField] List<Sprite> spriteItemList;   // 0:空,1:唐辛子...
+    [SerializeField] Button btnShowEmoteWindow;
+    [SerializeField] EmoteWindowUI emoteWindowUI;
 
     public bool IsSetupDone { get; private set; } = false;
 
@@ -64,6 +67,7 @@ public class CharacterControlUI : MonoBehaviour
     public void SetupButtonEvent(GameObject player)
     {
         PlayerController controller = player.GetComponent<PlayerController>();
+        PlayerAnimatorController animController = player.GetComponent<PlayerAnimatorController>();
         PlayerItemController itemController = player.GetComponent<PlayerItemController>();
         coolTime = player.GetComponent<PlayerSkillController>().CoolTime;
 
@@ -72,6 +76,16 @@ public class CharacterControlUI : MonoBehaviour
         btnSkill.onClick.AddListener(controller.OnSkillButton);
         btnUseItem.onClick.AddListener(itemController.OnUseItemButton);
         btnUseItem.onClick.AddListener(OnUseItemButton);
+        btnShowEmoteWindow.onClick.AddListener(OnShowEmoteWindow);
+
+        // エモートのボタン設定
+        var emoteId = PlayerAnimatorController.firstEmoteId;
+        foreach (Button btnEmote in emoteWindowUI.ButtonEmotes)
+        {
+            Debug.Log("エモートＩＤ：" + emoteId);
+            btnEmote.onClick.AddListener(()=> { animController.SetInt(emoteId); });
+            emoteId++;
+        }
 
         ToggleButtonInteractable(false);
         IsSetupDone = true;
@@ -123,5 +137,10 @@ public class CharacterControlUI : MonoBehaviour
         textSkillCoolTime.text = "";
         isCoolTime = false;
         btnSkill.interactable = true;
+    }
+
+    public void OnShowEmoteWindow()
+    {
+        emoteWindowUI.ToggleWindowVisibility(true);
     }
 }

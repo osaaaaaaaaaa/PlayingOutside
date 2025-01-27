@@ -41,7 +41,15 @@ public class PlayerAnimatorController : MonoBehaviour
         RunFast,
         StandUp,
         Respawn,
+        Emote_Bittan,
+        Emote_Happy,
+        Emote_Inner,
+        Emote_Step,
+        Emoto_NenrikiDance
     }
+
+    // ç≈èâÇÃÉGÉÇÅ[ÉgID
+    public static ANIM_ID firstEmoteId = ANIM_ID.Emote_Bittan;
 
     private void Awake()
     {
