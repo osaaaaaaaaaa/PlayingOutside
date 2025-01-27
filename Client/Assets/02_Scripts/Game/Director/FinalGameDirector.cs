@@ -598,6 +598,8 @@ public class FinalGameDirector : MonoBehaviour
             characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(itemController.ItemId);
         }
 
+        characterList[connectionId].GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
+
         Destroy(itemList[itemName]);
     }
 

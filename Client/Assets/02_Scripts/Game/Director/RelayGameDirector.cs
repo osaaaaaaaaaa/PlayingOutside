@@ -431,7 +431,7 @@ public class RelayGameDirector : MonoBehaviour
     public async void OnCountdownOver()
     {
         isGameStartCountDownOver = true;
-        await RoomModel.Instance.CountdownOverAsynk();
+        //await RoomModel.Instance.CountdownOverAsynk();
     }
 
     /// <summary>
@@ -618,6 +618,8 @@ public class RelayGameDirector : MonoBehaviour
             characterControlUI.GetComponent<CharacterControlUI>().SetImageItem(itemController.ItemId);
             characterList[connectionId].GetComponent<PlayerItemController>().SetItemSlot(itemController.ItemId);
         }
+
+        characterList[connectionId].GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
 
         Destroy(itemList[itemName]);
     }

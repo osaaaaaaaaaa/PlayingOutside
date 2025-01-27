@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
+using UnityEngine.UIElements;
 using static PlayerAnimatorController;
 
 public class RoomModel : BaseModel, IRoomHubReceiver
@@ -103,6 +104,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #endregion
 
+    // バックグラウンドに移行したかどうか
+    bool isBackground;
+
     /// <summary>
     /// 自分の状況
     /// </summary>
@@ -150,11 +154,37 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     public async UniTask DisconnectAsync()
     {
-        if(roomHub != null) await roomHub.DisposeAsync();
+        userState = USER_STATE.disconnect;
+
+        if (roomHub != null) await roomHub.DisposeAsync();
         if(channel != null) await channel.ShutdownAsync();
         roomHub = null;channel = null;
+    }
 
-        userState = USER_STATE.disconnect;
+    /// <summary>
+    /// バックグラウンドに移行したらサーバーとの接続を切断
+    /// </summary>
+    /// <param name="pauseStatus"></param>
+    private async void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            Debug.Log("アプリが一時停止(バックグラウンドに行った)");
+            if(userState == USER_STATE.joined)
+            {
+                isBackground = true;
+            }
+            await DisconnectAsync();
+        }
+        else
+        {
+            Debug.Log("アプリが再開(バックグラウンドから戻った)");
+            if (isBackground)
+            {
+                isBackground = false;
+                ErrorUIController.Instance.ShowErrorUI("サーバーとの接続が切断されました。", OnError);
+            }
+        }
     }
 
     /// <summary>
@@ -329,7 +359,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask UpdatePlayerStateAsync(PlayerState playerState)
     {
-        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) 
+        if (userState == USER_STATE.joined) 
         {
             await roomHub.UpdatePlayerStateAsynk(playerState);
         }
@@ -343,7 +373,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUpdatePlayerState(Guid connectionId, PlayerState playerState)
     {
         // アクション実行
-        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done) 
+        if (userState == USER_STATE.joined) 
         {
             OnUpdatePlayerStateUser(connectionId, playerState); 
         }
@@ -356,7 +386,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <returns></returns>
     public async UniTask UpdateMasterClientAsynk(MasterClient masterClient)
     {
-        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done)
+        if (userState == USER_STATE.joined)
         {
             await roomHub.UpdateMasterClientAsynk(masterClient);
         }
@@ -370,7 +400,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUpdateMasterClient(Guid connectionId, MasterClient masterClient)
     {
         // アクション実行
-        if (userState != USER_STATE.leave && userState != USER_STATE.leave_done)
+        if (userState == USER_STATE.joined)
         {
             OnUpdateMasterClientUser(connectionId, masterClient);
         }

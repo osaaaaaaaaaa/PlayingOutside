@@ -468,7 +468,6 @@ namespace Server.StreamingHubs
             {
                 // 送信したユーザーのデータを更新
                 var data = roomStorage.Get(this.ConnectionId);
-                if (data.UserState.isReadyRoom) return;
                 data.UserState.isReadyRoom = isReady;
 
                 if (data.JoinedUser.IsGameRunning) return;

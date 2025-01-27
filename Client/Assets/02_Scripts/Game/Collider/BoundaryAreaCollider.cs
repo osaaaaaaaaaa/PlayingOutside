@@ -12,22 +12,32 @@ public class BoundaryAreaCollider : MonoBehaviour
     [SerializeField] Transform rangePointB; // positionのパラメータを全てrangePointAより大きくする
     #endregion
 
+    private void OnTriggerEnter(Collider other)
+    {
+        OnBoundaryAreaCollider(other.gameObject);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        var compornent = collision.gameObject.GetComponent<PlayerController>();
+        OnBoundaryAreaCollider(collision.gameObject);
+    }
+
+    void OnBoundaryAreaCollider(GameObject obj)
+    {
+        var compornent = obj.gameObject.GetComponent<PlayerController>();
         if (compornent != null)
         {
             if (!compornent.enabled) return;
-            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
-            PlayerAnimatorController playerAnimatorController = collision.gameObject.GetComponent<PlayerAnimatorController>();
+            PlayerController playerController = obj.gameObject.GetComponent<PlayerController>();
+            PlayerAnimatorController playerAnimatorController = obj.gameObject.GetComponent<PlayerAnimatorController>();
 
             playerController.Respawn();
             playerController.IsControlEnabled = false;
             playerController.IsStandUp = false;
             playerAnimatorController.SetInt(PlayerAnimatorController.ANIM_ID.Respawn);
 
-            collision.gameObject.layer = 8;
-            collision.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            obj.gameObject.layer = 8;
+            obj.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             if (rangePointA != null && rangePointB != null) OutOfBoundsAsynk();
         }
