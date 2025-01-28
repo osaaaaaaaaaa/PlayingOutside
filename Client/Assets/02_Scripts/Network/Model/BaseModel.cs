@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BaseModel : MonoBehaviour
 {
-    protected const string ServerURL = "http://localhost:7000";
+    protected const string ServerURL = "http://ikusei.japaneast.cloudapp.azure.com:7000";
 //#if UNITY_EDITOR
 //    protected const string ServerURL = "http://localhost:7000";
 //#else
