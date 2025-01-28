@@ -17262,6 +17262,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f23f8ec57ac1a34ca760712356a9202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colliders:
+  - {fileID: 3659448996582743090}
+  - {fileID: 8465882931264956966}
   hpMax: 90
   hp: 90
   rangeKick: 2
@@ -17272,6 +17275,8 @@ MonoBehaviour:
   speed: 1
   defaultJumpPower: 500
   objOtherPlayers: []
+  isStandUp: 0
+  isControlEnabled: 1
   isDebug: 0
 --- !u!114 &2710276982764965377
 MonoBehaviour:
@@ -17341,6 +17346,7 @@ MonoBehaviour:
   - {fileID: 6432371490244044160, guid: 38c0148d646231b4a95d8a62beb2bb6e, type: 3}
   - {fileID: 7358791291892171350, guid: a1054d968c1238643846b876f057f826, type: 3}
   - {fileID: 6882876057106214378, guid: 248ae8faa83268e4386a6d509def44c6, type: 3}
+  particleSystems: []
 --- !u!114 &4976500832358206259
 MonoBehaviour:
   m_ObjectHideFlags: 0

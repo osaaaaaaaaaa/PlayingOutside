@@ -210,6 +210,7 @@ public class RelayGameDirector : MonoBehaviour
             // プレイヤーの初期化処理
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1],isMyCharacter);
+            character.GetComponent<PlayerController>().ToggleGravityAndColliders(false);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理
@@ -431,7 +432,7 @@ public class RelayGameDirector : MonoBehaviour
     public async void OnCountdownOver()
     {
         isGameStartCountDownOver = true;
-        //await RoomModel.Instance.CountdownOverAsynk();
+        await RoomModel.Instance.CountdownOverAsynk();
     }
 
     /// <summary>
@@ -452,6 +453,11 @@ public class RelayGameDirector : MonoBehaviour
         }
 
         // プレイヤーの操作をできるようにする
+        foreach(var character in characterList.Values)
+        {
+            character.GetComponent<PlayerController>().ToggleGravityAndColliders(true);
+        }
+
         characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());

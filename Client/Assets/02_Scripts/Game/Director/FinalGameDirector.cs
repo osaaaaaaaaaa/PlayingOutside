@@ -204,6 +204,7 @@ public class FinalGameDirector : MonoBehaviour
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             Vector3 startPos = characterStartPoints[value.JoinOrder - 1].position;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1], isMyCharacter);
+            character.GetComponent<PlayerController>().ToggleGravityAndColliders(false);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
             // ユーザー名の初期化処理
@@ -444,6 +445,10 @@ public class FinalGameDirector : MonoBehaviour
         }
 
         // プレイヤーの操作をできるようにする
+        foreach (var character in characterList.Values)
+        {
+            character.GetComponent<PlayerController>().ToggleGravityAndColliders(true);
+        }
         characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());

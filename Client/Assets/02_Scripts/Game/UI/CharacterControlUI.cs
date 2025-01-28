@@ -96,6 +96,12 @@ public class CharacterControlUI : MonoBehaviour
         btnJump.interactable = toggle;
         if(!isCoolTime) btnSkill.interactable = toggle;
         btnUseItem.interactable = toggle;
+        btnShowEmoteWindow.interactable = toggle;
+
+        if (!toggle)
+        {
+            emoteWindowUI.ToggleWindowVisibility(false);
+        }
     }
 
     public void ToggleButtonInteractable(bool toggle, bool isButtonKickActive)

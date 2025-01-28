@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     FloatingJoystick floatingJoystick;
     Rigidbody rb;
     public Rigidbody Rb { get { return rb; } }
+    [SerializeField] List<CapsuleCollider> colliders;
     #endregion
 
     #region ÉJÉÅÉâä÷åW
@@ -447,6 +448,15 @@ public class PlayerController : MonoBehaviour
         rb.velocity = Vector3.zero;
         transform.position = respawnPoint;
         InitParam();
+    }
+
+    public void ToggleGravityAndColliders(bool isToggle)
+    {
+        GetComponent<Rigidbody>().useGravity = isToggle;
+        foreach (var collider in colliders)
+        {
+            collider.enabled = isToggle;
+        }
     }
 
     /// <summary>
