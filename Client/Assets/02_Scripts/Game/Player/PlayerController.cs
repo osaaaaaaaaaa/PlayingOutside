@@ -166,8 +166,8 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // マッハキック中はアイドルアニメを再生しない
-                if (animController.GetAnimId() != (int)PlayerAnimatorController.ANIM_ID.MachKick)
+                // マッハキック中 || エモート中はアイドルアニメを再生しない
+                if (animController.GetAnimId() != (int)PlayerAnimatorController.ANIM_ID.MachKick && !animController.IsPlayingEmoteAnim())
                 {
                     if (isMachAura) animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleA);
                     if (!isMachAura) animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleB);

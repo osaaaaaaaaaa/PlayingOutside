@@ -79,12 +79,11 @@ public class CharacterControlUI : MonoBehaviour
         btnShowEmoteWindow.onClick.AddListener(OnShowEmoteWindow);
 
         // エモートのボタン設定
-        var emoteId = PlayerAnimatorController.firstEmoteId;
-        foreach (Button btnEmote in emoteWindowUI.ButtonEmotes)
+        for(int i = 0; i < emoteWindowUI.ButtonEmotes.Count; i++)
         {
-            Debug.Log("エモートＩＤ：" + emoteId);
-            btnEmote.onClick.AddListener(()=> { animController.SetInt(emoteId); });
-            emoteId++;
+            PlayerAnimatorController.ANIM_ID emoteId = new PlayerAnimatorController.ANIM_ID();
+            emoteId = (PlayerAnimatorController.firstEmoteId + i);
+            emoteWindowUI.ButtonEmotes[i].onClick.AddListener(() => animController.SetInt(emoteId));
         }
 
         ToggleButtonInteractable(false);
@@ -105,6 +104,12 @@ public class CharacterControlUI : MonoBehaviour
         btnJump.interactable = toggle;
         if (!isCoolTime) btnSkill.interactable = toggle;
         btnUseItem.interactable = toggle;
+        btnShowEmoteWindow.interactable = toggle;
+
+        if (!toggle)
+        {
+            emoteWindowUI.ToggleWindowVisibility(false);
+        }
     }
 
     public void SetImageItem(EnumManager.ITEM_ID itemId)

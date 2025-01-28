@@ -131,6 +131,11 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <param name="id"></param>
     public void SetInt(ANIM_ID id)
     {
+        if(id == ANIM_ID.Emote_Bittan)
+        {
+            Debug.Log("はいった");
+        }
+
         if (!playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
 
         if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura
@@ -161,9 +166,11 @@ public class PlayerAnimatorController : MonoBehaviour
             animator.Play("Jump", 0, 0); // 初めから再生する
         }
 
+        // 歩く時のSE関係
         if (id == ANIM_ID.Run || id == ANIM_ID.RunFast) audioController.PlayRunningSourse();
         else if(audioController != null) audioController.StopRunningSourse();
 
+        // ループしているスキルのSEを停止する
         if (GetAnimId() == (int)ANIM_ID.MachKick && id != ANIM_ID.MachKick) audioController.StopLoopSkillSourse();
 
         animator.SetInteger("animation", (int)id);
@@ -176,6 +183,11 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <param name="id"></param>
     public void SetInt(int id)
     {
+        if (id == (int)ANIM_ID.Emote_Bittan)
+        {
+            Debug.Log("入った");
+        }
+
         if (skillController.isUsedSkill && skillController.SkillId != SKILL_ID.Skill3) return;
 
         if (id == (int)ANIM_ID.Skill1_Hurricane || id == (int)ANIM_ID.Skill2_Screwkick || id == (int)ANIM_ID.Skill3_MachAura
@@ -209,9 +221,30 @@ public class PlayerAnimatorController : MonoBehaviour
         animator.SetInteger("animation", id);
     }
 
+    /// <summary>
+    /// 再生中のアニメーションIDを取得
+    /// </summary>
+    /// <returns></returns>
     public int GetAnimId()
     {
         return animator.GetInteger("animation");
+    }
+
+    /// <summary>
+    /// エモートを再生中かどうか
+    /// </summary>
+    /// <returns></returns>
+    public bool IsPlayingEmoteAnim()
+    {
+        var id = GetAnimId();
+        if(id >= (int)ANIM_ID.Emote_Bittan && id <= (int)ANIM_ID.Emoto_NenrikiDance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /// <summary>
