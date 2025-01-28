@@ -34,5 +34,7 @@ namespace Shared.Interfaces.Model.Entity
         public List<string> triggeringPlantGimmickList { get; set; } = new List<string>();    // [競技：カントリーリレー]植物のギミックを発動した履歴
         [Key(11)]
         public EnumManager.RELAY_AREA_ID currentAreaId { get; set; } = EnumManager.FirstAreaId;    // [競技：カントリーリレー]現在のエリアのID
+        [Key(12)]
+        public bool isTriggerMegaCoopGimmick { get; set; } // 鶏小屋のギミックを発動中かどうか
     }
 }

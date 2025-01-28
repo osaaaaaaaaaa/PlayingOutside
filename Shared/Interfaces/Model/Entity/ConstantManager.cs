@@ -13,5 +13,8 @@ namespace Shared.Interfaces.Model.Entity
 
         // フォロー上限値
         public static int followingCntMax { get; private set; } = 20;
+
+        // ガチョウが入った木箱の最大HP
+        public static int propGooseHp { get; private set; } = 100;
     }
 }

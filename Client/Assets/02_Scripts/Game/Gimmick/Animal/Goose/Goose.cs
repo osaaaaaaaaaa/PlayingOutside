@@ -40,6 +40,11 @@ public class Goose : MonoBehaviour
 
     private void OnEnable()
     {
+        InitParam();
+    }
+
+    public void InitMember()
+    {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         animator = transform.GetChild(0).GetComponent<Animator>();
@@ -76,7 +81,10 @@ public class Goose : MonoBehaviour
 
                 // 追跡範囲外,ターゲットが無敵状態,ターゲットとの間に地面がない場合
                 float targetDis = Mathf.Abs(Vector3.Distance(transform.position, target.transform.position));
-                if (targetDis > trackingDis || target.GetComponent<PlayerController>().IsInvincible || !IsGround(target.transform.position)) continue;
+                float disY = Mathf.Abs(transform.position.y - target.transform.position.y);
+                if (targetDis > trackingDis || disY > 1 
+                    || target.GetComponent<PlayerController>().IsInvincible 
+                    || !IsGround(target.transform.position)) continue;
 
                 if (currentTarget == null)
                 {

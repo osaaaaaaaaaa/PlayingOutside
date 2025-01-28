@@ -20,8 +20,11 @@ namespace Shared.Interfaces.Model.Entity
         public enum SCENE_ID
         {
             RelayGame = 0,
-            FinalGame,
+            FinalGame_Hay,
+            FinalGame_Goose,
+            FinalGame_Chicken,
         }
+        public static int finalStatageTypeMax = 3;
 
         /// <summary>
         /// カントリーリレーのエリアID

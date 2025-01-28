@@ -145,7 +145,19 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="animalName"></param>
         /// <param name="optionVec"></param>
-        void OnPlayAnimalGimmick(EnumManager.ANIMAL_GIMMICK_ID animalId ,string animalName, Vector3[] optionVec);
+        void OnPlayAnimalGimmick(EnumManager.ANIMAL_GIMMICK_ID gimmickId ,string animalName, Vector3[] optionVec);
+
+        /// <summary>
+        /// 鶏小屋のギミック発動通知
+        /// </summary>
+        /// <returns></returns>
+        void OnTriggerMegaCoop();
+
+        /// <summary>
+        /// 鶏小屋のギミック終了通知
+        /// </summary>
+        /// <returns></returns>
+        void OnTriggerMegaCoopEnd();
         #endregion
 
         #region 競技『カントリーリレー』の処理

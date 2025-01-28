@@ -374,8 +374,18 @@ public class PlayerController : MonoBehaviour
         animController.PlayKnockBackAnim();
         rb.AddForce(knockBackVec, ForceMode.Impulse);
 
-        // コイン(ポイント)のドロップ処理
-        if(!isDebug && SceneManager.GetActiveScene().name == "FinalGameScene") await RoomModel.Instance.KnockDownAsynk(transform.position);
+        if (!isDebug)
+        {
+            // 乱闘シーンかどうかチェック
+            var currentSceneName = SceneManager.GetActiveScene().name;
+            if (currentSceneName == "FinalGameScene_Hay" 
+                || currentSceneName == "FinalGameScene_Goose" 
+                || currentSceneName == "FinalGameScene_Chicken")
+            {
+                // コイン(ポイント)のドロップ処理
+                await RoomModel.Instance.KnockDownAsynk(transform.position);
+            }
+        }
     }
 
     /// <summary>

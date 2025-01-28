@@ -1036,7 +1036,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             }
 
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
-            writer.WriteArrayHeader(12);
+            writer.WriteArrayHeader(13);
             writer.Write(value.isReadyRoom);
             writer.Write(value.isCountdownOver);
             writer.Write(value.isAreaCleared);
@@ -1049,6 +1049,7 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
             writer.Write(value.isDestroyPlantsRequest);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<string>>(formatterResolver).Serialize(ref writer, value.triggeringPlantGimmickList, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID>(formatterResolver).Serialize(ref writer, value.currentAreaId, options);
+            writer.Write(value.isTriggerMegaCoopGimmick);
         }
 
         public global::Shared.Interfaces.Model.Entity.UserState Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -1102,6 +1103,9 @@ namespace MessagePack.Formatters.Shared.Interfaces.Model.Entity
                         break;
                     case 11:
                         ____result.currentAreaId = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::Shared.Interfaces.Model.Entity.EnumManager.RELAY_AREA_ID>(formatterResolver).Deserialize(ref reader, options);
+                        break;
+                    case 12:
+                        ____result.isTriggerMegaCoopGimmick = reader.ReadBoolean();
                         break;
                     default:
                         reader.Skip();

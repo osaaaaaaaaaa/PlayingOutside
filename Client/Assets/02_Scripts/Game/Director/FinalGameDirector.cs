@@ -37,9 +37,16 @@ public class FinalGameDirector : MonoBehaviour
     #endregion
 
     #region マスタークライアントと同期するギミック
-    [SerializeField] GameObject gimmicksParent;
+    [SerializeField] GameObject movingGimmicksParent;
     Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
     Dictionary<string, Goose> gooseObjList = new Dictionary<string, Goose>();
+    [SerializeField] bool isStartShowMovingGimmicks = false;
+    #endregion
+
+    #region 動物のギミック
+    [SerializeField] List<GameObject> animalGimmicks = new List<GameObject>();
+    Dictionary<string, GameObject> animalGimmickList = new Dictionary<string, GameObject>();
+    MegaCoop megaCoopGimmick; // 鶏小屋のギミック
     #endregion
 
     #region ゲーム終了関係
@@ -49,7 +56,7 @@ public class FinalGameDirector : MonoBehaviour
 
     #region カウントダウン関係
     Coroutine coroutineCountDown;
-    const int maxTime = 121;
+    const int maxTime = 31;
     int currentTime;
     bool isGameStartCountDownOver;
     #endregion
@@ -86,6 +93,9 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDestroyItemUser += this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser += this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser += this.NotifySpawnObjectUser;
+        RoomModel.Instance.OnPlayAnimalGimmickUser += this.NotifyPlayAnimalGimmickUser;
+        RoomModel.Instance.OnTriggerMegaCoopUser += this.NotifyTriggerMegaCoopUser;
+        RoomModel.Instance.OnTriggerMegaCoopEndUser += this.NotifyTriggerMegaCoopEndUser;
         #endregion
 
         SetupGame();
@@ -110,6 +120,9 @@ public class FinalGameDirector : MonoBehaviour
         RoomModel.Instance.OnDestroyItemUser -= this.NotifyDestroyItemUser;
         RoomModel.Instance.OnSpawnItemUser -= this.NotifySpawnItemUser;
         RoomModel.Instance.OnSpawnObjectUser -= this.NotifySpawnObjectUser;
+        RoomModel.Instance.OnPlayAnimalGimmickUser -= this.NotifyPlayAnimalGimmickUser;
+        RoomModel.Instance.OnTriggerMegaCoopUser -= this.NotifyTriggerMegaCoopUser;
+        RoomModel.Instance.OnTriggerMegaCoopEndUser -= this.NotifyTriggerMegaCoopEndUser;
         #endregion
     }
 
@@ -150,10 +163,10 @@ public class FinalGameDirector : MonoBehaviour
         GenerateCharacters();
 
         // マスタークライアントと同期するオブジェクトを取得して設定する
-        gimmicksParent.SetActive(true);
+        movingGimmicksParent.SetActive(true);
         var movingRootObjs = new List<MoveSetRoot>(FindObjectsOfType<MoveSetRoot>());
         var gooseObjs = new List<Goose>(FindObjectsOfType<Goose>());
-        gimmicksParent.SetActive(false);
+        if(!isStartShowMovingGimmicks) movingGimmicksParent.SetActive(false);
         foreach (var item in movingRootObjs)
         {
             movingObjectList.Add(item.name, item);
@@ -162,6 +175,16 @@ public class FinalGameDirector : MonoBehaviour
         {
             gooseObjList.Add(item.name, item);
         }
+
+        // 動物のギミックを設定
+        foreach (var item in animalGimmicks)
+        {
+            animalGimmickList.Add(item.name, item);
+        }
+
+        // 鶏小屋のギミック取得
+        var getCoopGimmick = FindObjectOfType<MegaCoop>();
+        if(getCoopGimmick != null) megaCoopGimmick = getCoopGimmick;
 
         // カメラのターゲットグループを設定する
         targetGroup.m_Targets = new CinemachineTargetGroup.Target[characterList.Count];
@@ -444,6 +467,14 @@ public class FinalGameDirector : MonoBehaviour
             return;
         }
 
+        // ギミックを起動
+        movingGimmicksParent.SetActive(true);
+        foreach (var goose in gooseObjList.Values)
+        {
+            goose.enabled = true;
+            goose.InitMember();
+        }
+
         // プレイヤーの操作をできるようにする
         foreach (var character in characterList.Values)
         {
@@ -452,9 +483,6 @@ public class FinalGameDirector : MonoBehaviour
         characterControlUI.OnSkillButton();
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
-
-        // ギミックを起動
-        gimmicksParent.SetActive(true);
 
         // アイテムスポーン開始
         itemSpawner.enabled = true;
@@ -520,7 +548,6 @@ public class FinalGameDirector : MonoBehaviour
     void NotifyAfterFinalGameUser()
     {
         // 最終結果発表シーンに遷移
-        StopCoroutine(UpdateCoroutine());
         SceneControler.Instance.StartSceneLoad("FinalResultsScene");
     }
 
@@ -540,6 +567,8 @@ public class FinalGameDirector : MonoBehaviour
         // ゲーム終了時のUIを表示
         finishUI.SetActive(true);
         yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // 余韻の時間を加算
+
+        StopCoroutine(UpdateCoroutine());
 
         // ゲーム終了リクエスト
         OnFinishGame();
@@ -648,5 +677,43 @@ public class FinalGameDirector : MonoBehaviour
     void NotifySpawnObjectUser(SpawnObject spawnObject)
     {
         GetComponent<ObjectPrefabController>().Spawn(spawnObject);
+    }
+
+    /// <summary>
+    /// 動物のギミック発動通知
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="option"></param>
+    void NotifyPlayAnimalGimmickUser(EnumManager.ANIMAL_GIMMICK_ID animalId, string name, Vector3[] option)
+    {
+        var animal = animalGimmickList[name];
+        if (animal != null && animal.activeSelf)
+        {
+            switch (animalId)
+            {
+                case EnumManager.ANIMAL_GIMMICK_ID.Bull:
+                    animal.GetComponent<BullGimmick>().PlayEatAnim();
+                    break;
+                case EnumManager.ANIMAL_GIMMICK_ID.Chicken:
+                    animal.transform.GetChild(0).GetComponent<ChickenGimmick>().GenerateEggBulletWarning(option);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック発動通知
+    /// </summary>
+    void NotifyTriggerMegaCoopUser()
+    {
+        if(megaCoopGimmick != null) megaCoopGimmick.PlayDamageAnim();
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック終了通知
+    /// </summary>
+    void NotifyTriggerMegaCoopEndUser()
+    {
+        if (megaCoopGimmick != null) megaCoopGimmick.OnTriggerEnd();
     }
 }

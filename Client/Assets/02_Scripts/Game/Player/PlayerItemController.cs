@@ -99,6 +99,7 @@ public class PlayerItemController : MonoBehaviour
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.PepperFire);
                 audioController.PlayOneShot(PlayerAudioController.AudioClipName.item_pepper);
                 break;
+
         }
 
         // Œø‰ÊŠÔ‚ğİ’è‚·‚é

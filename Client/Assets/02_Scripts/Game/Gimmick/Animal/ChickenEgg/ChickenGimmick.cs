@@ -9,13 +9,22 @@ public class ChickenGimmick : MonoBehaviour
 {
     #region 弾の着弾地点のPrefabと生成範囲
     [SerializeField] GameObject eggWarningPrefab;
+    [SerializeField] GameObject eggWarningMegaPrefab;
     [SerializeField] Transform minRange;
     [SerializeField] Transform maxRange;
     #endregion
 
     #region 障害物のある範囲
+    [SerializeField] List<GameObject> obstacles;
     List<Vector3> obstaclesMaxRange = new List<Vector3>();
     List<Vector3> obstaclesMinRange = new List<Vector3>();
+    #endregion
+
+    #region 条件関係
+    [SerializeField] bool isMegaChicken = false;
+    [SerializeField] bool isOneShot;    // スクリプトがアクティブ状態になるたびに、１度のみギミックを発動する
+    [SerializeField] int maxEggNum = 3; // ターゲット1人につき発射する卵の最大数
+    bool isTriggering;  // 発動済みかどうか
     #endregion
 
     List<GameObject> targetList = new List<GameObject>();
@@ -24,11 +33,21 @@ public class ChickenGimmick : MonoBehaviour
     const float jumpHeight = 1.8f;
     const float rotateNum = 3;
     const float rotateAnimSec = 0.4f;
-    const int maxEggNum = 3;
 
     private void Start()
     {
         animator = GetComponent<Animator>();
+        isTriggering = false;
+
+        foreach (var obstacle in obstacles)
+        {
+            var ranges = GetObstacleRanges(obstacle);
+            if (ranges != null)
+            {
+                obstaclesMaxRange.Add(ranges[0]);
+                obstaclesMinRange.Add(ranges[1]);
+            }
+        }
     }
 
     private void OnDisable()
@@ -36,6 +55,23 @@ public class ChickenGimmick : MonoBehaviour
         if(coroutine != null) StopCoroutine(coroutine);
         targetList.Clear();
         coroutine = null;
+    }
+
+    public void InitParam()
+    {
+        isTriggering = false;
+    }
+
+    public void OnEndLayEggMegaChickenAnim()
+    {
+        var megaChickeAnim = transform.parent.GetComponent<MegaChickenAnim>();
+        if(megaChickeAnim != null) megaChickeAnim.PlayHideAnim();
+    }
+
+    public void Rotate()
+    {
+        var rotate = transform.parent.eulerAngles;
+        transform.parent.DORotate(rotate + Vector3.back * 360 * rotateNum, rotateAnimSec, RotateMode.FastBeyond360).SetEase(Ease.Linear);
     }
 
     /// <summary>
@@ -46,16 +82,23 @@ public class ChickenGimmick : MonoBehaviour
     {
         foreach (var point in points)
         {
-            var eggWarning = Instantiate(eggWarningPrefab);
+            GameObject prefab = isMegaChicken ? eggWarningMegaPrefab : eggWarningPrefab;
+            var eggWarning = Instantiate(prefab);
             eggWarning.transform.position = point;
             eggWarning.GetComponent<EggWarning>().InitParam(transform.position + Vector3.up * jumpHeight);
         }
 
-        animator.Play("LayEgg", 0, 0);
+        if(isMegaChicken) animator.Play("LayEgg_MegaChicken", 0, 0);
+        else animator.Play("LayEgg", 0, 0);
     }
 
     IEnumerator SetupEggBulletWarningPoints(float waitSec)
     {
+        if(isTriggering && isOneShot)
+        {
+            coroutine = null;
+            yield break;
+        }
         while (targetList.Count > 0)
         {
             var points = GetWarningPoints();
@@ -70,18 +113,20 @@ public class ChickenGimmick : MonoBehaviour
                 {
                     GenerateEggBulletWarning(points.ToArray());
                 }
+
+                isTriggering = true;
+            }
+
+
+            if(isTriggering && isOneShot)
+            {
+                break;
             }
 
             yield return new WaitForSeconds(waitSec);
         }
 
         coroutine = null;
-    }
-
-    public void Rotate()
-    {
-        var rotate = transform.parent.eulerAngles;
-        transform.parent.DORotate(rotate + Vector3.back * 360 * rotateNum, rotateAnimSec, RotateMode.FastBeyond360).SetEase(Ease.Linear);
     }
 
     /// <summary>
@@ -103,7 +148,7 @@ public class ChickenGimmick : MonoBehaviour
             }
 
             const int roopMacCnt = 100;
-int eggNum = Random.Range(2, maxEggNum);
+            int eggNum = Random.Range(2, maxEggNum);
             for (int i = 0; i < eggNum; i++)
             {
                 int roopCnt = 0;

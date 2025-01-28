@@ -75,6 +75,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<SpawnObject> OnSpawnObjectUser { get; set; }
     // 動物のギミック発動通知
     public Action<EnumManager.ANIMAL_GIMMICK_ID, string, Vector3[]> OnPlayAnimalGimmickUser { get; set; }
+    // 鶏小屋のギミック発動通知
+    public Action OnTriggerMegaCoopUser { get; set; }
+    // 鶏小屋のギミック発動終了通知
+    public Action OnTriggerMegaCoopEndUser { get; set; }
     #endregion
 
     #region 競技『カントリーリレー』の処理
@@ -531,8 +535,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
                 case EnumManager.SCENE_ID.RelayGame:
                     sceneName = "RelayGameScene";
                     break;
-                case EnumManager.SCENE_ID.FinalGame:
-                    sceneName = "FinalGameScene";
+                case EnumManager.SCENE_ID.FinalGame_Hay:
+                    sceneName = "FinalGameScene_Hay";
+                    break;
+                case EnumManager.SCENE_ID.FinalGame_Goose:
+                    sceneName = "FinalGameScene_Goose";
+                    break;
+                case EnumManager.SCENE_ID.FinalGame_Chicken:
+                    sceneName = "FinalGameScene_Chicken";
                     break;
             }
             Debug.Log("次のゲーム：" + sceneName);
@@ -718,6 +728,42 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnPlayAnimalGimmick(EnumManager.ANIMAL_GIMMICK_ID animalId, string animalName, Vector3[] optionVec)
     {
         if (userState == USER_STATE.joined) OnPlayAnimalGimmickUser(animalId, animalName, optionVec);
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック発動処理
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask TriggerMegaCoopAsynk()
+    {
+        if (userState == USER_STATE.joined) await roomHub.TriggerMegaCoopAsynk();
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック発動通知
+    /// </summary>
+    /// <returns></returns>
+    public void OnTriggerMegaCoop()
+    {
+        if (userState == USER_STATE.joined) OnTriggerMegaCoopUser();
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック終了処理
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask TriggerMegaCoopEndAsynk()
+    {
+        if (userState == USER_STATE.joined) await roomHub.TriggerMegaCoopEndAsynk();
+    }
+
+    /// <summary>
+    /// 鶏小屋のギミック終了通知
+    /// </summary>
+    /// <returns></returns>
+    public void OnTriggerMegaCoopEnd()
+    {
+        if (userState == USER_STATE.joined) OnTriggerMegaCoopEndUser();
     }
     #endregion
 

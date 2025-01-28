@@ -347,6 +347,18 @@ namespace Server.StreamingHubs
                         }
                     }
                 }
+                if (dataSelf.UserState.isTriggerMegaCoopGimmick)
+                {
+                    foreach (var data in dataList)
+                    {
+                        // 鶏小屋のギミック発動終了通知待ちの場合
+                        if (!data.UserState.isTriggerMegaCoopGimmick)
+                        {
+                            TriggerMegaCoopEndAsynk();
+                            break;
+                        }
+                    }
+                }
             }
 
         }
@@ -592,16 +604,23 @@ namespace Server.StreamingHubs
                 }
                 else
                 {
-                    EnumManager.SCENE_ID gameScene = EnumManager.SCENE_ID.FinalGame;
-                    // 次の競技が最終競技になる場合
-                    if (dataSelf.UserState.FinishGameCnt == maxGameCnt - 1)
-                    {
-                        gameScene = EnumManager.SCENE_ID.FinalGame;
-                    }
-                    else
-                    {
-                        // 次の競技を抽選する
-                    }
+                    // 最終競技のステージシーンを抽選
+                    int firstFinalStageTypeId = (int)EnumManager.SCENE_ID.FinalGame_Hay;
+                    int rndId = new Random().Next(firstFinalStageTypeId, firstFinalStageTypeId + EnumManager.finalStatageTypeMax);
+
+                    EnumManager.SCENE_ID gameScene = SCENE_ID.FinalGame_Goose;
+                    //switch (rndId)
+                    //{
+                    //    case (int)EnumManager.SCENE_ID.FinalGame_Hay:
+                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Hay;
+                    //        break;
+                    //    case (int)EnumManager.SCENE_ID.FinalGame_Goose:
+                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Goose;
+                    //        break;
+                    //    case (int)EnumManager.SCENE_ID.FinalGame_Chicken:
+                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Chicken;
+                    //        break;
+                    //}
 
                     // 全員がゲーム終了処理を完了した通知を配る
                     this.Broadcast(room).OnFinishGame(gameScene);
@@ -822,9 +841,58 @@ namespace Server.StreamingHubs
         /// <param name="animalName"></param>
         /// <param name="optionVec"></param>
         /// <returns></returns>
-        public async Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID animalId, string animalName, Vector3[] optionVec)
+        public async Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID gimmickId, string animalName, Vector3[] optionVec)
         {
-            this.Broadcast(this.room).OnPlayAnimalGimmick(animalId, animalName, optionVec);
+            this.Broadcast(this.room).OnPlayAnimalGimmick(gimmickId, animalName, optionVec);
+        }
+
+        /// <summary>
+        /// 鶏小屋のギミック発動処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task TriggerMegaCoopAsynk()
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                // 他のユーザーが既に鶏小屋のギミックを発動させているかどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (RoomData roomData in roomDataList)
+                {
+                    if (roomData.UserState.isTriggerMegaCoopGimmick) return;
+                }
+
+                // 発動したことにし、発動通知を配る
+                foreach (RoomData roomData in roomDataList)
+                {
+                    roomData.UserState.isTriggerMegaCoopGimmick = true;
+                }
+                this.Broadcast(this.room).OnTriggerMegaCoop();
+            }
+        }
+
+        /// <summary>
+        /// 鶏小屋のギミック終了処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task TriggerMegaCoopEndAsynk()
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+            lock (roomStorage)
+            {
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                var dataSelf = roomStorage.Get(this.ConnectionId);
+                dataSelf.UserState.isTriggerMegaCoopGimmick = false;
+
+                // 全てのユーザーがギミックの終了処理をリクエストしているかチェック
+                foreach (RoomData roomData in roomDataList)
+                {
+                    if (roomData.UserState.isTriggerMegaCoopGimmick) return;
+                }
+
+                // ギミック終了通知を配る
+                this.Broadcast(this.room).OnTriggerMegaCoopEnd();
+            }
         }
 
         /// <summary>

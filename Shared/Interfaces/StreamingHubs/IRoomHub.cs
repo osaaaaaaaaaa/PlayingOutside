@@ -146,7 +146,19 @@ namespace Shared.Interfaces.StreamingHubs
         /// <param name="animalName"></param>
         /// <param name="optionVec"></param>
         /// <returns></returns>
-        Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID animalId , string animalName, Vector3[] optionVec);
+        Task PlayAnimalGimmickAsynk(EnumManager.ANIMAL_GIMMICK_ID gimmickId , string animalName, Vector3[] optionVec);
+
+        /// <summary>
+        /// 鶏小屋のギミック発動処理
+        /// </summary>
+        /// <returns></returns>
+        Task TriggerMegaCoopAsynk();
+
+        /// <summary>
+        /// 鶏小屋のギミック終了処理
+        /// </summary>
+        /// <returns></returns>
+        Task TriggerMegaCoopEndAsynk();
         #endregion
 
         #region 競技『カントリーリレー』の処理
