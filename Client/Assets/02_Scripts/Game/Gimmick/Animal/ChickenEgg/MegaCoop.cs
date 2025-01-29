@@ -72,7 +72,7 @@ public class MegaCoop : MonoBehaviour
     {
         if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
         {
-            //await RoomModel.Instance.TriggerMegaCoopEndAsynk();
+            await RoomModel.Instance.TriggerMegaCoopEndAsynk();
         }
         else
         {

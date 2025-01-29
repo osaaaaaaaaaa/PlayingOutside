@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.UI;
-using static AreaController;
-using static UnityEngine.Rendering.DebugUI;
 
 public class FinalGameDirector : MonoBehaviour
 {
@@ -56,7 +54,7 @@ public class FinalGameDirector : MonoBehaviour
 
     #region カウントダウン関係
     Coroutine coroutineCountDown;
-    const int maxTime = 31;
+    const int maxTime = 100;
     int currentTime;
     bool isGameStartCountDownOver;
     #endregion
