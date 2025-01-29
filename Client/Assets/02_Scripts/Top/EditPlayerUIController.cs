@@ -157,7 +157,6 @@ public class EditPlayerUIController : MonoBehaviour
         var user = new User()
         {
             Id = UserModel.Instance.UserId,
-            Name = UserModel.Instance.UserName,
             Token = UserModel.Instance.AuthToken,
             Character_Id = characterId
         };
