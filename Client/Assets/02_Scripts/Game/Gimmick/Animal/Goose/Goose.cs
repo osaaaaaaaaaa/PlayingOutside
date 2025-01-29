@@ -29,6 +29,7 @@ public class Goose : MonoBehaviour
     float moveZ;
     bool isControllEnable;
     public bool IsControllEnable { set {  isControllEnable = value; } }
+    bool isInitMember;
 
     public enum ANIM_ID
     {
@@ -40,7 +41,7 @@ public class Goose : MonoBehaviour
 
     private void OnEnable()
     {
-        InitParam();
+        InitMember();
     }
 
     public void InitMember()

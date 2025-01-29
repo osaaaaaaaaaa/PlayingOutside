@@ -1508,9 +1508,9 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.17775312
+    x: 0
     y: 0
-    width: 0.64449376
+    width: 1
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -3408,6 +3408,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 916331053}
     m_Modifications:
+    - target: {fileID: 1108457803970576643, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2935130481120089184, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4098532579016470166, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4859048179375461147, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4971368417857906678, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
         type: 3}
       propertyPath: m_Pivot.x
@@ -3512,6 +3532,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: EmotesWindow
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584499844936080006, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9085282240756551682, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

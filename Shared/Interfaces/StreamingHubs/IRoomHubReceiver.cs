@@ -33,7 +33,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// </summary>
         /// <param name="connectionId">退室したユーザーの接続ID</param>
         /// <param name="latestData">最新のユーザーデータ</param>
-        void OnLeave(Guid connectionId, JoinedUser latestData);
+        void OnLeave(Guid connectionId, JoinedUser latestData, string masterName);
 
         /// <summary>
         /// プレイヤーの情報更新通知
@@ -50,10 +50,10 @@ namespace Shared.Interfaces.StreamingHubs
 
         #region ゲーム開始までの処理
         /// <summary>
-        /// 競技カントリーリレーの中間エリアIDを受信
+        /// 各競技のマップ選択された通知
         /// </summary>
         /// <param name="selectMidAreaId"></param>
-        void OnSelectMidArea(EnumManager.SELECT_MID_AREA_ID selectMidAreaId);
+        void OnSelectGameMap(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId);
 
         /// <summary>
         /// 準備完了したかどうかの通知

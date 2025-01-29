@@ -131,11 +131,6 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <param name="id"></param>
     public void SetInt(ANIM_ID id)
     {
-        if(id == ANIM_ID.Emote_Bittan)
-        {
-            Debug.Log("はいった");
-        }
-
         if (!playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // 操作不能状態&&同じアニメーションを再生しようとした場合
 
         if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura
@@ -183,11 +178,6 @@ public class PlayerAnimatorController : MonoBehaviour
     /// <param name="id"></param>
     public void SetInt(int id)
     {
-        if (id == (int)ANIM_ID.Emote_Bittan)
-        {
-            Debug.Log("入った");
-        }
-
         if (skillController.isUsedSkill && skillController.SkillId != SKILL_ID.Skill3) return;
 
         if (id == (int)ANIM_ID.Skill1_Hurricane || id == (int)ANIM_ID.Skill2_Screwkick || id == (int)ANIM_ID.Skill3_MachAura

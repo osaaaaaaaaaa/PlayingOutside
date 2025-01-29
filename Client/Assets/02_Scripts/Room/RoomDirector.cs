@@ -9,6 +9,7 @@ using UnityEngine.Windows;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using static Shared.Interfaces.Model.Entity.EnumManager;
 
 public class RoomDirector : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class RoomDirector : MonoBehaviour
     [SerializeField] Text textRoomName;
     [SerializeField] Button btnLeave;
     [SerializeField] CharacterControlUI characterControlUI;
-    [SerializeField] Dropdown dropdown;
+    [SerializeField] SelectMapUIController selectMapUI;
     #endregion
 
     #region キャラクター関係
@@ -51,7 +52,7 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnReadyUser += this.NotifyReadyUser;
-        RoomModel.Instance.OnSelectMidAreaIdUser += this.NotifySelectMidAreaId;
+        RoomModel.Instance.OnSelectGameMapUser += this.NotifySelectGameMapId;
 
         // 接続処理
         if (!RoomModel.Instance.IsMatchingRunning)
@@ -73,7 +74,7 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnReadyUser -= this.NotifyReadyUser;
-        RoomModel.Instance.OnSelectMidAreaIdUser -= this.NotifySelectMidAreaId;
+        RoomModel.Instance.OnSelectGameMapUser -= this.NotifySelectGameMapId;
     }
 
     IEnumerator UpdateCoroutine()
@@ -164,13 +165,14 @@ public class RoomDirector : MonoBehaviour
             StartCoroutine(UpdateCoroutine());
         }
 
-        // 自分がマスタークライアントの場合はエリアを選択できるようにする
+        // 自分がマスタークライアントの場合はエリアを選択できるようにする ############################################################
         if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
         {
             bool isMasterClientSelf = RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient;
-            dropdown.interactable = isMasterClientSelf;
+            selectMapUI.SetupInteractableButtons(isMasterClientSelf);
 
-            if (!isMasterClientSelf) dropdown.value = (int)user.selectMidAreaId;
+            selectMapUI.OnSelectRelayArea(user.selectMidAreaId);
+            selectMapUI.OnSelectFinalMap(user.selectFinalStageId);
         }
 
         int minRequiredUsers = characterList.Count < 2 ? 2 : characterList.Count;
@@ -184,7 +186,7 @@ public class RoomDirector : MonoBehaviour
     /// </summary>
     public async void LeaveRoom()
     {
-        dropdown.interactable = false;
+        selectMapUI.DisableButton();
         StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.LeaveAsync();
 
@@ -207,6 +209,8 @@ public class RoomDirector : MonoBehaviour
         }
         else
         {
+            selectMapUI.UpdateHostNameText();
+
             if (characterList.ContainsKey(connectionId))
             {
                 // 該当のキャラクター削除&リストから削除
@@ -219,7 +223,7 @@ public class RoomDirector : MonoBehaviour
             if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
             {
                 bool isMasterClientSelf = RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient;
-                dropdown.interactable = isMasterClientSelf;
+                selectMapUI.SetupInteractableButtons(isMasterClientSelf);
             }
         }
     }
@@ -256,45 +260,28 @@ public class RoomDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// 競技カントリーリレーの中間エリアを選択したリクエスト
+    /// 各競技のマップ選択処理
     /// </summary>
-    public async void OnSelectDropDown()
+    public async void SelectGameMapAsynk(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
-        if (btnLeave.interactable)
+        // 自分がマスタークライアントの場合はマップ選択できるようにする
+        if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
         {
-            EnumManager.SELECT_MID_AREA_ID id;
-            switch (dropdown.value)
+            bool isMasterClientSelf = RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient;
+            if (btnLeave.interactable && isMasterClientSelf)
             {
-                case 0:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Random;
-                    break;
-                case 1:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Hay;
-                    break;
-                case 2:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Cow;
-                    break;
-                case 3:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Plant;
-                    break;
-                case 4:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Goose;
-                    break;
-                default:
-                    id = EnumManager.SELECT_MID_AREA_ID.Course_Random;
-                    break;
+                await RoomModel.Instance.SelectGameMapAsynk(relayAreaId, finalGameStageId);
             }
-
-            await RoomModel.Instance.SelectMidAreaAsynk(id);
         }
     }
 
     /// <summary>
-    /// 競技カントリーリレーの中間エリアを選択した通知
+    /// 各競技のマップ選択された通知
     /// </summary>
-    void NotifySelectMidAreaId(EnumManager.SELECT_MID_AREA_ID selectId)
+    void NotifySelectGameMapId(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
-        dropdown.value = (int)selectId;
+        selectMapUI.OnSelectRelayArea(relayAreaId);
+        selectMapUI.OnSelectFinalMap(finalGameStageId);
     }
 
     /// <summary>

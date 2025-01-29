@@ -7,6 +7,7 @@ using UnityEngine.TextCore.Text;
 
 public class MegaCoop : MonoBehaviour
 {
+    [SerializeField] SEController seController;
     [SerializeField] MegaChickenAnim megaChicken;
     Vector3 startPos;
     bool isPlayAnim;
@@ -20,13 +21,25 @@ public class MegaCoop : MonoBehaviour
     {
         if (isPlayAnim) return;
 
-        if(RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
+        // ダメージコライダーの取得チェック
+        var damageCompornent = other.GetComponent<DamageCollider>();
+        if (damageCompornent == null) return;
+
+        var playerController = damageCompornent.root.GetComponent<PlayerController>();
+        if (playerController != null)
         {
-            PlayCoopGimmickAsynk();
-        }
-        else
-        {
-            PlayDamageAnim();
+            // NPCではない場合
+            if (playerController.gameObject.layer == 3)
+            {
+                if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
+                {
+                    PlayCoopGimmickAsynk();
+                }
+                else
+                {
+                    PlayDamageAnim();
+                }
+            }
         }
     }
 
@@ -37,6 +50,7 @@ public class MegaCoop : MonoBehaviour
     {
         if (isPlayAnim) return;
         isPlayAnim = true;
+        seController.PlayAudio();
         DOTween.Kill(this.gameObject);
         transform.position = startPos;
         transform.DOPunchPosition(new Vector3(1f, 0, 0), 1f, 10, 1.5f).OnComplete(megaChicken.PlayShowAnim);
@@ -58,7 +72,7 @@ public class MegaCoop : MonoBehaviour
     {
         if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
         {
-            await RoomModel.Instance.TriggerMegaCoopEndAsynk();
+            //await RoomModel.Instance.TriggerMegaCoopEndAsynk();
         }
         else
         {

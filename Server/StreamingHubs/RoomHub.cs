@@ -189,6 +189,7 @@ namespace Server.StreamingHubs
                 {
                     var dataSelf = roomStorage.Get(this.ConnectionId);
                     dataSelf.JoinedUser.selectMidAreaId = master.JoinedUser.selectMidAreaId;
+                    dataSelf.JoinedUser.selectFinalStageId = master.JoinedUser.selectFinalStageId;
                 }
 
                 // 参加中のユーザー情報を返す
@@ -246,11 +247,13 @@ namespace Server.StreamingHubs
                 if (dataSelf.JoinedUser.IsMasterClient) AssignNewMasterClient(dataList, dataSelf.JoinedUser.ConnectionId, dataSelf.JoinedUser.IsStartMasterCountDown);
 
                 CheckReadys(dataList, dataSelf);
+                var master = GetMasterClient(dataList);
+                string masterName = master != null ? master.JoinedUser.UserData.Name : "存在しません";
 
                 foreach (var latestData in dataList)
                 {
                     // ルーム参加者にユーザーの退室通知を送信
-                    this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser);
+                    this.BroadcastTo(this.room, latestData.JoinedUser.ConnectionId).OnLeave(this.ConnectionId, latestData.JoinedUser, masterName);
                 }
 
                 // 自分のデータを グループデータから削除する
@@ -261,7 +264,6 @@ namespace Server.StreamingHubs
 
                 if (isCountdownActive)
                 {
-                    var master = GetMasterClient(dataList);
                     if (master != null && !master.JoinedUser.IsStartMasterCountDown)
                     {
                         // 新しいマスタークライアントにカウントダウン処理を引き継がせる
@@ -439,12 +441,12 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
-        /// 競技カントリーリレーの中間エリアを選択する
+        /// 各競技のマップ選択処理
         /// (マスタークライアントが処理)
         /// </summary>
         /// <param name="selectMidAreaId"></param>
         /// <returns></returns>
-        public async Task SelectMidAreaAsynk(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+        public async Task SelectGameMapAsynk(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
         {
             var roomStorage = room.GetInMemoryStorage<RoomData>();
             lock (roomStorage)
@@ -456,10 +458,11 @@ namespace Server.StreamingHubs
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 foreach (var data in roomDataList)
                 {
-                    data.JoinedUser.selectMidAreaId = selectMidAreaId;
+                    data.JoinedUser.selectMidAreaId = relayAreaId;
+                    data.JoinedUser.selectFinalStageId = finalGameStageId;
                 }
 
-                this.BroadcastExceptSelf(this.room).OnSelectMidArea(selectMidAreaId);
+                this.Broadcast(this.room).OnSelectGameMap(relayAreaId,finalGameStageId);
             }
         }
 
@@ -605,22 +608,30 @@ namespace Server.StreamingHubs
                 else
                 {
                     // 最終競技のステージシーンを抽選
-                    int firstFinalStageTypeId = (int)EnumManager.SCENE_ID.FinalGame_Hay;
-                    int rndId = new Random().Next(firstFinalStageTypeId, firstFinalStageTypeId + EnumManager.finalStatageTypeMax);
-
                     EnumManager.SCENE_ID gameScene = SCENE_ID.FinalGame_Goose;
-                    //switch (rndId)
-                    //{
-                    //    case (int)EnumManager.SCENE_ID.FinalGame_Hay:
-                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Hay;
-                    //        break;
-                    //    case (int)EnumManager.SCENE_ID.FinalGame_Goose:
-                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Goose;
-                    //        break;
-                    //    case (int)EnumManager.SCENE_ID.FinalGame_Chicken:
-                    //        gameScene = EnumManager.SCENE_ID.FinalGame_Chicken;
-                    //        break;
-                    //}
+                    var master = GetMasterClient(roomDataList);
+                    if(master.JoinedUser.selectFinalStageId == SELECT_FINALGAME_AREA_ID.Stage_Random)
+                    {
+                        int firstFinalStageTypeId = (int)EnumManager.SCENE_ID.FinalGame_Hay;
+                        int rndId = new Random().Next(firstFinalStageTypeId, firstFinalStageTypeId + EnumManager.finalStatageTypeMax);
+                        switch (rndId)
+                        {
+                            case (int)EnumManager.SCENE_ID.FinalGame_Hay:
+                                gameScene = EnumManager.SCENE_ID.FinalGame_Hay;
+                                break;
+                            case (int)EnumManager.SCENE_ID.FinalGame_Goose:
+                                gameScene = EnumManager.SCENE_ID.FinalGame_Goose;
+                                break;
+                            case (int)EnumManager.SCENE_ID.FinalGame_Chicken:
+                                gameScene = EnumManager.SCENE_ID.FinalGame_Chicken;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        var firstFinalStageTypeId = EnumManager.SCENE_ID.FinalGame_Hay;
+                        gameScene = firstFinalStageTypeId + ((int)master.JoinedUser.selectFinalStageId - 1);
+                    }
 
                     // 全員がゲーム終了処理を完了した通知を配る
                     this.Broadcast(room).OnFinishGame(gameScene);
@@ -1107,12 +1118,12 @@ namespace Server.StreamingHubs
         /// 次のエリアIDの取得処理
         /// </summary>
         /// <returns></returns>
-        EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId, EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+        EnumManager.RELAY_AREA_ID GetNextAreaId(EnumManager.RELAY_AREA_ID currentAreaId, EnumManager.SELECT_RELAY_AREA_ID selectMidAreaId)
         {
 
             if (currentAreaId == EnumManager.FirstAreaId)
             {
-                if(selectMidAreaId == SELECT_MID_AREA_ID.Course_Random)
+                if(selectMidAreaId == SELECT_RELAY_AREA_ID.Course_Random)
                 {
                     // 中間エリアをランダム抽選する
                     var rnd = new Random().Next((int)EnumManager.MiddleAreaMinId, (int)EnumManager.MiddleAreaMaxId + 1);
@@ -1134,13 +1145,13 @@ namespace Server.StreamingHubs
                 {
                     switch (selectMidAreaId)
                     {
-                        case SELECT_MID_AREA_ID.Course_Hay:
+                        case SELECT_RELAY_AREA_ID.Course_Hay:
                             return RELAY_AREA_ID.Area2_Hay;
-                        case SELECT_MID_AREA_ID.Course_Cow:
+                        case SELECT_RELAY_AREA_ID.Course_Cow:
                             return RELAY_AREA_ID.Area3_Cow;
-                        case SELECT_MID_AREA_ID.Course_Plant:
+                        case SELECT_RELAY_AREA_ID.Course_Plant:
                             return RELAY_AREA_ID.Area4_Plant;
-                        case SELECT_MID_AREA_ID.Course_Goose:
+                        case SELECT_RELAY_AREA_ID.Course_Goose:
                             return RELAY_AREA_ID.Area5_Goose;
                         default:
                             return RELAY_AREA_ID.Area2_Hay;

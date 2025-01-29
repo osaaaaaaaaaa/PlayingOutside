@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public class EmoteWindowUI : MonoBehaviour
 {
-    #region TweenアニメーションするUIの親
-    [SerializeField] List<GameObject> uiList;
-    #endregion
     [SerializeField] GameObject panel;
+    [SerializeField] Button btnBack;
     [SerializeField] List<Button> buttonEmotes;
     public List<Button> ButtonEmotes { get { return buttonEmotes; } }
 
@@ -21,17 +19,10 @@ public class EmoteWindowUI : MonoBehaviour
     public void ToggleWindowVisibility(bool isVisibility)
     {
         panel.SetActive(isVisibility);
-        Vector3 endScale = isVisibility ? Vector3.one : Vector3.zero;
-        Ease setEase = isVisibility ? Ease.OutBack : Ease.InBack;
-
-        foreach (var ui in uiList)
+        btnBack.gameObject.SetActive(isVisibility);
+        foreach (var btn in buttonEmotes)
         {
-            ui.transform.DOScale(endScale, 0.2f).SetEase(setEase);
-        }
-
-        foreach(var btn in buttonEmotes)
-        {
-            btn.interactable = isVisibility;
+            btn.gameObject.SetActive(isVisibility);
         }
     }
 }

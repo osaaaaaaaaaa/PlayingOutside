@@ -5,6 +5,7 @@ using DG.Tweening;
 
 public class MegaChickenAnim : MonoBehaviour
 {
+    [SerializeField] SEController seController;
     [SerializeField] MegaCoop megaCoop;
     [SerializeField] ChickenGimmick chickenGimmick;
     [SerializeField] CapsuleCollider capsuleCollider;
@@ -28,6 +29,7 @@ public class MegaChickenAnim : MonoBehaviour
         var endSvaleVal = Vector3.one * 5;
         Ease ease = Ease.OutBack;
 
+        seController.PlayAudio();
         DOTween.Kill(this.gameObject);
         transform.position = animStartPos;
         transform.localScale = Vector3.one;

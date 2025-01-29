@@ -14,6 +14,7 @@ public class TopSceneCharacterManager : MonoBehaviour
     private void Start()
     {
         startPosCharacter = characterModelsparent.transform.position;
+        ToggleCharacter(UserModel.Instance.CharacterId);
     }
 
     public void ToggleCharacter(int characterid)

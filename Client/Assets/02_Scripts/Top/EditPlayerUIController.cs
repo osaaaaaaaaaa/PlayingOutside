@@ -13,6 +13,7 @@ public class EditPlayerUIController : MonoBehaviour
     [SerializeField] List<GameObject> uiList;
     #endregion
 
+    [SerializeField] List<GameObject> characterProfiles;
     [SerializeField] List<GameObject> scrollViewList;
     [SerializeField] InputField userName;
     [SerializeField] GameObject editUserNameButton;
@@ -40,6 +41,19 @@ public class EditPlayerUIController : MonoBehaviour
         {
             ui.transform.DOScale(endScale, 0.2f).SetEase(setEase);
         }
+
+        // キャラクターのプロフィールを表示・非表示
+        for (int i = 0; i < characterProfiles.Count; i++)
+        {
+            if (isVisibility)
+            {
+                int characterId = UserModel.Instance.CharacterId - 1;
+                if (i == characterId) characterProfiles[i].SetActive(true);
+                else characterProfiles[i].SetActive(false);
+            }
+        }
+
+        userName.text = UserModel.Instance.UserName;
     }
 
     /// <summary>
@@ -50,7 +64,6 @@ public class EditPlayerUIController : MonoBehaviour
         if (topSceneUIManager.IsTaskRunning) return;
         topSceneUIManager.IsTaskRunning = true;
 
-        userName.text = UserModel.Instance.UserName;
         userName.interactable = false;
         editUserNameButton.SetActive(true);
         editUserNameButton.GetComponent<Button>().interactable = true;
@@ -118,6 +131,7 @@ public class EditPlayerUIController : MonoBehaviour
             Id = UserModel.Instance.UserId,
             Name = userName.text,
             Token = UserModel.Instance.AuthToken,
+            Character_Id = UserModel.Instance.CharacterId,
         };
 
         var result = await UserModel.Instance.UpdateUserAsync(user);
@@ -128,7 +142,7 @@ public class EditPlayerUIController : MonoBehaviour
             return;
         }
 
-        topSceneDirector.UpdateUserNameText();
+        topSceneUIManager.SetUserNameText();
         updateUserNameButton.SetActive(false);
         updateUserNameButton.GetComponent<Button>().interactable = true;
         editUserNameButton.SetActive(true);
@@ -143,6 +157,7 @@ public class EditPlayerUIController : MonoBehaviour
         var user = new User()
         {
             Id = UserModel.Instance.UserId,
+            Name = UserModel.Instance.UserName,
             Token = UserModel.Instance.AuthToken,
             Character_Id = characterId
         };
@@ -153,6 +168,13 @@ public class EditPlayerUIController : MonoBehaviour
             ErrorUIController.Instance.ShowErrorUI(result);
             updateUserNameButton.GetComponent<Button>().interactable = true;
             return;
+        }
+
+        // キャラクターのプロフィールを変更する
+        for(int i = 0; i < characterProfiles.Count; i++)
+        {
+            if (i == characterId - 1) characterProfiles[i].SetActive(true);
+            else characterProfiles[i].SetActive(false);
         }
 
         characterManager.ToggleCharacter(characterId);

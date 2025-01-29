@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de17e3acf1148f44eb872203948dadb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 50
+  damage: 65
   specifiedKnockback: {x: 0, y: 0, z: 0}
 --- !u!135 &2608596199617685473
 SphereCollider:

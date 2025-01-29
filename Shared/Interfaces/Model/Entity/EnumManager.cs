@@ -46,7 +46,7 @@ namespace Shared.Interfaces.Model.Entity
         /// <summary>
         /// カントリーリレーのコース選択
         /// </summary>
-        public enum SELECT_MID_AREA_ID
+        public enum SELECT_RELAY_AREA_ID
         {
             Course_Random,
             Course_Hay,
@@ -55,6 +55,16 @@ namespace Shared.Interfaces.Model.Entity
             Course_Goose
         }
 
+        /// <summary>
+        /// 最終競技のステージ選択
+        /// </summary>
+        public enum SELECT_FINALGAME_AREA_ID
+        {
+            Stage_Random,
+            Stage_Hay,
+            Stage_Goose,
+            Stage_Chicken
+        }
 
         public enum ITEM_ID
         {

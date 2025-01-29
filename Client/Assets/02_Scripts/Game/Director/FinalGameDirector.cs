@@ -195,7 +195,7 @@ public class FinalGameDirector : MonoBehaviour
             {
                 target = target.transform,
                 weight = 1,
-                radius = 1,
+                radius = 1.5f,
             };
             i++;
         }

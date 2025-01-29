@@ -53,12 +53,11 @@ namespace Shared.Interfaces.StreamingHubs
 
         #region ゲーム開始までの処理
         /// <summary>
-        /// 競技カントリーリレーの中間エリアを選択する
+        /// 各競技のマップ選択処理
         /// (マスタークライアントが処理)
         /// </summary>
-        /// <param name="selectMidAreaId"></param>
         /// <returns></returns>
-        Task SelectMidAreaAsynk(EnumManager.SELECT_MID_AREA_ID selectMidAreaId);
+        Task SelectGameMapAsynk(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId);
 
         /// <summary>
         /// 準備完了したかどうか

@@ -31,6 +31,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     // マッチング中(マッチング完了)かどうか
     bool isMatchingRunning = false;
     public bool IsMatchingRunning { get { return isMatchingRunning; }  set { isMatchingRunning = value; } }
+    // マスタークライアントの名前
+    public string MasterName {  get; private set; }
 
     #region サーバーから通知が届いた際に呼ばれるAction関数
     public Action OnmatchingUser { get; set; }
@@ -44,8 +46,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid, MasterClient> OnUpdateMasterClientUser { get; set; }
 
     #region ゲーム開始までの処理
-    // カントリーリレーの中間エリアを選択した通知
-    public Action<EnumManager.SELECT_MID_AREA_ID> OnSelectMidAreaIdUser { get; set; }
+    // 各競技のマップ選択された通知
+    public Action<EnumManager.SELECT_RELAY_AREA_ID, EnumManager.SELECT_FINALGAME_AREA_ID> OnSelectGameMapUser { get; set; }
     // 準備が完了したかどうかの通信
     public Action<int,bool> OnReadyUser { get; set; }
     // 全員がゲーム開始前のカウントダウン終了通知
@@ -286,6 +288,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             foreach (JoinedUser user in users)
             {
                 if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // 自身の接続IDを探して保存する
+                if(user.IsMasterClient) MasterName = user.UserData.Name;
 
                 // 存在しなければ追加(複数のユーザーが同時に入室した際の対策)
                 if (!JoinedUsers.ContainsKey(user.ConnectionId))
@@ -337,7 +340,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// ユーザーが退室する通知（自分も含む）
     /// </summary>
     /// <param name="user"></param>
-    public void OnLeave(Guid connectionId, JoinedUser latestData)
+    public void OnLeave(Guid connectionId, JoinedUser latestData, string masterName)
     {
         if (userState == USER_STATE.leave_done) return;
 
@@ -345,6 +348,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         JoinedUsers[this.ConnectionId] = latestData;
 
         // アクション実行
+        MasterName = masterName;
         OnLeavedUser(connectionId);
         JoinedUsers.Remove(connectionId);
 
@@ -412,26 +416,27 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #region ゲーム開始までの処理
     /// <summary>
-    /// 競技カントリーリレーの中間エリアを選択する
+    /// 各競技のマップ選択処理
     /// (マスタークライアントが処理)
     /// </summary>
     /// <param name="selectMidAreaId"></param>
     /// <returns></returns>
-    public async UniTask SelectMidAreaAsynk(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+    public async UniTask SelectGameMapAsynk(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
-        if(userState == USER_STATE.joined) await roomHub.SelectMidAreaAsynk(selectMidAreaId);
+        if(userState == USER_STATE.joined) await roomHub.SelectGameMapAsynk(relayAreaId,finalGameStageId);
     }
 
     /// <summary>
     /// [IRoomHubReceiverのインターフェイス]
-    /// 競技カントリーリレーの中間エリアを選択した通知
+    /// 各競技のマップ選択された通知
     /// </summary>
-    public void OnSelectMidArea(EnumManager.SELECT_MID_AREA_ID selectMidAreaId)
+    public void OnSelectGameMap(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
-        Debug.Log(selectMidAreaId.ToString());
+        Debug.Log(relayAreaId.ToString());
+        Debug.Log(finalGameStageId.ToString());
         if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
 
-        OnSelectMidAreaIdUser(selectMidAreaId);
+        OnSelectGameMapUser(relayAreaId, finalGameStageId);
     }
 
     /// <summary>

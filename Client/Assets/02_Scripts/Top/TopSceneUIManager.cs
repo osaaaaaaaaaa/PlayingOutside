@@ -12,6 +12,8 @@ public class TopSceneUIManager : MonoBehaviour
     SEController seController;
     #endregion
 
+    [SerializeField] Text userNameText;
+
     [SerializeField] List<GameObject> selectButtonList;
     [SerializeField] GameObject textUserName;
 
@@ -25,6 +27,12 @@ public class TopSceneUIManager : MonoBehaviour
     private void Start()
     {
         seController = GetComponent<SEController>();
+        SetUserNameText();
+    }
+
+    public void SetUserNameText()
+    {
+        userNameText.text = UserModel.Instance.UserName;
     }
 
     void ToggleUIVisibility(bool isVisibility)
