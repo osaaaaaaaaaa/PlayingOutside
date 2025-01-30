@@ -53,6 +53,10 @@ public class EditPlayerUIController : MonoBehaviour
             }
         }
 
+        if (UserModel.Instance.UserName == null || UserModel.Instance.UserName.Length == 0)
+        {
+            UserModel.Instance.LoadUserData();
+        }
         userName.text = UserModel.Instance.UserName;
     }
 

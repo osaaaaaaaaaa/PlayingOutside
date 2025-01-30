@@ -43,6 +43,8 @@ public class TitleSceneDirector : MonoBehaviour
             isRanning = true;
             UnityAction errorActoin = OnErrorPanelButton;
 
+            isLocalData = UserModel.Instance.LoadUserData();
+
             // ローカルにあるユーザー情報を取得する
             if (isLocalData)
             {

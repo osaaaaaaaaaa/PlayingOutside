@@ -32,6 +32,10 @@ public class TopSceneUIManager : MonoBehaviour
 
     public void SetUserNameText()
     {
+        if(UserModel.Instance.UserName == null || UserModel.Instance.UserName.Length == 0)
+        {
+            UserModel.Instance.LoadUserData();
+        }
         userNameText.text = UserModel.Instance.UserName;
     }
 
