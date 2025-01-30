@@ -54,7 +54,7 @@ public class FinalGameDirector : MonoBehaviour
 
     #region カウントダウン関係
     Coroutine coroutineCountDown;
-    const int maxTime = 100;
+    const int maxTime = 46;
     int currentTime;
     bool isGameStartCountDownOver;
     #endregion
@@ -290,13 +290,16 @@ public class FinalGameDirector : MonoBehaviour
             }
         }
 
-        if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+        if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
         {
-            foreach (var obj in movingObjectList)
+            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
             {
-                if (obj.Value != null)
+                foreach (var obj in movingObjectList)
                 {
-                    if (obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                    if (obj.Value != null)
+                    {
+                        if (obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                    }
                 }
             }
         }

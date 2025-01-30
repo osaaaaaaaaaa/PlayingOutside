@@ -32,10 +32,10 @@ public class RoomDirector : MonoBehaviour
     [SerializeField] TargetCameraController targetCameraController;
     SEController seController;
 
-    #region 自動マッチングのタイムアウト関係
+    #region 自動マッチング関係
     Coroutine coroutineTimeout;
     DateTime startMatchingTime;
-    const float timeoutSec = 30f;
+    const float timeoutSec = 10f;
     #endregion
 
     const float waitSeconds = 0.1f;
@@ -43,8 +43,8 @@ public class RoomDirector : MonoBehaviour
     private async void Start()
     {
         if (RoomModel.Instance.IsMatchingRunning) roomNameObj.SetActive(false);
-        seController = GetComponent<SEController>();
 
+        seController = GetComponent<SEController>();
         textRoomName.text = RoomModel.Instance.ConnectionRoomName;
 
         // 関数を登録する
@@ -105,17 +105,9 @@ public class RoomDirector : MonoBehaviour
 
     async void OnTimeOut()
     {
+
         StopCoroutine(UpdateCoroutine());
-        await RoomModel.Instance.LeaveAsync();
-
-        UnityAction errorActoin = CallSceneLoadMethod;
-        ErrorUIController.Instance.ShowErrorUI("タイムアウトが発生しました。ルームから退室します。", errorActoin);
-    }
-
-    public void CallSceneLoadMethod()
-    {
-        if (SceneControler.Instance.isLoading) SceneManager.LoadScene("TopScene");
-        else SceneControler.Instance.StartSceneLoad("TopScene");
+        await RoomModel.Instance.StartGameAsynk();
     }
 
     /// <summary>
@@ -125,6 +117,7 @@ public class RoomDirector : MonoBehaviour
     public async void JoinRoom()
     {
         // 入室処理[ルーム名,ユーザーID(最終的にはローカルに保存してあるユーザーID)]
+        Debug.Log("[RoomScene]ルーム名：" + RoomModel.Instance.ConnectionRoomName);
         await RoomModel.Instance.JoinAsync(RoomModel.Instance.ConnectionRoomName, UserModel.Instance.UserId);
     }
 
@@ -187,6 +180,7 @@ public class RoomDirector : MonoBehaviour
     public async void LeaveRoom()
     {
         selectMapUI.DisableButton();
+        if(coroutineTimeout != null) StopCoroutine(coroutineTimeout);
         StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.LeaveAsync();
 

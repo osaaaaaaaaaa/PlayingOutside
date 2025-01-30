@@ -60,6 +60,12 @@ namespace Shared.Interfaces.StreamingHubs
         Task SelectGameMapAsynk(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId);
 
         /// <summary>
+        /// 強制的にゲームを開始する
+        /// </summary>
+        /// <returns></returns>
+        Task StartGameAsynk();
+
+        /// <summary>
         /// 準備完了したかどうか
         /// </summary>
         /// <param name="isReady"></param>

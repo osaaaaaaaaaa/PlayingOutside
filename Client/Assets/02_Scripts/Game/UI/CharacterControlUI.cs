@@ -40,6 +40,16 @@ public class CharacterControlUI : MonoBehaviour
     float coolTime;
     bool isCoolTime = false;
 
+    public void SetColorAlphaButtons(float alpha)
+    {
+        Color color = new Color(1,1,1,alpha);
+        btnKick.gameObject.GetComponent<Image>().color = color;
+        btnJump.gameObject.GetComponent<Image>().color = color;
+        btnSkill.gameObject.GetComponent<Image>().color = color;
+        btnUseItem.gameObject.GetComponent<Image>().color = color;
+        btnShowEmoteWindow.gameObject.GetComponent<Image>().color = color;
+    }
+
     public void ToggleUIVisibiliity(bool visibility)
     {
         uiParent.SetActive(visibility);

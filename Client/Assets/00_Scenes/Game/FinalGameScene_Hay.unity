@@ -14771,12 +14771,12 @@ PrefabInstance:
     - target: {fileID: 4971368417857906678, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 960
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4971368417857906678, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 540
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4971368417857906678, guid: 37ffc98ef0c0d7141a3ba6c0bb19627e,
         type: 3}
@@ -15109,7 +15109,7 @@ MonoBehaviour:
   pathType: 0
   animSec: 10
   isSetLookAt: 1
-  isDebug: 1
+  isDebug: 0
 --- !u!114 &1847450144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23271,7 +23271,7 @@ MonoBehaviour:
   pathType: 0
   animSec: 10
   isSetLookAt: 1
-  isDebug: 1
+  isDebug: 0
 --- !u!82 &6758624831066431096
 AudioSource:
   m_ObjectHideFlags: 0

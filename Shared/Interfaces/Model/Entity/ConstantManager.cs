@@ -16,5 +16,8 @@ namespace Shared.Interfaces.Model.Entity
 
         // ガチョウが入った木箱の最大HP
         public static int propGooseHp { get; private set; } = 100;
+
+        // 最大参加可能人数
+        public static int userMaxCnt { get; private set; } = 4;
     }
 }

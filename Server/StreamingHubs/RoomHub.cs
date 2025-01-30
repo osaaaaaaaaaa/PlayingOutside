@@ -27,8 +27,6 @@ namespace Server.StreamingHubs
         // どのルームに入っているか
         IGroup room;
 
-        // 参加可能人数
-        const int maxUsers = 4;
         // ゲーム開始可能人数
         const int minRequiredUsers = 2;
         // 加算するスコアのベース
@@ -57,7 +55,8 @@ namespace Server.StreamingHubs
             }
             else
             {
-                if(this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId) != null)
+                var dataSelf = this.room.GetInMemoryStorage<RoomData>().Get(this.ConnectionId);
+                if (dataSelf != null)
                 {
                     // 自分のデータを グループデータから削除する
                     this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
@@ -100,13 +99,14 @@ namespace Server.StreamingHubs
                 }
 
                 // 人数が集まったかチェック
-                if (joinedUsers.Length == maxUsers)
+                if (joinedUsers.Length == ConstantManager.userMaxCnt)
                 {
                     foreach (var user in joinedUsers)
                     {
                         user.IsMatching = true;
                     }
 
+                    Console.WriteLine("マッチング完了通知");
                     var guid = Guid.NewGuid();
                     this.Broadcast(room).OnMatching(guid.ToString());
                 }
@@ -125,6 +125,8 @@ namespace Server.StreamingHubs
         {
             // 指定したルームに参加、ルームを保持
             this.room = await this.Group.AddAsync(roomName);
+
+            Console.WriteLine("ルーム名：" + roomName);
 
             // ストレージには一種類の型しか使えないため、他の情報を入れたい場合は、RoomDataクラスに追加
             var roomStorage = this.room.GetInMemoryStorage<RoomData>();
@@ -145,7 +147,7 @@ namespace Server.StreamingHubs
                 }
 
                 // 人数制限もチェック
-                if (isFailed || roomStorage.AllValues.ToArray<RoomData>().Length >= maxUsers)
+                if (isFailed || roomStorage.AllValues.ToArray<RoomData>().Length >= ConstantManager.userMaxCnt)
                 {
                     // ルーム内のメンバーから削除
                     room.RemoveAsync(this.Context);
@@ -259,9 +261,6 @@ namespace Server.StreamingHubs
                 // 自分のデータを グループデータから削除する
                 this.room.GetInMemoryStorage<RoomData>().Remove(this.ConnectionId);
 
-                // ルーム内のメンバーから自分を削除
-                room.RemoveAsync(this.Context); // 元々はlockの外にあり、awaitで待機してたやつ
-
                 if (isCountdownActive)
                 {
                     if (master != null && !master.JoinedUser.IsStartMasterCountDown)
@@ -274,6 +273,9 @@ namespace Server.StreamingHubs
                     }
                 }
             }
+
+            // ルーム内のメンバーから自分を削除
+            await room.RemoveAsync(this.Context);
         }
 
         /// <summary>
@@ -467,6 +469,37 @@ namespace Server.StreamingHubs
         }
 
         /// <summary>
+        /// 強制的にゲームを開始する
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartGameAsynk()
+        {
+            var roomStorage = room.GetInMemoryStorage<RoomData>();
+
+            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "がゲーム開始リクエスト");
+
+            // [排他制御] 準備完了チェックが複数同時に処理すると、データの整合性に異常がでるため
+            lock (roomStorage)
+            {
+                // 既にゲーム中かどうかチェック
+                RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
+                foreach (var roomData in roomDataList)
+                {
+                    if (roomData.JoinedUser.IsGameRunning) return;
+                }
+
+                foreach (var roomData in roomDataList)
+                {
+                    roomData.JoinedUser.IsGameRunning = true;
+                }
+
+                // 全員が準備完了したことにし、準備完了通知を送信する
+                Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "がゲーム開始通知を配る");
+                this.Broadcast(room).OnReady(roomDataList.Length, true);
+            }
+        }
+
+        /// <summary>
         /// 準備完了したかどうか
         /// </summary>
         /// <returns></returns>
@@ -497,8 +530,8 @@ namespace Server.StreamingHubs
                 }
                 Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(" + readyCnt + ")");
 
-                // ゲームに参加する人数を取得 [マッチングからゲームに参加している場合:maxUsers]
-                int maxRequiredUsers = isMatching ? maxUsers : roomDataList.Length;
+                // ゲームに参加する人数を取得 [自動マッチングからゲームに参加している場合:maxUsers]
+                int maxRequiredUsers = isMatching ? ConstantManager.userMaxCnt : roomDataList.Length;
 
                 // 最低人数以上かつ全員が準備完了している場合
                 if (roomDataList.Length >= minRequiredUsers && readyCnt == maxRequiredUsers)

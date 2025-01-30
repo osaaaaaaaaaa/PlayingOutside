@@ -98,6 +98,7 @@ public class FinalResultSceneDirector : MonoBehaviour
             if (isMyCharacter)
             {
                 characterControlUI.SetupButtonEvent(character);
+                characterControlUI.SetColorAlphaButtons(0);
             }
         }
     }
@@ -243,6 +244,7 @@ public class FinalResultSceneDirector : MonoBehaviour
         }
 
         // ƒvƒŒƒCƒ„[‚Ì‘€ì‚ğ‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        characterControlUI.SetColorAlphaButtons(1);
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
 
         // ‘Şº‚ª‚Å‚«‚é‚æ‚¤‚É‚·‚é

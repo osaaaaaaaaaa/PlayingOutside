@@ -2839,6 +2839,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterControls
       objectReference: {fileID: 0}
+    - target: {fileID: 2321923600533902694, guid: 5d411856d88075b4f9682e0ce88ea244,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3588525188617311918, guid: 5d411856d88075b4f9682e0ce88ea244,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2938,6 +2943,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5441247805544131812, guid: 5d411856d88075b4f9682e0ce88ea244,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

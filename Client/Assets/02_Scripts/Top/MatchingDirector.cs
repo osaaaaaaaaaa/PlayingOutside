@@ -13,26 +13,33 @@ public class MatchingDirector : MonoBehaviour
 {
     [SerializeField] QuickGameUIController quickGameUIController;
     Dictionary<Guid, int> userList = new Dictionary<Guid, int>(); // <接続ID,入室順>
-    public bool isTaskRunnning;
+    public bool isJoinTaskRunnning; // 入室処理中かどうか
+    public bool isLeaveTaskRunning; // 退室処理中かどうか
+    public bool isJoindUsersMax;    // ユーザーが集まったかどうか
     bool isReceivedOnMatching;
 
     private void Start()
     {
         // 関数を登録する
+        RoomModel.Instance.OnJoinedLobbyUser += this.NotifyJoinedLobbyUser;
         RoomModel.Instance.OnJoinedUser += this.NotifyJoinedUser;
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnmatchingUser += this.NotifyMatching;
 
         RoomModel.Instance.IsMatchingRunning = false;
-        isTaskRunnning = false;
+        isJoinTaskRunnning = false;
+        isLeaveTaskRunning = false;
+        isJoindUsersMax = false;
         isReceivedOnMatching = false;
     }
 
     void OnDisable()
     {
         // シーン遷移時に関数の登録を解除
+        RoomModel.Instance.OnJoinedLobbyUser -= this.NotifyJoinedLobbyUser;
         RoomModel.Instance.OnJoinedUser -= this.NotifyJoinedUser;
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
+        RoomModel.Instance.OnmatchingUser -= this.NotifyMatching;
     }
 
     /// <summary>
@@ -40,8 +47,8 @@ public class MatchingDirector : MonoBehaviour
     /// </summary>
     public async void OnQuickGameButtonAsync()
     {
-        if (isTaskRunnning  || RoomModel.Instance.IsMatchingRunning) return;
-        isTaskRunnning = true;
+        if (isJoinTaskRunnning || isLeaveTaskRunning || RoomModel.Instance.IsMatchingRunning) return;
+        isJoinTaskRunnning = true;
 
         // 接続処理
         await RoomModel.Instance.ConnectAsync();
@@ -71,25 +78,49 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
+    /// ロビー入室時の処理
+    /// </summary>
+    void NotifyJoinedLobbyUser()
+    {
+        Debug.Log("ロビー入室(" + "参加人数：" + RoomModel.Instance.JoinedUsers.Count + ")");
+        foreach (var user in RoomModel.Instance.JoinedUsers.Values)
+        {
+            if(!userList.ContainsKey(user.ConnectionId)) 
+                userList[user.ConnectionId] = user.JoinOrder;
+
+            // ユーザーのUI情報を設定
+            quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, user.UserData.Character_Id - 1);
+        }
+
+        if (RoomModel.Instance.JoinedUsers.Count == ConstantManager.userMaxCnt) isJoindUsersMax = true;
+        isJoinTaskRunnning = false;
+    }
+
+    /// <summary>
     /// 入室通知処理
     /// </summary>
     /// <param name="user"></param>
     void NotifyJoinedUser(JoinedUser user)
     {
-        if (user.ConnectionId == RoomModel.Instance.ConnectionId) isTaskRunnning = false;
-        userList[user.ConnectionId] = user.JoinOrder;
+        if (RoomModel.Instance.JoinedUsers.Count == ConstantManager.userMaxCnt) isJoindUsersMax = true;
+
+        if (!userList.ContainsKey(user.ConnectionId))
+            userList[user.ConnectionId] = user.JoinOrder;
 
         // ユーザーのUI情報を設定
         quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, user.UserData.Character_Id - 1);
     }
 
     /// <summary>
-    /// 退室リクエスト(ボタンから)
+    /// 退室リクエスト(ボタンから処理する)
     /// </summary>
     public async void LeaveRoom()
     {
-        if (isTaskRunnning || !RoomModel.Instance.IsMatchingRunning) return;
-        isTaskRunnning = true;
+        if (isJoindUsersMax || isJoinTaskRunnning || isLeaveTaskRunning 
+            || !RoomModel.Instance.IsMatchingRunning
+            || RoomModel.Instance.JoinedUsers.Count == ConstantManager.userMaxCnt) return;
+        Debug.Log("退出リクエスト(" + "参加人数：" + RoomModel.Instance.JoinedUsers.Count + ")");
+        isLeaveTaskRunning = true;
         RoomModel.Instance.IsMatchingRunning = false;
         isReceivedOnMatching = false;
 
@@ -115,12 +146,15 @@ public class MatchingDirector : MonoBehaviour
             // 自分が退出する場合は全て削除
             quickGameUIController.InitAllUserFrame();
             userList.Clear();
-            isTaskRunnning = false;
+            isJoinTaskRunnning = false;
+            isLeaveTaskRunning = false;
+            isJoindUsersMax = false;
         }
         else
         {
             if (isReceivedOnMatching) return;
 
+            isJoindUsersMax = false;
             if (userList.ContainsKey(connectionId))
             {
                 // 該当のユーザーのUI削除

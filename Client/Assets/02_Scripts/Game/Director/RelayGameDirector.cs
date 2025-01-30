@@ -8,6 +8,8 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using DG.Tweening;
 using Server.Model.Entity;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class RelayGameDirector : MonoBehaviour
 {
@@ -65,6 +67,7 @@ public class RelayGameDirector : MonoBehaviour
     private void Start()
     {
         if (isDebug) return;
+
         isDestroyPlantRequest = false;
         isDestroyedPlants = false;
         isGameStartCountDownOver = false;
@@ -92,6 +95,13 @@ public class RelayGameDirector : MonoBehaviour
 
         RoomModel.Instance.OnDestroyPlantsGimmickUser += this.NotifyDestroyPlantsGimmickUser;
         RoomModel.Instance.OnTriggeringPlantGimmickUser += this.NotifyTriggeringPlantGimmickUser;
+
+        // [自動マッチング完了後] 参加者が自分だけだった場合
+        if (RoomModel.Instance.JoinedUsers.Count == 1)
+        {
+            OnOnlyPlayerRemaining();
+            return;
+        }
 
         SetupGame();
     }
@@ -158,6 +168,29 @@ public class RelayGameDirector : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         coroutineCountDown = null;
+    }
+
+    /// <summary>
+    /// 参加者が自分1人だったときの処理
+    /// </summary>
+    async void OnOnlyPlayerRemaining()
+    {
+        // 退出処理
+        StopCoroutine(UpdateCoroutine());
+        if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
+        await RoomModel.Instance.LeaveAsync();
+
+        UnityAction errorActoin = CallSceneLoadMethod;
+        ErrorUIController.Instance.ShowErrorUI("他のユーザーが切断し、最後の参加者になったため、ルームから退室します。", errorActoin);
+    }
+
+    /// <summary>
+    /// シーン遷移の関数を呼ぶ
+    /// </summary>
+    public void CallSceneLoadMethod()
+    {
+        if (SceneControler.Instance.isLoading) SceneManager.LoadScene("TopScene");
+        else SceneControler.Instance.StartSceneLoad("TopScene");
     }
 
     void SetupGame()
@@ -276,13 +309,16 @@ public class RelayGameDirector : MonoBehaviour
             }
         }
 
-        if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
+        if (RoomModel.Instance.JoinedUsers.ContainsKey(RoomModel.Instance.ConnectionId))
         {
-            foreach (var obj in movingObjectList)
+            if (RoomModel.Instance.JoinedUsers[RoomModel.Instance.ConnectionId].IsMasterClient)
             {
-                if(obj.Value != null)
+                foreach (var obj in movingObjectList)
                 {
-                    if(obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                    if (obj.Value != null)
+                    {
+                        if (obj.Value.gameObject.activeSelf) obj.Value.ResumeTween();
+                    }
                 }
             }
         }
