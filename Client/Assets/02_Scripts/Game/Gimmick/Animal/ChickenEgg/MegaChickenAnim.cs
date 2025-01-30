@@ -43,6 +43,7 @@ public class MegaChickenAnim : MonoBehaviour
             chickenGimmickCollider.enabled = true;
             chickenGimmick.enabled = true;
             chickenGimmick.InitParam();
+            chickenGimmick.CallEggWarningCorutine();
         });
     }
 

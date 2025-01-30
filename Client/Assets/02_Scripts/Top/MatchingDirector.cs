@@ -13,9 +13,9 @@ public class MatchingDirector : MonoBehaviour
 {
     [SerializeField] QuickGameUIController quickGameUIController;
     Dictionary<Guid, int> userList = new Dictionary<Guid, int>(); // <接続ID,入室順>
-    public bool isJoinTaskRunnning; // 入室処理中かどうか
-    public bool isLeaveTaskRunning; // 退室処理中かどうか
-    public bool isJoindUsersMax;    // ユーザーが集まったかどうか
+    bool isJoinTaskRunnning; // 入室処理中かどうか
+    bool isLeaveTaskRunning; // 退室処理中かどうか
+    bool isJoindUsersMax;    // ユーザーが集まったかどうか
     bool isReceivedOnMatching;
 
     private void Start()

@@ -53,13 +53,32 @@ public class ChickenGimmick : MonoBehaviour
     private void OnDisable()
     {
         if(coroutine != null) StopCoroutine(coroutine);
-        targetList.Clear();
+        if(!isMegaChicken) targetList.Clear();
         coroutine = null;
     }
 
     public void InitParam()
     {
         isTriggering = false;
+
+        if (animator == null) animator = GetComponent<Animator>();
+        if (obstaclesMaxRange.Count == 0)
+        {
+            foreach (var obstacle in obstacles)
+            {
+                var ranges = GetObstacleRanges(obstacle);
+                if (ranges != null)
+                {
+                    obstaclesMaxRange.Add(ranges[0]);
+                    obstaclesMinRange.Add(ranges[1]);
+                }
+            }
+        }
+        if (isMegaChicken && targetList.Count == 0)
+        {
+            var characters = GameObject.FindGameObjectsWithTag("Character");
+            targetList = new List<GameObject>(characters);
+        }
     }
 
     public void OnEndLayEggMegaChickenAnim()
@@ -72,6 +91,11 @@ public class ChickenGimmick : MonoBehaviour
     {
         var rotate = transform.parent.eulerAngles;
         transform.parent.DORotate(rotate + Vector3.back * 360 * rotateNum, rotateAnimSec, RotateMode.FastBeyond360).SetEase(Ease.Linear);
+    }
+
+    public void CallEggWarningCorutine()
+    {
+        if (coroutine == null) coroutine = StartCoroutine(SetupEggBulletWarningPoints(3f));
     }
 
     /// <summary>
@@ -88,17 +112,18 @@ public class ChickenGimmick : MonoBehaviour
             eggWarning.GetComponent<EggWarning>().InitParam(transform.position + Vector3.up * jumpHeight);
         }
 
-        if(isMegaChicken) animator.Play("LayEgg_MegaChicken", 0, 0);
+        if (isMegaChicken) animator.Play("LayEgg_MegaChicken", 0, 0);
         else animator.Play("LayEgg", 0, 0);
     }
 
     IEnumerator SetupEggBulletWarningPoints(float waitSec)
     {
-        if(isTriggering && isOneShot)
+        if (isTriggering && isOneShot)
         {
             coroutine = null;
             yield break;
         }
+
         while (targetList.Count > 0)
         {
             var points = GetWarningPoints();
@@ -259,7 +284,8 @@ public class ChickenGimmick : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var controller = other.GetComponent<PlayerController>();
+        if (isMegaChicken) return;
+            var controller = other.GetComponent<PlayerController>();
         if (controller != null && !targetList.Contains(other.gameObject))
         {
             targetList.Add(other.gameObject);
@@ -278,7 +304,8 @@ public class ChickenGimmick : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        var controller = other.GetComponent<PlayerController>();
+        if (isMegaChicken) return;
+            var controller = other.GetComponent<PlayerController>();
         if (controller != null && targetList.Contains(other.gameObject))
         {
             targetList.Remove(other.gameObject);
