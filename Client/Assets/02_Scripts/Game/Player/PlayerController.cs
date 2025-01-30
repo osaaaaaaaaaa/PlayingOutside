@@ -12,7 +12,7 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerController : MonoBehaviour
 {
-    #region ƒRƒ“ƒ|[ƒlƒ“ƒg
+    #region ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
     PlayerAnimatorController animController;
     PlayerSkillController skillController;
     PlayerItemController itemController;
@@ -25,12 +25,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] List<CapsuleCollider> colliders;
     #endregion
 
-    #region ƒJƒƒ‰ŠÖŒW
+    #region ã‚«ãƒ¡ãƒ©é–¢ä¿‚
     const float minShakeVecCamera = 0.5f;
     const float maxShakeVecCamera = 2f;
     #endregion
 
-    #region ƒvƒŒƒCƒ„[‚ÌƒXƒe[ƒ^ƒX
+    #region ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
     float moveX;
     float moveZ;
 
@@ -39,20 +39,20 @@ public class PlayerController : MonoBehaviour
 
     public float rangeKick;
 
-    #region ƒmƒbƒNƒoƒbƒN‚·‚é—Í
+    #region ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹åŠ›
     public float addKnockBackPower = 5;
     public float correctionKnockBackPowerY = 2f;
     public float defaultKnockBackPower1 = 5;
     public float defaultKnockBackPower2 = 15;
     #endregion
 
-    #region ƒXƒs[ƒhEƒWƒƒƒ“ƒv
+    #region ã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ»ã‚¸ãƒ£ãƒ³ãƒ—
     public float speed;
     public float Speed { get { return speed; } set { speed = value; } }
     float defaultSpeed = 5f;
     public float DefaultSpeed { get { return defaultSpeed; } set { defaultSpeed = value; } }
 
-    // ‰ÁZ‚·‚éƒXƒs[ƒh
+    // åŠ ç®—ã™ã‚‹ã‚¹ãƒ”ãƒ¼ãƒ‰
     public float addPepperSpeed { get; private set; } = 3f;
     float addMudSpeed = -2f;
 
@@ -64,25 +64,25 @@ public class PlayerController : MonoBehaviour
 
     Transform modelTf;
 
-    // •œŠˆ‚·‚éÀ•W
+    // å¾©æ´»ã™ã‚‹åº§æ¨™
     public Vector3 respawnPoint { get; private set; } = Vector3.zero;
 
-    // ‘¼‚ÌƒvƒŒƒCƒ„[‚ÌTransform
+    // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Transform
     [SerializeField] List<GameObject> objOtherPlayers = new List<GameObject>();
 
-    // —§‚¿ã‚ª‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
+    // ç«‹ã¡ä¸ŠãŒã£ã¦ã„ã‚‹ã‹ã©ã†ã‹
     public bool isStandUp;
     public bool IsStandUp { get { return isStandUp; } set { isStandUp = value; } }
 
-    // –³“Gó‘Ô‚©‚Ç‚¤‚©
+    // ç„¡æ•µçŠ¶æ…‹ã‹ã©ã†ã‹
     bool isInvincible;
     public bool IsInvincible { get { return isInvincible; }set { isInvincible = value; } }
 
-    // ‘€ì‚ª‰Â”\‚©‚Ç‚¤‚©
+    // æ“ä½œãŒå¯èƒ½ã‹ã©ã†ã‹
     public bool isControlEnabled = true;
     public bool IsControlEnabled { get { return isControlEnabled; }set { isControlEnabled = value; } }
 
-    // ƒ}ƒbƒnƒLƒbƒNƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+    // ãƒãƒƒãƒã‚­ãƒƒã‚¯ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹
     bool isPressMachKickBtn;
     public bool IsPressMachKickBtn { get { return isPressMachKickBtn; } set { isPressMachKickBtn = value; } }
 
@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // ƒL[“ü—Í‚ÅˆÚ“®•ûŒü‚ğXV
+        // ã‚­ãƒ¼å…¥åŠ›ã§ç§»å‹•æ–¹å‘ã‚’æ›´æ–°
         if (floatingJoystick && floatingJoystick.Horizontal != 0 && floatingJoystick.Vertical != 0)
         {
             moveX = floatingJoystick.Horizontal;
@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // ƒ}ƒbƒnƒLƒbƒN’† || ƒGƒ‚[ƒg’†‚ÍƒAƒCƒhƒ‹ƒAƒjƒ‚ğÄ¶‚µ‚È‚¢
+                // ãƒãƒƒãƒã‚­ãƒƒã‚¯ä¸­ || ã‚¨ãƒ¢ãƒ¼ãƒˆä¸­ã¯ã‚¢ã‚¤ãƒ‰ãƒ«ã‚¢ãƒ‹ãƒ¡ã‚’å†ç”Ÿã—ãªã„
                 if (animController.GetAnimId() != (int)PlayerAnimatorController.ANIM_ID.MachKick && !animController.IsPlayingEmoteAnim())
                 {
                     if (isMachAura) animController.SetInt(PlayerAnimatorController.ANIM_ID.IdleA);
@@ -175,9 +175,9 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            // «‚Æ‚è‚ ‚¦‚¸c‚µ‚Ä‚¨‚­####################################################
+            // â†“ã¨ã‚Šã‚ãˆãšæ®‹ã—ã¦ãŠã####################################################
 
-            // ƒWƒƒƒ“ƒvˆ—
+            // ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (characterControlUI.IsSetupDone)
@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviour
                 else OnJumpButton();
             }
 
-            // ƒXƒLƒ‹”­“®ˆ—
+            // ã‚¹ã‚­ãƒ«ç™ºå‹•å‡¦ç†
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (characterControlUI.IsSetupDone)
@@ -200,10 +200,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // «‚Æ‚è‚ ‚¦‚¸c‚µ‚Ä‚¨‚­####################################################
+        // â†“ã¨ã‚Šã‚ãˆãšæ®‹ã—ã¦ãŠã####################################################
         if (isInteractable || isMachAura)
         {
-            // ƒLƒbƒNˆ—
+            // ã‚­ãƒƒã‚¯å‡¦ç†
             if (Input.GetKeyDown(KeyCode.K))
             {
                 if (characterControlUI.IsSetupDone)
@@ -251,16 +251,16 @@ public class PlayerController : MonoBehaviour
     {
         if (moveX == 0 && moveZ == 0 || !isStandUp || !isControlEnabled) return;
 
-        // ƒJƒƒ‰‚ÌŒü‚«‚Æ‰E•ûŒü‚Ì‘å‚«‚³‚ğæ“¾‚·‚é
+        // ã‚«ãƒ¡ãƒ©ã®å‘ãã¨å³æ–¹å‘ã®å¤§ãã•ã‚’å–å¾—ã™ã‚‹
         Vector3 cameraRot = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
         Vector3 cameraRight = new Vector3(Camera.main.transform.right.x, 0, Camera.main.transform.right.z);
 
-        // ˆÚ“®—Ê‚ğİ’è
-        Vector3 setMove = (cameraRight * moveX + cameraRot * moveZ).normalized; // ‘å‚«‚³‚ğ‚P‚É‚·‚é
-        rb.velocity = new Vector3(setMove.x * speed, rb.velocity.y, setMove.z * speed); // —‰º‘¬“x‚ğ‚¢‚¶‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+        // ç§»å‹•é‡ã‚’è¨­å®š
+        Vector3 setMove = (cameraRight * moveX + cameraRot * moveZ).normalized; // å¤§ãã•ã‚’ï¼‘ã«ã™ã‚‹
+        rb.velocity = new Vector3(setMove.x * speed, rb.velocity.y, setMove.z * speed); // è½ä¸‹é€Ÿåº¦ã‚’ã„ã˜ã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹
 
-        // ŠŠ‚ç‚©‚É‰ñ“]
-        transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // ‰ñ“]‘¬“x‚ğ‚©‚¯‚é
+        // æ»‘ã‚‰ã‹ã«å›è»¢
+        transform.forward = Vector3.Slerp(transform.forward, setMove, Time.deltaTime * 30f);   // å›è»¢é€Ÿåº¦ã‚’ã‹ã‘ã‚‹
     }
 
     private void OnTriggerStay(Collider other)
@@ -279,13 +279,13 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ_ƒ[ƒW‚ğó‚¯‚éˆ—
+    /// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹å‡¦ç†
     /// </summary>
     public void Hit(int damage, Vector3 specifiedKnockback, Transform tf)
     {
         if (hp <= 0 || !isStandUp || isInvincible) return;
 
-        // ƒ_ƒ[ƒW‚É—”‚ğ‰Á‚¦‚é
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã«ä¹±æ•°ã‚’åŠ ãˆã‚‹
         damage += Random.Range(0, 10);
 
         hp -= damage;
@@ -295,16 +295,16 @@ public class PlayerController : MonoBehaviour
 
         if (hp <= 0 || specifiedKnockback != Vector3.zero)
         {
-            // ƒmƒbƒNƒoƒbƒN‚·‚éƒxƒNƒgƒ‹‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡
+            // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹ãƒ™ã‚¯ãƒˆãƒ«ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆ
             if(specifiedKnockback == Vector3.zero)
             {
-                // ƒ_ƒ[ƒW—Ê‚É‰‚¶‚ÄƒmƒbƒNƒoƒbƒN‚·‚é—Í‚ª•Ï‰»
+                // ãƒ€ãƒ¡ãƒ¼ã‚¸é‡ã«å¿œã˜ã¦ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹åŠ›ãŒå¤‰åŒ–
                 float addPower = (float)damage / hpMax * addKnockBackPower;
                 float resultPower = defaultKnockBackPower2 + addPower;
                 if (resultPower > defaultKnockBackPower2 + addKnockBackPower) resultPower = defaultKnockBackPower2 + addKnockBackPower;
                 if (resultPower < defaultKnockBackPower2) resultPower = defaultKnockBackPower2;
 
-                // ‘å‚«‚­ƒmƒbƒNƒoƒbƒN‚·‚é
+                // å¤§ãããƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹
                 knockBackVec *= resultPower;
                 knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
             }
@@ -315,7 +315,7 @@ public class PlayerController : MonoBehaviour
 
             KnockBackAndDown(knockBackVec);
 
-            // ƒJƒƒ‰‚ğƒ_ƒ[ƒW—Ê‚É‰‚¶‚Ä—h‚ç‚·
+            // ã‚«ãƒ¡ãƒ©ã‚’ãƒ€ãƒ¡ãƒ¼ã‚¸é‡ã«å¿œã˜ã¦æºã‚‰ã™
             float shakePower = (float)damage / hpMax * (maxShakeVecCamera - minShakeVecCamera);
             shakePower += minShakeVecCamera;
             if(shakePower > maxShakeVecCamera) shakePower = maxShakeVecCamera;
@@ -326,13 +326,13 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // ƒ_ƒ[ƒW—Ê‚É‰‚¶‚ÄƒmƒbƒNƒoƒbƒN‚·‚é—Í‚ª•Ï‰»
+            // ãƒ€ãƒ¡ãƒ¼ã‚¸é‡ã«å¿œã˜ã¦ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹åŠ›ãŒå¤‰åŒ–
             float addPower = (float)damage / hpMax * addKnockBackPower;
             float resultPower = defaultKnockBackPower1 + addPower;
             if (resultPower > defaultKnockBackPower1 + addKnockBackPower) resultPower = defaultKnockBackPower1 + addKnockBackPower;
             if (resultPower < defaultKnockBackPower1) resultPower = defaultKnockBackPower1;
 
-            // Œy‚­ƒmƒbƒNƒoƒbƒN‚·‚é
+            // è»½ããƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹
             knockBackVec *= resultPower;
             knockBackVec = new Vector3(knockBackVec.x, resultPower / correctionKnockBackPowerY, knockBackVec.z);
             rb.AddForce(knockBackVec,ForceMode.Impulse);
@@ -342,60 +342,60 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ^[ƒQƒbƒg‚Ì•ûŒü‚ğŒü‚­ 
+    /// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ–¹å‘ã‚’å‘ã 
     /// </summary>
     /// <param name="target"></param>
     void LookAtPlayer(Transform target)
     {
-        // ƒ^[ƒQƒbƒg‚Ö‚ÌŒü‚«ƒxƒNƒgƒ‹ŒvZ
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®å‘ããƒ™ã‚¯ãƒˆãƒ«è¨ˆç®—
         var dir = target.position - transform.position;
 
-        // ƒ^[ƒQƒbƒg‚Ì•ûŒü‚Ö‚Ì‰ñ“]
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ–¹å‘ã¸ã®å›è»¢
         var lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
-        // ‰ñ“]•â³
-        var angles = Vector3.Scale(lookAtRotation.eulerAngles, Vector3.up); // ƒvƒŒƒCƒ„[‚Ìƒsƒ{ƒbƒg‚ª‘«Œ³‚Ì‚½‚ßYˆÈŠO‚Í0‚É‚·‚é
+        // å›è»¢è£œæ­£
+        var angles = Vector3.Scale(lookAtRotation.eulerAngles, Vector3.up); // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ”ãƒœãƒƒãƒˆãŒè¶³å…ƒã®ãŸã‚Yä»¥å¤–ã¯0ã«ã™ã‚‹
 
-        // ƒ^[ƒQƒbƒg‚Ì•ûŒü‚ğŒü‚­
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ–¹å‘ã‚’å‘ã
         transform.eulerAngles = angles;
     }
 
     /// <summary>
-    /// ƒmƒbƒNƒoƒbƒN‚µ‚Â‚Âƒ_ƒEƒ“‚·‚éˆ—
+    /// ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã—ã¤ã¤ãƒ€ã‚¦ãƒ³ã™ã‚‹å‡¦ç†
     /// </summary>
     /// <param name="knockBackVec"></param>
     public async void KnockBackAndDown(Vector3 knockBackVec)
     {
         if (!isStandUp || isInvincible) return;
         hp = hpMax;
-        transform.gameObject.layer = 8; // ƒmƒbƒNƒ_ƒEƒ“ó‘Ô‚É‚·‚é
+        transform.gameObject.layer = 8; // ãƒãƒƒã‚¯ãƒ€ã‚¦ãƒ³çŠ¶æ…‹ã«ã™ã‚‹
 
-        // ƒmƒbƒNƒoƒbƒN‰‰o
+        // ãƒãƒƒã‚¯ãƒãƒƒã‚¯æ¼”å‡º
         transform.position += Vector3.up * GetComponent<PlayerIsGroundController>().rayHeight;
         animController.PlayKnockBackAnim();
         rb.AddForce(knockBackVec, ForceMode.Impulse);
 
         if (!isDebug)
         {
-            // —“¬ƒV[ƒ“‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
+            // ä¹±é—˜ã‚·ãƒ¼ãƒ³ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
             var currentSceneName = SceneManager.GetActiveScene().name;
             if (currentSceneName == "FinalGameScene_Hay" 
                 || currentSceneName == "FinalGameScene_Goose" 
                 || currentSceneName == "FinalGameScene_Chicken")
             {
-                // ƒRƒCƒ“(ƒ|ƒCƒ“ƒg)‚Ìƒhƒƒbƒvˆ—
+                // ã‚³ã‚¤ãƒ³(ãƒã‚¤ãƒ³ãƒˆ)ã®ãƒ‰ãƒ­ãƒƒãƒ—å‡¦ç†
                 await RoomModel.Instance.KnockDownAsynk(transform.position);
             }
         }
     }
 
     /// <summary>
-    /// ˆê”Ô‹ß‚¢ƒ^[ƒQƒbƒg‚ğæ“¾
+    /// ä¸€ç•ªè¿‘ã„ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å–å¾—
     /// </summary>
     Transform SerchNearTarget()
     {
         if(objOtherPlayers.Count == 0)
         {
-            // ‚Ü‚¾‘¼‚ÌƒvƒŒƒCƒ„[‚ğæ“¾‚µ‚Ä‚¢‚È‚¢ê‡‚Íæ“¾‚·‚é
+            // ã¾ã ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å–å¾—ã—ã¦ã„ãªã„å ´åˆã¯å–å¾—ã™ã‚‹
             var otherPlayers = GameObject.FindGameObjectsWithTag("Character");
             objOtherPlayers = new List<GameObject>(otherPlayers);
             objOtherPlayers.Remove(this.gameObject);
@@ -436,7 +436,7 @@ public class PlayerController : MonoBehaviour
 
     void InitParam()
     {
-        // ƒAƒCƒeƒ€Œø‰ÊEƒp[ƒeƒBƒNƒ‹ƒŠƒZƒbƒg
+        // ã‚¢ã‚¤ãƒ†ãƒ åŠ¹æœãƒ»ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãƒªã‚»ãƒƒãƒˆ
         itemController.ClearAllItemEffects();
         effectController.ClearAllParticles();
 
@@ -470,7 +470,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// ‰Šúİ’è‚È‚Ç‚ÉŒÄ‚Ño‚µ
+    /// åˆæœŸè¨­å®šãªã©ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf, bool isMyCharacter)
@@ -493,8 +493,8 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// [‹£‹ZƒJƒ“ƒgƒŠ[ƒŠƒŒ[]
-    /// ƒGƒŠƒAˆÚ“®‚ÌÛ‚ÉŒÄ‚Ño‚µ
+    /// [ç«¶æŠ€ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼]
+    /// ã‚¨ãƒªã‚¢ç§»å‹•ã®éš›ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="startPointTf"></param>
     public void InitPlayer(Transform startPointTf)
@@ -508,7 +508,7 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“I—¹‚È‚Ç‚ÉŒÄ‚Ño‚µ
+    /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†æ™‚ãªã©ã«å‘¼ã³å‡ºã—
     /// </summary>
     public void InitPlayer()
     {

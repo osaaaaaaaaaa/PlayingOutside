@@ -22,121 +22,121 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     private GrpcChannel channel;
     private IRoomHub roomHub;
 
-    // Ú‘±ID
+    // æ¥ç¶šID
     public Guid ConnectionId { get; private set; }
-    // Ú‘±‚·‚éƒ‹[ƒ€–¼
+    // æ¥ç¶šã™ã‚‹ãƒ«ãƒ¼ãƒ å
     string connectionRoomName;
     public string ConnectionRoomName { get { return connectionRoomName; } set { connectionRoomName = value; } }
-    // Q‰Á‚µ‚Ä‚¢‚éƒ†[ƒU[‚Ìî•ñ
+    // å‚åŠ ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®æƒ…å ±
     public Dictionary<Guid, JoinedUser> JoinedUsers { get; private set; } = new Dictionary<Guid, JoinedUser>();
-    // ƒ}ƒbƒ`ƒ“ƒO’†‚©‚Ç‚¤‚©
+    // ãƒãƒƒãƒãƒ³ã‚°ä¸­ã‹ã©ã†ã‹
     bool isMatchingRunning = false;
     public bool IsMatchingRunning { get { return isMatchingRunning; }  set { isMatchingRunning = value; } }
-    // ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ì–¼‘O
+    // ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®åå‰
     public string MasterName {  get; private set; }
 
-    #region ƒT[ƒo[‚©‚ç’Ê’m‚ª“Í‚¢‚½Û‚ÉŒÄ‚Î‚ê‚éActionŠÖ”
-    // ©“®ƒ}ƒbƒ`ƒ“ƒOŠ®—¹
+    #region ã‚µãƒ¼ãƒãƒ¼ã‹ã‚‰é€šçŸ¥ãŒå±Šã„ãŸéš›ã«å‘¼ã°ã‚Œã‚‹Actioné–¢æ•°
+    // è‡ªå‹•ãƒãƒƒãƒãƒ³ã‚°å®Œäº†æ™‚
     public Action OnmatchingUser { get; set; }
-    // [©“®ƒ}ƒbƒ`ƒ“ƒO—p] ©•ª‚ªƒƒr[“üº
+    // [è‡ªå‹•ãƒãƒƒãƒãƒ³ã‚°ç”¨] è‡ªåˆ†ãŒãƒ­ãƒ“ãƒ¼å…¥å®¤æ™‚
     public Action OnJoinedLobbyUser { get; set; }
-    // ƒ†[ƒU[“üº’Ê’m
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼å…¥å®¤é€šçŸ¥
     public Action<JoinedUser> OnJoinedUser { get; set; }
-    // ƒ†[ƒU[Ø’f’Ê’m
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼åˆ‡æ–­é€šçŸ¥
     public Action<Guid> OnLeavedUser { get; set; }
-    // ƒvƒŒƒCƒ„[î•ñXV’Ê’m
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°é€šçŸ¥
     public Action<Guid, PlayerState> OnUpdatePlayerStateUser { get; set; }
-    // ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ìî•ñXV’Ê’m
+    // ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æƒ…å ±æ›´æ–°é€šçŸ¥
     public Action<Guid, MasterClient> OnUpdateMasterClientUser { get; set; }
 
-    #region ƒQ[ƒ€ŠJn‚Ü‚Å‚Ìˆ—
-    // Še‹£‹Z‚Ìƒ}ƒbƒv‘I‘ğ‚³‚ê‚½’Ê’m
+    #region ã‚²ãƒ¼ãƒ é–‹å§‹ã¾ã§ã®å‡¦ç†
+    // å„ç«¶æŠ€ã®ãƒãƒƒãƒ—é¸æŠã•ã‚ŒãŸé€šçŸ¥
     public Action<EnumManager.SELECT_RELAY_AREA_ID, EnumManager.SELECT_FINALGAME_AREA_ID> OnSelectGameMapUser { get; set; }
-    // €”õ‚ªŠ®—¹‚µ‚½‚©‚Ç‚¤‚©‚Ì’ÊM
+    // æº–å‚™ãŒå®Œäº†ã—ãŸã‹ã©ã†ã‹ã®é€šä¿¡
     public Action<int,bool> OnReadyUser { get; set; }
-    // ‘Sˆõ‚ªƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“I—¹’Ê’m
+    // å…¨å“¡ãŒã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³çµ‚äº†é€šçŸ¥
     public Action OnCountdownOverUser { get; set; }
     #endregion
 
-    #region ƒQ[ƒ€‹¤’Ê‚Ìˆ—
-    // ƒ†[ƒU[‚ÌŠƒ|ƒCƒ“ƒgXV’Ê’m
+    #region ã‚²ãƒ¼ãƒ å…±é€šã®å‡¦ç†
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®æ‰€æŒãƒã‚¤ãƒ³ãƒˆæ›´æ–°é€šçŸ¥
     public Action<Guid,int> OnUpdateScoreUser { get; set; }
-    // ƒJƒEƒ“ƒgƒ_ƒEƒ“’Ê’m
+    // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é€šçŸ¥
     public Action<int> OnCountDownUser { get; set; }
-    // ‘Sˆõ‚ÌƒQ[ƒ€I—¹ˆ—‚ªŠ®—¹‚µ‚½’Ê’m
+    // å…¨å“¡ã®ã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†ãŒå®Œäº†ã—ãŸé€šçŸ¥
     public Action<string> OnFinishGameUser { get; set; }
-    // ƒRƒCƒ“‚Ìƒhƒƒbƒv’Ê’m
+    // ã‚³ã‚¤ãƒ³ã®ãƒ‰ãƒ­ãƒƒãƒ—é€šçŸ¥
     public Action<Vector3, int[], string[], UserScore> OnDropCoinsUser { get; set; }
-    // ¶¬êŠ‚ªˆÙ‚È‚éƒRƒCƒ“‚Ìƒhƒƒbƒv’Ê’m
+    // ç”Ÿæˆå ´æ‰€ãŒç•°ãªã‚‹ã‚³ã‚¤ãƒ³ã®ãƒ‰ãƒ­ãƒƒãƒ—é€šçŸ¥
     public Action<Vector3[], string[], UserScore> OnDropCoinsAtRandomPositionsUser { get; set; }
-    // ƒAƒCƒeƒ€æ“¾’Ê’m
+    // ã‚¢ã‚¤ãƒ†ãƒ å–å¾—é€šçŸ¥
     public Action<Guid, string,float> OnGetItemUser {  get; set; }
-    // ƒAƒCƒeƒ€g—p’Ê’m
+    // ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨é€šçŸ¥
     public Action<Guid,EnumManager.ITEM_ID> OnUseItemUser { get; set; }
-    // ƒAƒCƒeƒ€‚Ì”jŠü’Ê’m
+    // ã‚¢ã‚¤ãƒ†ãƒ ã®ç ´æ£„é€šçŸ¥
     public Action<string> OnDestroyItemUser { get; set; }
-    // ƒAƒCƒeƒ€‚Ì¶¬’Ê’m
+    // ã‚¢ã‚¤ãƒ†ãƒ ã®ç”Ÿæˆé€šçŸ¥
     public Action<Vector3,EnumManager.ITEM_ID,string> OnSpawnItemUser { get; set; }
-    // “®“I‚ÈƒIƒuƒWƒFƒNƒg‚Ì¶¬’Ê’m
+    // å‹•çš„ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆé€šçŸ¥
     public Action<SpawnObject> OnSpawnObjectUser { get; set; }
-    // “®•¨‚ÌƒMƒ~ƒbƒN”­“®’Ê’m
+    // å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•é€šçŸ¥
     public Action<EnumManager.ANIMAL_GIMMICK_ID, string, Vector3[]> OnPlayAnimalGimmickUser { get; set; }
-    // Œ{¬‰®‚ÌƒMƒ~ƒbƒN”­“®’Ê’m
+    // é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•é€šçŸ¥
     public Action OnTriggerMegaCoopUser { get; set; }
-    // Œ{¬‰®‚ÌƒMƒ~ƒbƒN”­“®I—¹’Ê’m
+    // é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•çµ‚äº†é€šçŸ¥
     public Action OnTriggerMegaCoopEndUser { get; set; }
     #endregion
 
-    #region ‹£‹ZwƒJƒ“ƒgƒŠ[ƒŠƒŒ[x‚Ìˆ—
-    // A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚·‚é’Ê’m
+    #region ç«¶æŠ€ã€ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ã€ã®å‡¦ç†
+    // æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã™ã‚‹é€šçŸ¥
     public Action<string[]> OnDestroyPlantsGimmickUser { get; set; }
-    // A•¨‚ÌƒMƒ~ƒbƒN‚ğ”­“®‚·‚é’Ê’m
+    // æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç™ºå‹•ã™ã‚‹é€šçŸ¥
     public Action<string> OnTriggeringPlantGimmickUser { get; set; }
-    // Œ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½’Ê’m
+    // ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸé€šçŸ¥
     public Action<Guid,string,bool> OnAreaClearedUser { get; set; }
-    // ‘Sˆõ‚ªŸ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹‚µ‚½’Ê’m (ƒQ[ƒ€ÄŠJ’Ê’m)
+    // å…¨å“¡ãŒæ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ã—ãŸé€šçŸ¥ (ã‚²ãƒ¼ãƒ å†é–‹é€šçŸ¥)
     public Action<float, EnumManager.RELAY_AREA_ID> OnReadyNextAreaUser { get; set; }
-    // ƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn’Ê’m
+    // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹é€šçŸ¥
     public Action OnStartCountDownUser { get; set; }
     #endregion
 
-    #region ƒQ[ƒ€I—¹‚Ü‚Å‚Ìˆ—(ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚Ìˆ—)
+    #region ã‚²ãƒ¼ãƒ çµ‚äº†ã¾ã§ã®å‡¦ç†(æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã®å‡¦ç†)
     /// <summary>
-    /// ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚É‘JˆÚ‚µ‚½ˆ—
+    /// æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã«é·ç§»ã—ãŸå‡¦ç†
     /// </summary>
     public Action OnAfterFinalGameUser { get; set; }
 
     /// <summary>
-    /// ‘Sˆõ‚ª‘JˆÚ‚Å‚«‚½’Ê’m
+    /// å…¨å“¡ãŒé·ç§»ã§ããŸé€šçŸ¥
     /// </summary>
     public Action<ResultData[]> OnTransitionFinalResultSceneUser { get; set; }
     #endregion
 
     #endregion
 
-    // ƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚ÉˆÚs‚µ‚½‚©‚Ç‚¤‚©
+    // ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã«ç§»è¡Œã—ãŸã‹ã©ã†ã‹
     bool isBackground;
 
     /// <summary>
-    /// ©•ª‚Ìó‹µ
+    /// è‡ªåˆ†ã®çŠ¶æ³
     /// </summary>
     public enum USER_STATE
     {
-        disconnect = 0, // ƒT[ƒo[‚Æ–¢Ú‘±
-        connect,        // ƒT[ƒo[‚ÆÚ‘±‚µ‚½
-        joined,         // ƒ‹[ƒ€‚É“üº‚µ‚½
-        leave,          // ƒ‹[ƒ€‚©‚ç‘Şº‚·‚éƒŠƒNƒGƒXƒg‚ğ‘—M‚µ‚½
-        leave_done,     // ƒ‹[ƒ€‚©‚ç‚Ì‘Şº‚ªŠ®—¹‚µ‚½
+        disconnect = 0, // ã‚µãƒ¼ãƒãƒ¼ã¨æœªæ¥ç¶š
+        connect,        // ã‚µãƒ¼ãƒãƒ¼ã¨æ¥ç¶šã—ãŸ
+        joined,         // ãƒ«ãƒ¼ãƒ ã«å…¥å®¤ã—ãŸ
+        leave,          // ãƒ«ãƒ¼ãƒ ã‹ã‚‰é€€å®¤ã™ã‚‹ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’é€ä¿¡ã—ãŸ
+        leave_done,     // ãƒ«ãƒ¼ãƒ ã‹ã‚‰ã®é€€å®¤ãŒå®Œäº†ã—ãŸ
     }
     public USER_STATE userState { get; private set; } = USER_STATE.disconnect;
 
-    // ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
     private static RoomModel instance;
     public static RoomModel Instance
     {
         get
         {
-            // GETƒvƒƒpƒeƒB‚ğŒÄ‚Î‚ê‚½‚Æ‚«‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é(‰‰ñ‚Ì‚İ)
+            // GETãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‘¼ã°ã‚ŒãŸã¨ãã«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹(åˆå›ã®ã¿)
             if (instance == null)
             {
                 GameObject gameObj = new GameObject("RoomModel");
@@ -148,7 +148,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// MagicOnionÚ‘±ˆ—
+    /// MagicOnionæ¥ç¶šå‡¦ç†
     /// </summary>
     public async UniTask ConnectAsync()
     {
@@ -160,7 +160,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// MagicOnionØ’fˆ—
+    /// MagicOnionåˆ‡æ–­å‡¦ç†
     /// </summary>
     public async UniTask DisconnectAsync()
     {
@@ -172,14 +172,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚ÉˆÚs‚µ‚½‚çƒT[ƒo[‚Æ‚ÌÚ‘±‚ğØ’f
+    /// ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã«ç§»è¡Œã—ãŸã‚‰ã‚µãƒ¼ãƒãƒ¼ã¨ã®æ¥ç¶šã‚’åˆ‡æ–­
     /// </summary>
     /// <param name="pauseStatus"></param>
     private async void OnApplicationPause(bool pauseStatus)
     {
         if (pauseStatus)
         {
-            Debug.Log("ƒAƒvƒŠ‚ªˆê’â~(ƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚És‚Á‚½)");
+            Debug.Log("ã‚¢ãƒ—ãƒªãŒä¸€æ™‚åœæ­¢(ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã«è¡Œã£ãŸ)");
             if(userState == USER_STATE.joined)
             {
                 isBackground = true;
@@ -188,17 +188,17 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         }
         else
         {
-            Debug.Log("ƒAƒvƒŠ‚ªÄŠJ(ƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚©‚ç–ß‚Á‚½)");
+            Debug.Log("ã‚¢ãƒ—ãƒªãŒå†é–‹(ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã‹ã‚‰æˆ»ã£ãŸ)");
             if (isBackground)
             {
                 isBackground = false;
-                ErrorUIController.Instance.ShowErrorUI("ƒT[ƒo[‚Æ‚ÌÚ‘±‚ªØ’f‚³‚ê‚Ü‚µ‚½B", OnError);
+                ErrorUIController.Instance.ShowErrorUI("ã‚µãƒ¼ãƒãƒ¼ã¨ã®æ¥ç¶šãŒåˆ‡æ–­ã•ã‚Œã¾ã—ãŸã€‚", OnError);
             }
         }
     }
 
     /// <summary>
-    /// ”jŠü‚·‚éÛ(ƒAƒvƒŠI—¹‚È‚Ç)‚ÉƒT[ƒo[‚Æ‚ÌÚ‘±‚ğØ’f
+    /// ç ´æ£„ã™ã‚‹éš›(ã‚¢ãƒ—ãƒªçµ‚äº†æ™‚ãªã©)ã«ã‚µãƒ¼ãƒãƒ¼ã¨ã®æ¥ç¶šã‚’åˆ‡æ–­
     /// </summary>
     private async void OnDestroy()
     {
@@ -212,7 +212,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒƒr[“üºˆ—
+    /// ãƒ­ãƒ“ãƒ¼å…¥å®¤å‡¦ç†
     /// </summary>
     /// <param name="roomName"></param>
     /// <param name="userId"></param>
@@ -221,22 +221,22 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         JoinedUsers = new Dictionary<Guid, JoinedUser>();
         JoinedUser[] users = await roomHub.JoinLobbyAsynk(userId);
-        if(users != null) Debug.Log("ƒ†[ƒU[”" + users.Length);
+        if(users != null) Debug.Log("ãƒ¦ãƒ¼ã‚¶ãƒ¼æ•°" + users.Length);
 
         if (users == null)
         {
             await DisconnectAsync();
 
-            // “üº‚É¸”s‚µ‚½ê‡‚ÍTopScene‚É–ß‚é
-            ErrorUIController.Instance.ShowErrorUI("“üº‚É¸”s‚µ‚Ü‚µ‚½B‚à‚¤ˆê“x‚¨‚µ‚­‚¾‚³‚¢B", OnError);
+            // å…¥å®¤ã«å¤±æ•—ã—ãŸå ´åˆã¯TopSceneã«æˆ»ã‚‹
+            ErrorUIController.Instance.ShowErrorUI("å…¥å®¤ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ã‚‚ã†ä¸€åº¦ãŠè©¦ã—ãã ã•ã„ã€‚", OnError);
         }
         else
         {
             foreach (JoinedUser user in users)
             {
-                if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // ©g‚ÌÚ‘±ID‚ğ’T‚µ‚Ä•Û‘¶‚·‚é
+                if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // è‡ªèº«ã®æ¥ç¶šIDã‚’æ¢ã—ã¦ä¿å­˜ã™ã‚‹
 
-                // ‘¶İ‚µ‚È‚¯‚ê‚Î’Ç‰Á(•¡”‚Ìƒ†[ƒU[‚ª“¯‚É“üº‚µ‚È‚¢‚æ‚¤‚É‚·‚é‘Îô)
+                // å­˜åœ¨ã—ãªã‘ã‚Œã°è¿½åŠ (è¤‡æ•°ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒåŒæ™‚ã«å…¥å®¤ã—ãªã„ã‚ˆã†ã«ã™ã‚‹å¯¾ç­–)
                 if (!JoinedUsers.ContainsKey(user.ConnectionId))
                 {
                     JoinedUsers.Add(user.ConnectionId, user);
@@ -246,29 +246,29 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             OnJoinedLobbyUser();
             userState = USER_STATE.joined;
 
-            // ƒ}ƒbƒ`ƒ“ƒO‚ªŠ®—¹‚µ‚Ä‚¢‚éê‡
+            // ãƒãƒƒãƒãƒ³ã‚°ãŒå®Œäº†ã—ã¦ã„ã‚‹å ´åˆ
             if (JoinedUsers[this.ConnectionId].IsMatching)
             {
-                Debug.Log("ÅŒã‚Ìl‚ªƒ}ƒbƒ`ƒ“ƒOŠ®—¹");
+                Debug.Log("æœ€å¾Œã®äººãŒãƒãƒƒãƒãƒ³ã‚°å®Œäº†");
                 await LeaveAsync();
             }
         }
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒ}ƒbƒ`ƒ“ƒO‚ªŠ®—¹‚µ‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ãƒãƒƒãƒãƒ³ã‚°ãŒå®Œäº†ã—ãŸé€šçŸ¥
     /// </summary>
     /// <param name="user"></param>
     public async void OnMatching(string roomName)
     {
         if (IsMatchingRunning)
         {
-            Debug.Log("ƒ}ƒbƒ`ƒ“ƒOŠ®—¹’Ê’m");
+            Debug.Log("ãƒãƒƒãƒãƒ³ã‚°å®Œäº†é€šçŸ¥");
             OnmatchingUser();
             ConnectionRoomName = roomName;
 
-            // ƒ}ƒbƒ`ƒ“ƒO’†&&“üº‚ªŠ®—¹‚µ‚Ä‚¢‚éê‡‚Ì‚İˆ—
+            // ãƒãƒƒãƒãƒ³ã‚°ä¸­&&å…¥å®¤ãŒå®Œäº†ã—ã¦ã„ã‚‹å ´åˆã®ã¿å‡¦ç†
             if (userState == USER_STATE.joined)
             {
                 await LeaveAsync();
@@ -277,7 +277,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// “üºˆ—
+    /// å…¥å®¤å‡¦ç†
     /// </summary>
     /// <param name="roomName"></param>
     /// <param name="userId"></param>
@@ -291,18 +291,18 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         {
             await DisconnectAsync();
 
-            // “üº‚É¸”s‚µ‚½ê‡‚ÍTopScene‚É–ß‚é
-            ErrorUIController.Instance.ShowErrorUI("“üº‚É¸”s‚µ‚Ü‚µ‚½B‚à‚¤ˆê“x‚¨‚µ‚­‚¾‚³‚¢B", OnError);
+            // å…¥å®¤ã«å¤±æ•—ã—ãŸå ´åˆã¯TopSceneã«æˆ»ã‚‹
+            ErrorUIController.Instance.ShowErrorUI("å…¥å®¤ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ã‚‚ã†ä¸€åº¦ãŠè©¦ã—ãã ã•ã„ã€‚", OnError);
             return;
         }
         else
         {
             foreach (JoinedUser user in users)
             {
-                if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // ©g‚ÌÚ‘±ID‚ğ’T‚µ‚Ä•Û‘¶‚·‚é
+                if (user.UserData.Id == userId) this.ConnectionId = user.ConnectionId;  // è‡ªèº«ã®æ¥ç¶šIDã‚’æ¢ã—ã¦ä¿å­˜ã™ã‚‹
                 if(user.IsMasterClient) MasterName = user.UserData.Name;
 
-                // ‘¶İ‚µ‚È‚¯‚ê‚Î’Ç‰Á(•¡”‚Ìƒ†[ƒU[‚ª“¯‚É“üº‚µ‚½Û‚Ì‘Îô)
+                // å­˜åœ¨ã—ãªã‘ã‚Œã°è¿½åŠ (è¤‡æ•°ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒåŒæ™‚ã«å…¥å®¤ã—ãŸéš›ã®å¯¾ç­–)
                 if (!JoinedUsers.ContainsKey(user.ConnectionId))
                 {
                     JoinedUsers.Add(user.ConnectionId, user);
@@ -312,7 +312,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
             userState = USER_STATE.joined;
 
-            // ©“®ƒ}ƒbƒ`ƒ“ƒO‚Í“üº‚Å‚«‚½‚ç€”õŠ®—¹ƒŠƒNƒGƒXƒg‚ğ‘—M(‚±‚Ì‚Æ‚«AƒV[ƒ“‚ÍRoomƒV[ƒ“)
+            // è‡ªå‹•ãƒãƒƒãƒãƒ³ã‚°æ™‚ã¯å…¥å®¤ã§ããŸã‚‰æº–å‚™å®Œäº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆã‚’é€ä¿¡(ã“ã®ã¨ãã€ã‚·ãƒ¼ãƒ³ã¯Roomã‚·ãƒ¼ãƒ³)
             if (IsMatchingRunning)
             {
                 await ReadyAsynk(true);
@@ -321,22 +321,22 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ‘¼‚Ìƒ†[ƒU[‚ª“üº‚µ‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ä»–ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒå…¥å®¤ã—ãŸé€šçŸ¥
     /// </summary>
     /// <param name="user"></param>
     public void OnJoin(JoinedUser user)
     {
-        // ƒAƒNƒVƒ‡ƒ“Às
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
         if (!JoinedUsers.ContainsKey(user.ConnectionId))
         {
-            JoinedUsers.Add(user.ConnectionId, user);   // ‘¶İ‚µ‚È‚¯‚ê‚Î’Ç‰Á
+            JoinedUsers.Add(user.ConnectionId, user);   // å­˜åœ¨ã—ãªã‘ã‚Œã°è¿½åŠ 
         }
         if (userState == USER_STATE.joined) OnJoinedUser(user);
     }
 
     /// <summary>
-    /// ‘Şºˆ—
+    /// é€€å®¤å‡¦ç†
     /// </summary>
     /// <param name="roomName"></param>
     /// <param name="userId"></param>
@@ -347,13 +347,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         userState = USER_STATE.leave;
         ConnectionRoomName = "";
 
-        // ƒT[ƒo[‚É‘Şºˆ—‚ğƒŠƒNƒGƒXƒg
+        // ã‚µãƒ¼ãƒãƒ¼ã«é€€å®¤å‡¦ç†ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         await roomHub.LeaveAsynk();
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒ†[ƒU[‚ª‘Şº‚·‚é’Ê’mi©•ª‚àŠÜ‚Şj
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒé€€å®¤ã™ã‚‹é€šçŸ¥ï¼ˆè‡ªåˆ†ã‚‚å«ã‚€ï¼‰
     /// </summary>
     /// <param name="user"></param>
     public void OnLeave(Guid connectionId, JoinedUser latestData, string masterName)
@@ -362,23 +362,23 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
         MasterName = masterName;
 
-        // ©•ª‚Ìƒ†[ƒU[î•ñ‚ğXV
+        // è‡ªåˆ†ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã‚’æ›´æ–°
         JoinedUsers[this.ConnectionId] = latestData;
 
-        // ‘Şoˆ—
+        // é€€å‡ºå‡¦ç†
         JoinedUsers.Remove(connectionId);
         OnLeavedUser(connectionId);
 
-        // ©•ª‚ª‘Şº‚·‚éê‡
+        // è‡ªåˆ†ãŒé€€å®¤ã™ã‚‹å ´åˆ
         if (this.ConnectionId == connectionId)
         {
             userState = USER_STATE.leave_done;
-            if (!IsMatchingRunning) OnDestroy();    // ©“®ƒ}ƒbƒ`ƒ“ƒO’†ˆÈŠO‚Å‚ ‚ê‚ÎØ’fˆ—
+            if (!IsMatchingRunning) OnDestroy();    // è‡ªå‹•ãƒãƒƒãƒãƒ³ã‚°ä¸­ä»¥å¤–ã§ã‚ã‚Œã°åˆ‡æ–­å‡¦ç†
         }
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXVˆ—
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°å‡¦ç†
     /// </summary>
     /// <param name="playerState"></param>
     /// <returns></returns>
@@ -391,13 +391,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒvƒŒƒCƒ„[î•ñXV’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°é€šçŸ¥
     /// </summary>
     /// <param name="user"></param>
     public void OnUpdatePlayerState(Guid connectionId, PlayerState playerState)
     {
-        // ƒAƒNƒVƒ‡ƒ“Às
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
         if (userState == USER_STATE.joined) 
         {
             OnUpdatePlayerStateUser(connectionId, playerState); 
@@ -405,7 +405,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ìî•ñXVˆ—
+    /// ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æƒ…å ±æ›´æ–°å‡¦ç†
     /// </summary>
     /// <param name="playerState"></param>
     /// <returns></returns>
@@ -418,23 +418,23 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ìî•ñXV’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æƒ…å ±æ›´æ–°é€šçŸ¥
     /// </summary>
     /// <param name="user"></param>
     public void OnUpdateMasterClient(Guid connectionId, MasterClient masterClient)
     {
-        // ƒAƒNƒVƒ‡ƒ“Às
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
         if (userState == USER_STATE.joined)
         {
             OnUpdateMasterClientUser(connectionId, masterClient);
         }
     }
 
-    #region ƒQ[ƒ€ŠJn‚Ü‚Å‚Ìˆ—
+    #region ã‚²ãƒ¼ãƒ é–‹å§‹ã¾ã§ã®å‡¦ç†
     /// <summary>
-    /// Še‹£‹Z‚Ìƒ}ƒbƒv‘I‘ğˆ—
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªˆ—)
+    /// å„ç«¶æŠ€ã®ãƒãƒƒãƒ—é¸æŠå‡¦ç†
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå‡¦ç†)
     /// </summary>
     /// <param name="selectMidAreaId"></param>
     /// <returns></returns>
@@ -444,8 +444,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// Še‹£‹Z‚Ìƒ}ƒbƒv‘I‘ğ‚³‚ê‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// å„ç«¶æŠ€ã®ãƒãƒƒãƒ—é¸æŠã•ã‚ŒãŸé€šçŸ¥
     /// </summary>
     public void OnSelectGameMap(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
@@ -457,7 +457,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒQ[ƒ€‹­§ŠJnˆ—
+    /// ã‚²ãƒ¼ãƒ å¼·åˆ¶é–‹å§‹å‡¦ç†
     /// </summary>
     /// <returns></returns>
     public async UniTask StartGameAsynk()
@@ -466,7 +466,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ©•ª‚Ì€”õ‚ªŠ®—¹‚µ‚½‚©‚Ç‚¤‚©
+    /// è‡ªåˆ†ã®æº–å‚™ãŒå®Œäº†ã—ãŸã‹ã©ã†ã‹
     /// </summary>
     /// <returns></returns>
     public async UniTask ReadyAsynk(bool isReady)
@@ -475,42 +475,42 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// €”õŠ®—¹‚µ‚½‚©‚Ç‚¤‚©‚Ì’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// æº–å‚™å®Œäº†ã—ãŸã‹ã©ã†ã‹ã®é€šçŸ¥
     /// </summary>
     public void OnReady(int readyCnt, bool isTransitionGameScene)
     {
         Debug.Log(userState.ToString());
         if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
 
-        // ƒAƒNƒVƒ‡ƒ“Às
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
         OnReadyUser(readyCnt, isTransitionGameScene);
     }
 
     /// <summary>
-    /// ©•ª‚ÌƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“‚ªI—¹
+    /// è‡ªåˆ†ã®ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ãŒçµ‚äº†
     /// </summary>
     /// <returns></returns>
     public async UniTask CountdownOverAsynk()
     {
-        // ƒT[ƒo[‚ÉƒJƒEƒ“ƒgƒ_ƒEƒ“‚ªI—¹‚µ‚½‚±‚Æ‚ğƒŠƒNƒGƒXƒg
+        // ã‚µãƒ¼ãƒãƒ¼ã«ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ãŒçµ‚äº†ã—ãŸã“ã¨ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         if (userState == USER_STATE.joined) await roomHub.CountdownOverAsynk();
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ‘Sˆõ‚ªƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“I—¹’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// å…¨å“¡ãŒã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³çµ‚äº†é€šçŸ¥
     /// </summary>
     public void OnCountdownOver()
     {
-        // ƒAƒNƒVƒ‡ƒ“Às
+        // ã‚¢ã‚¯ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
         if (userState == USER_STATE.joined) OnCountdownOverUser();
     }
     #endregion
 
-    #region ƒQ[ƒ€‹¤’Êˆ—
+    #region ã‚²ãƒ¼ãƒ å…±é€šå‡¦ç†
     /// <summary>
-    /// ƒ†[ƒU[‚ÌŠƒ|ƒCƒ“ƒgXV’Ê’m
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®æ‰€æŒãƒã‚¤ãƒ³ãƒˆæ›´æ–°é€šçŸ¥
     /// </summary>
     public void OnUpdateScore(UserScore latestUserScore)
     {
@@ -522,8 +522,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒJƒEƒ“ƒgƒ_ƒEƒ“ˆ—
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªˆ—)
+    /// ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³å‡¦ç†
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå‡¦ç†)
     /// </summary>
     /// <param name="currentTime"></param>
     /// <returns></returns>
@@ -533,8 +533,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒJƒEƒ“ƒgƒ_ƒEƒ“’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é€šçŸ¥
     /// </summary>
     /// <param name="restarningWaitSec"></param>
     public void OnCountDown(int currentTime)
@@ -543,7 +543,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒQ[ƒ€I—¹‚ªŠ®—¹‚µ‚½ƒŠƒNƒGƒXƒg
+    /// ã‚²ãƒ¼ãƒ çµ‚äº†ãŒå®Œäº†ã—ãŸãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     /// <returns></returns>
     public async UniTask FinishGameAsynk()
@@ -552,8 +552,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ‘Sˆõ‚ªƒQ[ƒ€I—¹ˆ—‚ğŠ®—¹‚µ‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// å…¨å“¡ãŒã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†ã‚’å®Œäº†ã—ãŸé€šçŸ¥
     /// </summary>
     /// <param name="scene"></param>
     public void OnFinishGame(EnumManager.SCENE_ID scene)
@@ -576,13 +576,13 @@ public class RoomModel : BaseModel, IRoomHubReceiver
                     sceneName = "FinalGameScene_Chicken";
                     break;
             }
-            Debug.Log("Ÿ‚ÌƒQ[ƒ€F" + sceneName);
+            Debug.Log("æ¬¡ã®ã‚²ãƒ¼ãƒ ï¼š" + sceneName);
             OnFinishGameUser(sceneName);
         }
     }
 
     /// <summary>
-    /// ƒmƒbƒNƒ_ƒEƒ“‚ÉŒÄ‚Ño‚µ
+    /// ãƒãƒƒã‚¯ãƒ€ã‚¦ãƒ³æ™‚ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="startPoint"></param>
     /// <returns></returns>
@@ -592,7 +592,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// êŠO‚Éo‚½‚ÉŒÄ‚Ño‚µ
+    /// å ´å¤–ã«å‡ºãŸæ™‚ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="rangePointA"></param>
     /// <param name="rangePointB"></param>
@@ -603,8 +603,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒRƒCƒ“(ƒ|ƒCƒ“ƒg)‚Ìƒhƒƒbƒv’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚³ã‚¤ãƒ³(ãƒã‚¤ãƒ³ãƒˆ)ã®ãƒ‰ãƒ­ãƒƒãƒ—é€šçŸ¥
     /// </summary>
     /// <param name="startPoint"></param>
     /// <param name="angleY"></param>
@@ -618,8 +618,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ¶¬êŠ‚ªˆÙ‚È‚éƒRƒCƒ“(ƒ|ƒCƒ“ƒg)‚Ìƒhƒƒbƒv’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ç”Ÿæˆå ´æ‰€ãŒç•°ãªã‚‹ã‚³ã‚¤ãƒ³(ãƒã‚¤ãƒ³ãƒˆ)ã®ãƒ‰ãƒ­ãƒƒãƒ—é€šçŸ¥
     /// </summary>
     /// <param name="startPoins"></param>
     /// <param name="coinNames"></param>
@@ -633,7 +633,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€‚ÉG‚ê‚½‚ÉŒÄ‚Ño‚µ
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã«è§¦ã‚ŒãŸæ™‚ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="itemId"></param>
     /// <param name="itemName"></param>
@@ -644,8 +644,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒAƒCƒeƒ€æ“¾’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚¢ã‚¤ãƒ†ãƒ å–å¾—é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemName"></param>
@@ -656,7 +656,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€g—p‚ÉŒÄ‚Ño‚µ
+    /// ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨æ™‚ã«å‘¼ã³å‡ºã—
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -667,8 +667,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒAƒCƒeƒ€g—p’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -678,7 +678,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ì”jŠü
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç ´æ£„
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -689,8 +689,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒAƒCƒeƒ€‚Ì”jŠü’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç ´æ£„é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -700,7 +700,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ì¶¬
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç”Ÿæˆ
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -711,8 +711,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ƒAƒCƒeƒ€‚Ì¶¬’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç”Ÿæˆé€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -722,7 +722,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// “®“I‚ÈƒIƒuƒWƒFƒNƒg‚ğ¶¬
+    /// å‹•çš„ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
     /// </summary>
     /// <param name="spawnObject"></param>
     /// <returns></returns>
@@ -732,7 +732,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// “®“I‚ÈƒIƒuƒWƒFƒNƒg‚Ì¶¬’Ê’m
+    /// å‹•çš„ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆé€šçŸ¥
     /// </summary>
     /// <param name="spawnObject"></param>
     public void OnSpawnObject(SpawnObject spawnObject)
@@ -741,7 +741,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// “®•¨‚ÌƒMƒ~ƒbƒN”­“®ˆ—
+    /// å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•å‡¦ç†
     /// </summary>
     /// <param name="animalName"></param>
     /// <param name="optionVec"></param>
@@ -752,7 +752,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// “®•¨‚ÌƒMƒ~ƒbƒN”­“®’Ê’m
+    /// å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•é€šçŸ¥
     /// </summary>
     /// <param name="animalName"></param>
     /// <param name="optionVec"></param>
@@ -762,7 +762,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// Œ{¬‰®‚ÌƒMƒ~ƒbƒN”­“®ˆ—
+    /// é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•å‡¦ç†
     /// </summary>
     /// <returns></returns>
     public async UniTask TriggerMegaCoopAsynk()
@@ -771,7 +771,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// Œ{¬‰®‚ÌƒMƒ~ƒbƒN”­“®’Ê’m
+    /// é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•é€šçŸ¥
     /// </summary>
     /// <returns></returns>
     public void OnTriggerMegaCoop()
@@ -780,7 +780,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// Œ{¬‰®‚ÌƒMƒ~ƒbƒNI—¹ˆ—
+    /// é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯çµ‚äº†å‡¦ç†
     /// </summary>
     /// <returns></returns>
     public async UniTask TriggerMegaCoopEndAsynk()
@@ -789,7 +789,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// Œ{¬‰®‚ÌƒMƒ~ƒbƒNI—¹’Ê’m
+    /// é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯çµ‚äº†é€šçŸ¥
     /// </summary>
     /// <returns></returns>
     public void OnTriggerMegaCoopEnd()
@@ -798,10 +798,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
     #endregion
 
-    #region ‹£‹ZwƒJƒ“ƒgƒŠ[ƒŠƒŒ[x‚Ìˆ—
+    #region ç«¶æŠ€ã€ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ã€ã®å‡¦ç†
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚·‚éƒŠƒNƒGƒXƒg
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªŒÄ‚Ño‚·)
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã™ã‚‹ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå‘¼ã³å‡ºã™)
     /// </summary>
     /// <param name="names"></param>
     /// <returns></returns>
@@ -811,7 +811,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚·‚é’Ê’m
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã™ã‚‹é€šçŸ¥
     /// </summary>
     /// <param name="names"></param>
     public void OnDestroyPlantsGimmick(string[] names)
@@ -820,7 +820,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”­“®‚·‚éƒŠƒNƒGƒXƒg
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç™ºå‹•ã™ã‚‹ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     /// <returns></returns>
     public async UniTask TriggeringPlantGimmickAsynk(string name)
@@ -829,7 +829,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”­“®‚·‚é’Ê’m
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç™ºå‹•ã™ã‚‹é€šçŸ¥
     /// </summary>
     /// <param name="name"></param>
     public void OnTriggeringPlantGimmick(string name)
@@ -838,7 +838,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½ˆ—
+    /// ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸå‡¦ç†
     /// </summary>
     /// <param name="isLastArea"></param>
     /// <returns></returns>
@@ -848,8 +848,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// Œ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸé€šçŸ¥
     /// </summary>
     public void OnAreaCleared(Guid connectionId, string userName, bool isClearedAllUsers)
     {
@@ -857,7 +857,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// Ÿ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹‚µ‚½ˆ—
+    /// æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ã—ãŸå‡¦ç†
     /// </summary>
     /// <returns></returns>
     public async UniTask ReadyNextAreaAsynk()
@@ -866,8 +866,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ‘Sˆõ‚ªŸ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹‚µ‚½’Ê’m (ƒQ[ƒ€ÄŠJ’Ê’m)
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// å…¨å“¡ãŒæ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ã—ãŸé€šçŸ¥ (ã‚²ãƒ¼ãƒ å†é–‹é€šçŸ¥)
     /// </summary>
     /// <param name="restarningWaitSec"></param>
     public void OnReadyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId)
@@ -876,8 +876,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// (ƒGƒŠƒAƒNƒŠƒA‚È‚Ç‚Éƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªóM)ƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// (ã‚¨ãƒªã‚¢ã‚¯ãƒªã‚¢æ™‚ãªã©ã«ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå—ä¿¡)ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹é€šçŸ¥
     /// </summary>
     /// <param name="restarningWaitSec"></param>
     public void OnStartCountDown()
@@ -887,11 +887,11 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
 
-    #region ƒQ[ƒ€I—¹‚Ü‚Å‚Ìˆ—(ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚Ìˆ—)
+    #region ã‚²ãƒ¼ãƒ çµ‚äº†ã¾ã§ã®å‡¦ç†(æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã®å‡¦ç†)
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ÅŒã‚Ì‹£‹Z‚ªI—¹‚µ‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// æœ€å¾Œã®ç«¶æŠ€ãŒçµ‚äº†ã—ãŸé€šçŸ¥
     /// </summary>
     public void OnAfterFinalGame()
     {
@@ -899,7 +899,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚É‘JˆÚ‚µ‚½ˆ—
+    /// æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã«é·ç§»ã—ãŸå‡¦ç†
     /// </summary>
     /// <returns></returns>
     public async UniTask TransitionFinalResultSceneAsynk()
@@ -908,8 +908,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     }
 
     /// <summary>
-    /// [IRoomHubReceiver‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX]
-    /// ‘Sˆõ‚ª‘JˆÚ‚Å‚«‚½’Ê’m
+    /// [IRoomHubReceiverã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹]
+    /// å…¨å“¡ãŒé·ç§»ã§ããŸé€šçŸ¥
     /// </summary>
     /// <param name="result"></param>
     public async void OnTransitionFinalResultSceneAllUsers(ResultData[] result, int ratingDelta)
@@ -918,7 +918,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         {
             OnTransitionFinalResultSceneUser(result);
 
-            // ƒŒ[ƒeƒBƒ“ƒOXVAPI
+            // ãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°æ›´æ–°API
             await RatingModel.Instance.UpdateRatingAsync( UserModel.Instance.UserId, ratingDelta);
         }
     }

@@ -47,10 +47,10 @@ public class PlayerAnimEventTrigger : MonoBehaviour
                 animController.OnEndAnim(skillController.SkillId != PlayerSkillController.SKILL_ID.Skill3);
                 break;
             case EVENT_ID.OnStartDownAnim:
-                transform.parent.gameObject.layer = 8;  // ‘¼‚ÌƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è‚ğˆê“I‚É–³‚­‚·
+                transform.parent.gameObject.layer = 8;  // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’ä¸€æ™‚çš„ã«ç„¡ãã™
                 break;
             case EVENT_ID.OnEndStandUpAnim:
-                // ‘¼‚ÌƒvƒŒƒCƒ„[‚Æ‚Ì“–‚½‚è”»’è‚ğ–ß‚·
+                // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’æˆ»ã™
                 if (playerController.enabled) transform.parent.gameObject.layer = 3;    // Player
                 if (!playerController.enabled) transform.parent.gameObject.layer = 7; // NPC
                 animController.OnEndStandUpAnim();
@@ -65,21 +65,21 @@ public class PlayerAnimEventTrigger : MonoBehaviour
                 effectController.SetEffect(PlayerEffectController.EFFECT_ID.KnockBackSmoke);
                 break;
             case EVENT_ID.OnStampAnimRising:
-                // ƒXƒLƒ‹5(Stamp)‚Ìã¸‚µ‚½‚Æ‚«
+                // ã‚¹ã‚­ãƒ«5(Stamp)ã®ä¸Šæ˜‡ã—ãŸã¨ã
                 playerController.Jump(900);
                 playerController.IsControlEnabled = true;
                 break;
             case EVENT_ID.OnStampAnimFloating:
-                // ƒXƒLƒ‹5(Stamp)‚Ì‹ó’†‚É‚Æ‚Ç‚Ü‚é‚Æ‚«
+                // ã‚¹ã‚­ãƒ«5(Stamp)ã®ç©ºä¸­ã«ã¨ã©ã¾ã‚‹ã¨ã
                 playerController.Rb.drag = 20;
                 isPlayStampAnimFall = true;
                 break;
             case EVENT_ID.OnStartStampAnimFall:
-                // ƒXƒLƒ‹5(Stamp)‚Ì—‰º‚·‚é‚Æ‚«
+                // ã‚¹ã‚­ãƒ«5(Stamp)ã®è½ä¸‹ã™ã‚‹ã¨ã
                 if (isPlayStampAnimFall) playerController.Rb.drag = 2;
                 break;
             case EVENT_ID.OnLoopStampAnimFall:
-                // ƒXƒLƒ‹5(Stamp)‚Ì—‰ºƒAƒjƒ[ƒVƒ‡ƒ“‚ğƒ‹[ƒvÄ¶‚·‚é
+                // ã‚¹ã‚­ãƒ«5(Stamp)ã®è½ä¸‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ãƒ«ãƒ¼ãƒ—å†ç”Ÿã™ã‚‹
                 if(isPlayStampAnimFall) animController.PlayAnimationFromFrame(106, "Skill5");
                 break;
             case EVENT_ID.OnEndMachAuraChargeAnim:

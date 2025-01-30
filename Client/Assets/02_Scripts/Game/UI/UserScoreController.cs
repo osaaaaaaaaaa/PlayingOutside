@@ -14,7 +14,7 @@ public class UserScoreController : MonoBehaviour
 
     public void InitUserScoreList(int  joinOrder, int characterId, string userName, int score)
     {
-        joinOrder--;    // í≤êÆ
+        joinOrder--;    // Ë™øÊï¥
         objUserScoreList[joinOrder].SetActive(true);
         imageIconList[joinOrder].sprite = spriteIconList[characterId];
         textNameList[joinOrder].text = userName;
@@ -24,7 +24,7 @@ public class UserScoreController : MonoBehaviour
 
     public void UpdateScore(int joinOrder, int score)
     {
-        joinOrder--;    // í≤êÆ
+        joinOrder--;    // Ë™øÊï¥
         textScoreList[joinOrder].text = score + "pt";
         textShadowScoreList[joinOrder].text = score + "pt";
     }

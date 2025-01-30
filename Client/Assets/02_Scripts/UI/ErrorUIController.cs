@@ -19,15 +19,15 @@ public class ErrorUIController : MonoBehaviour
     {
         if (Instance == null)
         {
-            // �g�b�v��ʂ̏�Ԃ�ێ�����
+            // トップ画面の状態を保持する
             Instance = this;
 
-            // �V�[���J�ڂ��Ă��j�����Ȃ��悤�ɂ���
+            // シーン遷移しても破棄しないようにする
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            // �V�[���J�ڂ��ĐV������������鎩�g��j��
+            // シーン遷移して新しく生成される自身を破棄
             Destroy(gameObject);
         }
     }

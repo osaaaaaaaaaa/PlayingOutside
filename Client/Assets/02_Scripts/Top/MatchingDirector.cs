@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 public class MatchingDirector : MonoBehaviour
 {
     [SerializeField] QuickGameUIController quickGameUIController;
-    Dictionary<Guid, int> userList = new Dictionary<Guid, int>(); // <Ú‘±ID,“üº‡>
-    bool isJoinTaskRunnning; // “üºˆ—’†‚©‚Ç‚¤‚©
-    bool isLeaveTaskRunning; // ‘Şºˆ—’†‚©‚Ç‚¤‚©
-    bool isJoindUsersMax;    // ƒ†[ƒU[‚ªW‚Ü‚Á‚½‚©‚Ç‚¤‚©
+    Dictionary<Guid, int> userList = new Dictionary<Guid, int>(); // <æ¥ç¶šID,å…¥å®¤é †>
+    bool isJoinTaskRunnning; // å…¥å®¤å‡¦ç†ä¸­ã‹ã©ã†ã‹
+    bool isLeaveTaskRunning; // é€€å®¤å‡¦ç†ä¸­ã‹ã©ã†ã‹
+    bool isJoindUsersMax;    // ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒé›†ã¾ã£ãŸã‹ã©ã†ã‹
     bool isReceivedOnMatching;
 
     private void Start()
     {
-        // ŠÖ”‚ğ“o˜^‚·‚é
+        // é–¢æ•°ã‚’ç™»éŒ²ã™ã‚‹
         RoomModel.Instance.OnJoinedLobbyUser += this.NotifyJoinedLobbyUser;
         RoomModel.Instance.OnJoinedUser += this.NotifyJoinedUser;
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
@@ -35,7 +35,7 @@ public class MatchingDirector : MonoBehaviour
 
     void OnDisable()
     {
-        // ƒV[ƒ“‘JˆÚ‚ÉŠÖ”‚Ì“o˜^‚ğ‰ğœ
+        // ã‚·ãƒ¼ãƒ³é·ç§»æ™‚ã«é–¢æ•°ã®ç™»éŒ²ã‚’è§£é™¤
         RoomModel.Instance.OnJoinedLobbyUser -= this.NotifyJoinedLobbyUser;
         RoomModel.Instance.OnJoinedUser -= this.NotifyJoinedUser;
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
@@ -43,23 +43,23 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒNƒCƒbƒNƒQ[ƒ€ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½ê‡
+    /// ã‚¯ã‚¤ãƒƒã‚¯ã‚²ãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸå ´åˆ
     /// </summary>
     public async void OnQuickGameButtonAsync()
     {
         if (isJoinTaskRunnning || isLeaveTaskRunning || RoomModel.Instance.IsMatchingRunning) return;
         isJoinTaskRunnning = true;
 
-        // Ú‘±ˆ—
+        // æ¥ç¶šå‡¦ç†
         await RoomModel.Instance.ConnectAsync();
-        // ƒ}ƒbƒ`ƒ“ƒOˆ—‚ğƒŠƒNƒGƒXƒg
+        // ãƒãƒƒãƒãƒ³ã‚°å‡¦ç†ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         JoinLobby();
 
         quickGameUIController.OnSelectButton();
     }
 
     /// <summary>
-    /// ƒ}ƒbƒ`ƒ“ƒOƒŠƒNƒGƒXƒg
+    /// ãƒãƒƒãƒãƒ³ã‚°ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     /// <param name="strId"></param>
     public async void JoinLobby()
@@ -70,7 +70,7 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ}ƒbƒ`ƒ“ƒOŠ®—¹’Ê’m
+    /// ãƒãƒƒãƒãƒ³ã‚°å®Œäº†é€šçŸ¥
     /// </summary>
     void NotifyMatching()
     {
@@ -78,17 +78,17 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒƒr[“üº‚Ìˆ—
+    /// ãƒ­ãƒ“ãƒ¼å…¥å®¤æ™‚ã®å‡¦ç†
     /// </summary>
     void NotifyJoinedLobbyUser()
     {
-        Debug.Log("ƒƒr[“üº(" + "Q‰Ál”F" + RoomModel.Instance.JoinedUsers.Count + ")");
+        Debug.Log("ãƒ­ãƒ“ãƒ¼å…¥å®¤(" + "å‚åŠ äººæ•°ï¼š" + RoomModel.Instance.JoinedUsers.Count + ")");
         foreach (var user in RoomModel.Instance.JoinedUsers.Values)
         {
             if(!userList.ContainsKey(user.ConnectionId)) 
                 userList[user.ConnectionId] = user.JoinOrder;
 
-            // ƒ†[ƒU[‚ÌUIî•ñ‚ğİ’è
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®UIæƒ…å ±ã‚’è¨­å®š
             quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, user.UserData.Character_Id - 1);
         }
 
@@ -97,7 +97,7 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// “üº’Ê’mˆ—
+    /// å…¥å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyJoinedUser(JoinedUser user)
@@ -107,19 +107,19 @@ public class MatchingDirector : MonoBehaviour
         if (!userList.ContainsKey(user.ConnectionId))
             userList[user.ConnectionId] = user.JoinOrder;
 
-        // ƒ†[ƒU[‚ÌUIî•ñ‚ğİ’è
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®UIæƒ…å ±ã‚’è¨­å®š
         quickGameUIController.SetupUserFrame(user.JoinOrder - 1, user.UserData.Name, user.UserData.Character_Id - 1);
     }
 
     /// <summary>
-    /// ‘ŞºƒŠƒNƒGƒXƒg(ƒ{ƒ^ƒ“‚©‚çˆ—‚·‚é)
+    /// é€€å®¤ãƒªã‚¯ã‚¨ã‚¹ãƒˆ(ãƒœã‚¿ãƒ³ã‹ã‚‰å‡¦ç†ã™ã‚‹)
     /// </summary>
     public async void LeaveRoom()
     {
         if (isJoindUsersMax || isJoinTaskRunnning || isLeaveTaskRunning 
             || !RoomModel.Instance.IsMatchingRunning
             || RoomModel.Instance.JoinedUsers.Count == ConstantManager.userMaxCnt) return;
-        Debug.Log("‘ŞoƒŠƒNƒGƒXƒg(" + "Q‰Ál”F" + RoomModel.Instance.JoinedUsers.Count + ")");
+        Debug.Log("é€€å‡ºãƒªã‚¯ã‚¨ã‚¹ãƒˆ(" + "å‚åŠ äººæ•°ï¼š" + RoomModel.Instance.JoinedUsers.Count + ")");
         isLeaveTaskRunning = true;
         RoomModel.Instance.IsMatchingRunning = false;
         isReceivedOnMatching = false;
@@ -129,21 +129,21 @@ public class MatchingDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Şº’Ê’mˆ—
+    /// é€€å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     void NotifyLeavedUser(Guid connectionId)
     {
-        // ƒ}ƒbƒ`ƒ“ƒO‚ªŠ®—¹‚µ‚ÄA©•ª‚Ìƒƒr[‘Şº’Ê’m(ƒ}ƒbƒ`ƒ“ƒOŠ®—¹’Ê’m)‚ª“Í‚¢‚½ê‡
+        // ãƒãƒƒãƒãƒ³ã‚°ãŒå®Œäº†ã—ã¦ã€è‡ªåˆ†ã®ãƒ­ãƒ“ãƒ¼é€€å®¤é€šçŸ¥(ãƒãƒƒãƒãƒ³ã‚°å®Œäº†é€šçŸ¥)ãŒå±Šã„ãŸå ´åˆ
         if (RoomModel.Instance.IsMatchingRunning && connectionId == RoomModel.Instance.ConnectionId)
         {
-            // 4”Ô–Ú‚Ìƒ†[ƒU[‚ª“üº‚µ‚½uŠÔ‚ÉƒV[ƒ“‘JˆÚ‚·‚é‚Ì‚ğ‘j~‚·‚é‚½‚ß
+            // 4ç•ªç›®ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒå…¥å®¤ã—ãŸç¬é–“ã«ã‚·ãƒ¼ãƒ³é·ç§»ã™ã‚‹ã®ã‚’é˜»æ­¢ã™ã‚‹ãŸã‚
             Invoke("CallFuncSceneLoad", 1f);
             return;
         }
 
         if (connectionId == RoomModel.Instance.ConnectionId)
         {
-            // ©•ª‚ª‘Şo‚·‚éê‡‚Í‘S‚Äíœ
+            // è‡ªåˆ†ãŒé€€å‡ºã™ã‚‹å ´åˆã¯å…¨ã¦å‰Šé™¤
             quickGameUIController.InitAllUserFrame();
             userList.Clear();
             isJoinTaskRunnning = false;
@@ -157,7 +157,7 @@ public class MatchingDirector : MonoBehaviour
             isJoindUsersMax = false;
             if (userList.ContainsKey(connectionId))
             {
-                // ŠY“–‚Ìƒ†[ƒU[‚ÌUIíœ
+                // è©²å½“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®UIå‰Šé™¤
                 quickGameUIController.InitUserFrame(userList[connectionId] - 1);
             }
         }

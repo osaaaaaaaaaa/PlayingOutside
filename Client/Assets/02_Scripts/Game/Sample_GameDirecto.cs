@@ -15,19 +15,19 @@ public class Sample_GameDirecto : MonoBehaviour
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] GameObject characterPrefab;
     [SerializeField] RoomModel roomModel;
-    Dictionary<Guid,GameObject> characterList = new Dictionary<Guid,GameObject>();  // ƒ†[ƒU[‚ÌƒLƒƒƒ‰ƒNƒ^[î•ñ
+    Dictionary<Guid,GameObject> characterList = new Dictionary<Guid,GameObject>();  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼æƒ…å ±
 
     Coroutine updateCoroutine;
     const float waitSeconds = 0.1f;
 
     private async void Start()
     {
-        //// ƒ†[ƒU[‚ª“üº‚µ‚½‚Æ‚«‚Éthis.OnJoinedUserƒƒ\ƒbƒh‚ğÀs‚·‚é‚æ‚¤‚É‚·‚é
+        //// ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒå…¥å®¤ã—ãŸã¨ãã«this.OnJoinedUserãƒ¡ã‚½ãƒƒãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
         //RoomModel.Instance..OnJoinedUser += this.NotifyJoinedUser;
         //RoomModel.Instance..OnLeavedUser += this.NotifyLeavedUser;
         //RoomModel.Instance..OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
 
-        //// Ú‘±ˆ—
+        //// æ¥ç¶šå‡¦ç†
         //await RoomModel.Instance..ConnectAsync();
     }
 
@@ -51,42 +51,42 @@ public class Sample_GameDirecto : MonoBehaviour
     }
 
     /// <summary>
-    /// “üºƒŠƒNƒGƒXƒg
+    /// å…¥å®¤ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     /// <param name="strId"></param>
     public async void JoinRoom()
     {
         int id = int.Parse(userIdField.text);
 
-        // “üºˆ—[ƒ‹[ƒ€–¼ = [ÅI“I]“ü—Í‚³‚ê‚½ƒ‹[ƒ€–¼,ƒ†[ƒU[ID = [ÅI“I]‚Íƒ[ƒJƒ‹‚É•Û‘¶‚µ‚Ä‚ ‚éƒ†[ƒU[ID]
+        // å…¥å®¤å‡¦ç†[ãƒ«ãƒ¼ãƒ å = [æœ€çµ‚çš„]å…¥åŠ›ã•ã‚ŒãŸãƒ«ãƒ¼ãƒ å,ãƒ¦ãƒ¼ã‚¶ãƒ¼ID = [æœ€çµ‚çš„]ã¯ãƒ­ãƒ¼ã‚«ãƒ«ã«ä¿å­˜ã—ã¦ã‚ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼ID]
         await roomModel.JoinAsync("sampleRoom", id);
     }
 
     /// <summary>
-    /// “üº’Ê’mˆ—
+    /// å…¥å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyJoinedUser(JoinedUser user)
     {
-        // ƒLƒƒƒ‰ƒNƒ^[¶¬,
+        // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”Ÿæˆ,
         GameObject character = Instantiate(characterPrefab);
         characterList[user.ConnectionId] = character;
 
-        // ƒvƒŒƒCƒ„[‚Ì‰Šú‰»ˆ—
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ–å‡¦ç†
         bool isMyCharacter = user.ConnectionId == roomModel.ConnectionId;
         Debug.Log(user.JoinOrder);
         character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.JoinOrder - 1]);
 
-        // ƒ†[ƒU[–¼‚Ì‰Šú‰»ˆ—
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼åã®åˆæœŸåŒ–å‡¦ç†
         Color colorText = isMyCharacter ? Color.white : Color.green;
         character.GetComponent<PlayerUIController>().InitUI(user.UserData.Name, colorText);
 
-        // ©•ª‚Å‚Í‚È‚¢ê‡‚ÍPlayerController‚ğŠO‚·
+        // è‡ªåˆ†ã§ã¯ãªã„å ´åˆã¯PlayerControllerã‚’å¤–ã™
         character.GetComponent<PlayerController>().enabled = isMyCharacter;
     }
 
     /// <summary>
-    /// ‘ŞºƒŠƒNƒGƒXƒg
+    /// é€€å®¤ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void LeaveRoom()
     {
@@ -94,13 +94,13 @@ public class Sample_GameDirecto : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Şº’Ê’mˆ—
+    /// é€€å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     void NotifyLeavedUser(Guid connectionId)
     {
         if (connectionId == roomModel.ConnectionId) 
         {
-            // ©•ª‚ª‘Şo‚·‚éê‡‚Í‘S‚Äíœ
+            // è‡ªåˆ†ãŒé€€å‡ºã™ã‚‹å ´åˆã¯å…¨ã¦å‰Šé™¤
             foreach (var character in characterList.Values)
             {
                 Destroy(character);
@@ -109,14 +109,14 @@ public class Sample_GameDirecto : MonoBehaviour
         }
         else
         {
-            // ŠY“–‚ÌƒLƒƒƒ‰ƒNƒ^[íœ&ƒŠƒXƒg‚©‚çíœ
+            // è©²å½“ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å‰Šé™¤&ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
         }
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXVƒŠƒNƒGƒXƒg
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void UpdatePlayerState()
     {
@@ -131,14 +131,14 @@ public class Sample_GameDirecto : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXV’Ê’mˆ—
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyUpdatedPlayerState(Guid connectionId,PlayerState playerState)
     {
-        if (!characterList.ContainsKey(connectionId)) return;   // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        if (!characterList.ContainsKey(connectionId)) return;   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 
-        // ˆÚ“®E‰ñ“]EƒAƒjƒ[ƒVƒ‡ƒ“ˆ—
+        // ç§»å‹•ãƒ»å›è»¢ãƒ»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
         characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].transform.DORotate(playerState.angle,waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);

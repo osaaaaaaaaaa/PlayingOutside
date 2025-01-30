@@ -17,6 +17,6 @@ public class RankingUserUI : MonoBehaviour
         rankText.text = rank.ToString();
         iconImg.sprite = characterIcon;
         userNameText.text = user.UserName;
-        rateText.text = "ƒŒ[ƒgF" + user.Rating;
+        rateText.text = "ãƒ¬ãƒ¼ãƒˆï¼š" + user.Rating;
     }
 }

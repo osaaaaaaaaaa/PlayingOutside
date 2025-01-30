@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class TopSceneUIManager : MonoBehaviour
 {
-    #region ƒI[ƒfƒBƒIŠÖŒW
+    #region ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªé–¢ä¿‚
     [SerializeField] AudioClip selectSE;
     [SerializeField] AudioClip closeSE;
     SEController seController;
@@ -20,7 +20,7 @@ public class TopSceneUIManager : MonoBehaviour
     [SerializeField] List<Sprite> spriteIcons;
     public List<Sprite> SpriteIcons { get { return spriteIcons; } }
 
-    // TweenƒAƒjƒ[ƒVƒ‡ƒ“’†‚©‚Ç‚¤‚©
+    // Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ä¸­ã‹ã©ã†ã‹
     bool isTaskRunning  = false;
     public bool IsTaskRunning { get { return isTaskRunning; } set { isTaskRunning = value; } }
 

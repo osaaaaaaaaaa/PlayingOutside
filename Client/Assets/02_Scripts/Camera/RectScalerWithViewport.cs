@@ -66,7 +66,7 @@ namespace TedLab
 
         private Camera GetTargetCamera()
         {
-            // İ’è‚ª‚ ‚ê‚Î‚»‚¿‚ç‚ğ—Dæ
+            // è¨­å®šãŒã‚ã‚Œã°ãã¡ã‚‰ã‚’å„ªå…ˆ
             return refCamera != null ? refCamera : Camera.main;
         }
 
@@ -90,7 +90,7 @@ namespace TedLab
                 return;
             }
 
-            // canvas scaler‚©‚çˆø—p
+            // canvas scalerã‹ã‚‰å¼•ç”¨
             var logWidth = Mathf.Log(width / referenceResolution.x, LogBase);
             var logHeight = Mathf.Log(height / referenceResolution.y, LogBase);
             var logWeightedAverage = Mathf.Lerp(logWidth, logHeight, matchWidthOrHeight);
@@ -103,7 +103,7 @@ namespace TedLab
 
             refRect.localScale = new Vector3(scale, scale, scale);
 
-            // ƒXƒP[ƒ‹‚Åk‚Ü‚é‚Ì‚Å—Ìˆæ‚¾‚¯L‚°‚é
+            // ã‚¹ã‚±ãƒ¼ãƒ«ã§ç¸®ã¾ã‚‹ã®ã§é ˜åŸŸã ã‘åºƒã’ã‚‹
             var revScale = 1f / scale;
             refRect.sizeDelta = new Vector2(width * revScale, height * revScale);
 

@@ -43,10 +43,10 @@ public class TitleSceneDirector : MonoBehaviour
             isRanning = true;
             UnityAction errorActoin = OnErrorPanelButton;
 
-            // ƒ[ƒJƒ‹‚É‚ ‚éƒ†[ƒU[î•ñ‚ğæ“¾‚·‚é
+            // ãƒ­ãƒ¼ã‚«ãƒ«ã«ã‚ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã‚’å–å¾—ã™ã‚‹
             if (isLocalData)
             {
-                // ƒ†[ƒU[î•ñæ“¾ˆ—
+                // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—å‡¦ç†
                 var error = await UserModel.Instance.ShowUserAsync(UserModel.Instance.UserId);
 
                 if (error != null)
@@ -59,8 +59,8 @@ public class TitleSceneDirector : MonoBehaviour
             }
             else
             {
-                // ƒ†[ƒU[“o˜^ˆ—
-                var result = await UserModel.Instance.RegistUserAsync(Guid.NewGuid().ToString("N").Substring(0, 8)); // ƒnƒCƒtƒ“‚È‚µ‚Ì8•¶š
+                // ãƒ¦ãƒ¼ã‚¶ãƒ¼ç™»éŒ²å‡¦ç†
+                var result = await UserModel.Instance.RegistUserAsync(Guid.NewGuid().ToString("N").Substring(0, 8)); // ãƒã‚¤ãƒ•ãƒ³ãªã—ã®8æ–‡å­—
                 if (result != null)
                 {
                     ErrorUIController.Instance.ShowErrorUI(result, errorActoin);
@@ -68,10 +68,10 @@ public class TitleSceneDirector : MonoBehaviour
                 }
                 isLocalData = true;
 
-                // ƒŒ[ƒeƒBƒ“ƒOƒf[ƒ^‚ğ“o˜^
+                // ãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
                 await RatingModel.Instance.UpdateRatingAsync(UserModel.Instance.UserId, ConstantManager.DefaultRating);
 
-                // ƒV[ƒ“‘JˆÚŠJn
+                // ã‚·ãƒ¼ãƒ³é·ç§»é–‹å§‹
                 SceneControler.Instance.StartSceneLoad("TopScene");
             }
         }
@@ -88,14 +88,14 @@ public class TitleSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// [ƒfƒoƒbƒO—p] w’è‚µ‚½ƒ†[ƒU[ID‚ğŒ³‚ÉƒƒOƒCƒ“
+    /// [ãƒ‡ãƒãƒƒã‚°ç”¨] æŒ‡å®šã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼IDã‚’å…ƒã«ãƒ­ã‚°ã‚¤ãƒ³
     /// </summary>
     public async void OnDebugButtonAsync()
     {
         int userId;
         if(int.TryParse(inputFieldDebugId.text, out userId))
         {
-            // ƒ†[ƒU[î•ñæ“¾ˆ—
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—å‡¦ç†
             var error = await UserModel.Instance.ShowUserAsync(userId);
             if (error != null)
             {
@@ -103,7 +103,7 @@ public class TitleSceneDirector : MonoBehaviour
                 return;
             }
 
-            // ƒV[ƒ“‘JˆÚŠJn
+            // ã‚·ãƒ¼ãƒ³é·ç§»é–‹å§‹
             SceneControler.Instance.StartSceneLoad("TopScene");
         }
     }

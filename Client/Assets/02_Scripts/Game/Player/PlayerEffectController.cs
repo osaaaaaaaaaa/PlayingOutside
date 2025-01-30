@@ -11,16 +11,16 @@ public class PlayerEffectController : MonoBehaviour
 
     public enum EFFECT_ID
     {
-        Run = 0,        // [ƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌŒÄ‚Ño‚µ] ‘–‚é
-        Landing,        // [ƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌŒÄ‚Ño‚µ] ’…’n
-        AreaCleared,    // ƒS[ƒ‹‚µ‚½‚Æ‚«
-        MudSplash,      // “D‚É’……‚µ‚½‚Æ‚«
-        MudRipples,     // “D‚Ì’†‚É‚¢‚é‚Æ‚«
-        Down,           // [ƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌŒÄ‚Ño‚µ] ƒmƒbƒNƒ_ƒEƒ“‚·‚éƒ_ƒ[ƒW‚ğó‚¯‚½‚Æ‚«
-        KnockBackSmoke, // [ƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç‚ÌŒÄ‚Ño‚µ] ƒmƒbƒNƒoƒbƒN’†
-        PepperFire,     // [ƒAƒCƒeƒ€] “‚hq
-        AuraBuff,       // ƒXƒs[ƒhƒAƒbƒv
-        AuraDebuff,     // ƒXƒs[ƒhƒ_ƒEƒ“
+        Run = 0,        // [ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®å‘¼ã³å‡ºã—] èµ°ã‚‹
+        Landing,        // [ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®å‘¼ã³å‡ºã—] ç€åœ°
+        AreaCleared,    // ã‚´ãƒ¼ãƒ«ã—ãŸã¨ã
+        MudSplash,      // æ³¥ã«ç€æ°´ã—ãŸã¨ã
+        MudRipples,     // æ³¥ã®ä¸­ã«ã„ã‚‹ã¨ã
+        Down,           // [ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®å‘¼ã³å‡ºã—] ãƒãƒƒã‚¯ãƒ€ã‚¦ãƒ³ã™ã‚‹ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ãŸã¨ã
+        KnockBackSmoke, // [ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®å‘¼ã³å‡ºã—] ãƒãƒƒã‚¯ãƒãƒƒã‚¯ä¸­
+        PepperFire,     // [ã‚¢ã‚¤ãƒ†ãƒ ] å”è¾›å­
+        AuraBuff,       // ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
+        AuraDebuff,     // ã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
     }
 
     public List<GameObject> particleSystems = new List<GameObject>();
@@ -145,14 +145,14 @@ public class PlayerEffectController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // “D‚Ìê‡
+        // æ³¥ã®å ´åˆ
         if (other.tag == "Mud")
         {
             isTouchedMud = true;
             SetEffect(EFFECT_ID.MudSplash);
             SetEffect(EFFECT_ID.MudRipples);
         }
-        // ƒfƒoƒt
+        // ãƒ‡ãƒãƒ•
         if (other.GetComponent<DebuffCollider>() != null)
         {
             if (other.GetComponent<DebuffCollider>().IsSpeedDown)
@@ -169,7 +169,7 @@ public class PlayerEffectController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        // “D‚Ìê‡
+        // æ³¥ã®å ´åˆ
         if (other.tag == "Mud")
         {
             isTouchedMud = false;

@@ -11,7 +11,7 @@ public class PlayerSkillController : MonoBehaviour
     Rigidbody rb;
     [SerializeField] PlayerAnimEventTrigger eventTrigger;
 
-    [SerializeField] GameObject skillObj;       // ŒÅ—LƒXƒLƒ‹‚Ìƒp[ƒeƒBƒNƒ‹
+    [SerializeField] GameObject skillObj;       // å›ºæœ‰ã‚¹ã‚­ãƒ«ã®ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«
 
     public bool isUsedSkill { get; private set; }
 
@@ -44,14 +44,14 @@ public class PlayerSkillController : MonoBehaviour
 
     private void Update()
     {
-        // ƒXƒLƒ‹5Ä¶’†‚Å—‰º‚µ‚Ä’…’n‚·‚é‚Æ‚«
+        // ã‚¹ã‚­ãƒ«5å†ç”Ÿä¸­ã§è½ä¸‹ã—ã¦ç€åœ°ã™ã‚‹ã¨ã
         if (eventTrigger.IsPlayStampAnimFall && skillID == SKILL_ID.Skill5 && isUsedSkill && GetComponent<PlayerIsGroundController>().IsGround())
         {
             eventTrigger.IsPlayStampAnimFall = false;
             skillObj.SetActive(true);
             skillObj.GetComponent<ParticleSystem>().Play();
             skillObj.GetComponent<BoxCollider>().enabled = true;
-            transform.GetChild(0).transform.localPosition = Vector3.zero;   // ƒ‚ƒfƒ‹‚ğ‰Šú‰»
+            transform.GetChild(0).transform.localPosition = Vector3.zero;   // ãƒ¢ãƒ‡ãƒ«ã‚’åˆæœŸåŒ–
             transform.gameObject.layer = 3;
             playerAnimatorController.PlayAnimationFromFrame(148, "Skill5");
             playerController.IsControlEnabled = false;
@@ -80,7 +80,7 @@ public class PlayerSkillController : MonoBehaviour
                 skillObj.GetComponent<SphereCollider>().enabled = true;
                 break;
             case SKILL_ID.Skill2:
-                transform.gameObject.layer = 8; // ‘¼‚ÌƒvƒŒƒCƒ„[‚Æ‚ÌÚG”»’è‚ğ–³‚­‚·
+                transform.gameObject.layer = 8; // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®æ¥è§¦åˆ¤å®šã‚’ç„¡ãã™
                 playerController.IsInvincible = true;
                 playerController.IsControlEnabled = false;
                 skillObj.GetComponent<BoxCollider>().enabled = true;
@@ -99,7 +99,7 @@ public class PlayerSkillController : MonoBehaviour
                 break;
             case SKILL_ID.Skill5:
                 isShowParticle = false;
-                transform.gameObject.layer = 8; // ‘¼‚ÌƒvƒŒƒCƒ„[‚Æ‚ÌÚG”»’è‚ğ–³‚­‚·
+                transform.gameObject.layer = 8; // ä»–ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã®æ¥è§¦åˆ¤å®šã‚’ç„¡ãã™
                 playerController.IsInvincible = true;
                 playerController.Speed = 3f;
                 playerController.IsControlEnabled = false;

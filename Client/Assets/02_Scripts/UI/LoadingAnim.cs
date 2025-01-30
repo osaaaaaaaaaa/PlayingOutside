@@ -6,14 +6,14 @@ using DG.Tweening;
 
 public class LoadingAnim : MonoBehaviour
 {
-    private const float DURATION = 1f;  // ƒ[ƒfƒBƒ“ƒOƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÔŠu
+    private const float DURATION = 1f;  // ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®é–“éš”
 
     void Start()
     {
-        Image[] circles = GetComponentsInChildren<Image>(); // qƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚é
+        Image[] circles = GetComponentsInChildren<Image>(); // å­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 
         for (var i = 0; i < circles.Length; i++)
-        {// æ“¾‚µ‚½‰æ‘œ‚Ì–‡”•ªƒ‹[ƒv
+        {// å–å¾—ã—ãŸç”»åƒã®æšæ•°åˆ†ãƒ«ãƒ¼ãƒ—
             var angle = -2 * Mathf.PI * i / circles.Length;
             circles[i].rectTransform.anchoredPosition = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 50f;
             circles[i].DOFade(0f, DURATION).SetLoops(-1, LoopType.Yoyo).SetDelay(DURATION * i / circles.Length);

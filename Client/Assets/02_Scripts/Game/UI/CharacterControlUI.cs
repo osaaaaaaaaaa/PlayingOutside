@@ -17,7 +17,7 @@ public class CharacterControlUI : MonoBehaviour
     [SerializeField] Button btnSkill;
     [SerializeField] Text textSkillCoolTime;
     [SerializeField] Button btnUseItem;
-    [SerializeField] List<Sprite> spriteItemList;   // 0:‹ó,1:“‚hq...
+    [SerializeField] List<Sprite> spriteItemList;   // 0:ç©º,1:å”è¾›å­...
     [SerializeField] Button btnShowEmoteWindow;
     [SerializeField] EmoteWindowUI emoteWindowUI;
 
@@ -88,7 +88,7 @@ public class CharacterControlUI : MonoBehaviour
         btnUseItem.onClick.AddListener(OnUseItemButton);
         btnShowEmoteWindow.onClick.AddListener(OnShowEmoteWindow);
 
-        // ƒGƒ‚[ƒg‚Ìƒ{ƒ^ƒ“İ’è
+        // ã‚¨ãƒ¢ãƒ¼ãƒˆã®ãƒœã‚¿ãƒ³è¨­å®š
         for(int i = 0; i < emoteWindowUI.ButtonEmotes.Count; i++)
         {
             PlayerAnimatorController.ANIM_ID emoteId = new PlayerAnimatorController.ANIM_ID();

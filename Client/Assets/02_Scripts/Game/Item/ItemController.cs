@@ -21,7 +21,7 @@ public class ItemController : MonoBehaviour
 
     private async void OnTriggerEnter(Collider other)
     {
-        // ƒvƒŒƒCƒ„[‚ÉG‚ê‚½ê‡
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è§¦ã‚ŒãŸå ´åˆ
         if (other.gameObject.layer == 3 && !isHit)
         {
             if (ItemId == EnumManager.ITEM_ID.Coin)
@@ -29,7 +29,7 @@ public class ItemController : MonoBehaviour
                 isHit = true;
                 await RoomModel.Instance.GetItemAsynk(itemID, this.name);
 
-                // ƒ`ƒ…[ƒgƒŠƒAƒ‹‚Åg—p‚·‚é‘z’è
+                // ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ã§ä½¿ç”¨ã™ã‚‹æƒ³å®š
                 if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
                 {
                     other.GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
@@ -41,7 +41,7 @@ public class ItemController : MonoBehaviour
                 isHit = true;
                 await RoomModel.Instance.GetItemAsynk(itemID, this.name);
 
-                // ƒ`ƒ…[ƒgƒŠƒAƒ‹‚Åg—p‚·‚é‘z’è
+                // ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ã§ä½¿ç”¨ã™ã‚‹æƒ³å®š
                 if (RoomModel.Instance.userState != RoomModel.USER_STATE.joined)
                 {
                     other.GetComponent<PlayerAudioController>().PlayOneShot(PlayerAudioController.AudioClipName.item_get);
@@ -50,7 +50,7 @@ public class ItemController : MonoBehaviour
                 }
             }
         }
-        // êŠO‚ÌƒoƒŠƒA‚ÉG‚ê‚½ê‡
+        // å ´å¤–ã®ãƒãƒªã‚¢ã«è§¦ã‚ŒãŸå ´åˆ
         else if (other.gameObject.layer == 10 && !isHit)
         {
             Destroy(this.gameObject);

@@ -22,15 +22,15 @@ public class SceneControler : MonoBehaviour
         {
             isLoading = false;
 
-            // ƒgƒbƒv‰æ–Ê‚Ìó‘Ô‚ğ•Û‚·‚é
+            // ãƒˆãƒƒãƒ—ç”»é¢ã®çŠ¶æ…‹ã‚’ä¿æŒã™ã‚‹
             Instance = this;
 
-            // ƒV[ƒ“‘JˆÚ‚µ‚Ä‚à”jŠü‚µ‚È‚¢‚æ‚¤‚É‚·‚é
+            // ã‚·ãƒ¼ãƒ³é·ç§»ã—ã¦ã‚‚ç ´æ£„ã—ãªã„ã‚ˆã†ã«ã™ã‚‹
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            // ƒV[ƒ“‘JˆÚ‚µ‚ÄV‚µ‚­¶¬‚³‚ê‚é©g‚ğ”jŠü
+            // ã‚·ãƒ¼ãƒ³é·ç§»ã—ã¦æ–°ã—ãç”Ÿæˆã•ã‚Œã‚‹è‡ªèº«ã‚’ç ´æ£„
             Destroy(gameObject);
         }
     }
@@ -51,23 +51,23 @@ public class SceneControler : MonoBehaviour
 
     IEnumerator ShowEggAnimCortine()
     {
-        // ˆê’èŠÔ‚É—‘‚ÌUI‚ğ•\¦‚·‚é
+        // ä¸€å®šæ™‚é–“ã«åµã®UIã‚’è¡¨ç¤ºã™ã‚‹
         foreach (var item in eggAnimSets)
         {
             item.SetActive(true);
             yield return new WaitForSeconds(0.1f);
         }
 
-        // ƒV[ƒ“‘JˆÚŠJn
+        // ã‚·ãƒ¼ãƒ³é·ç§»é–‹å§‹
         StartCoroutine(Load());
     }
 
     IEnumerator Load()
     {
-        // ƒV[ƒ“‚ğ”ñ“¯Šú‚Åƒ[ƒh‚·‚é
+        // ã‚·ãƒ¼ãƒ³ã‚’éåŒæœŸã§ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
 
-        // ƒ[ƒh‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‹@‚·‚é
+        // ãƒ­ãƒ¼ãƒ‰ãŒå®Œäº†ã™ã‚‹ã¾ã§å¾…æ©Ÿã™ã‚‹
         while (true)
         {
             yield return null;
@@ -90,7 +90,7 @@ public class SceneControler : MonoBehaviour
     {
         if (isLoading) return;
 
-        // BGM‚ğƒtƒF[ƒhƒAƒEƒg
+        // BGMã‚’ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
         var bgmController = Camera.main.gameObject.GetComponent<BGMController>();
         if( bgmController != null ) bgmController.StopAudio();
 
@@ -99,7 +99,7 @@ public class SceneControler : MonoBehaviour
 
         this.sceneName = sceneName;
 
-        // ™X‚Éƒ¿‚ğã‚°‚éƒAƒjƒ[ƒVƒ‡ƒ“
+        // å¾ã€…ã«Î±ã‚’ä¸Šã’ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
         var sequence = DOTween.Sequence();
         foreach (var item in images)
         {
@@ -116,7 +116,7 @@ public class SceneControler : MonoBehaviour
         if(!isLoading) return;
         isLoading = false;
 
-        // ™X‚Éƒ¿‚ğ‰º‚°‚éƒAƒjƒ[ƒVƒ‡ƒ“
+        // å¾ã€…ã«Î±ã‚’ä¸‹ã’ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
         var sequence = DOTween.Sequence();
         foreach (var item in images)
         {

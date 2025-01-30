@@ -12,25 +12,25 @@ public class MyFirstMode : MonoBehaviour
 
     private async void Start()
     {
-        // Callbackƒo[ƒWƒ‡ƒ“
+        // Callbackãƒãƒ¼ã‚¸ãƒ§ãƒ³
         Sum(100, 323, result =>
         {
             Debug.Log(result);
         });
 
-        // UniTaskƒo[ƒWƒ‡ƒ“
-        Debug.Log("SumF" + await Sum(200, 200));
-        Debug.Log("SubF" + await Sub(1000, 200));
-        Debug.Log("SumAllF" + await SumAll(new int[5] { 1, 2, 3, 4, 5 }));
+        // UniTaskãƒãƒ¼ã‚¸ãƒ§ãƒ³
+        Debug.Log("Sumï¼š" + await Sum(200, 200));
+        Debug.Log("Subï¼š" + await Sub(1000, 200));
+        Debug.Log("SumAllï¼š" + await SumAll(new int[5] { 1, 2, 3, 4, 5 }));
         foreach (var item in await CalcForOperation(10, 5))
         {
-            Debug.Log("CalcForOperationF" + item);
+            Debug.Log("CalcForOperationï¼š" + item);
         }
-        Debug.Log("SumAllNumberF" + await SumAllNumber(new IMyFirstService.Number { x = 5, y = 10 }));
+        Debug.Log("SumAllNumberï¼š" + await SumAllNumber(new IMyFirstService.Number { x = 5, y = 10 }));
     }
 
     /// <summary>
-    /// Callbackƒo[ƒWƒ‡ƒ“
+    /// Callbackãƒãƒ¼ã‚¸ãƒ§ãƒ³
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -39,14 +39,14 @@ public class MyFirstMode : MonoBehaviour
     {
         using var handler = new YetAnotherHttpHandler() { Http2Only = true };
         var channel = GrpcChannel.ForAddress(
-            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IMyFirstService>(channel);
-        var result = await client.SumAsync(x, y);   // Œ‹‰Ê‚ğóM
+        var result = await client.SumAsync(x, y);   // çµæœã‚’å—ä¿¡
         callback?.Invoke(result);
     }
 
     /// <summary>
-    /// UniTaskƒo[ƒWƒ‡ƒ“
+    /// UniTaskãƒãƒ¼ã‚¸ãƒ§ãƒ³
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -55,14 +55,14 @@ public class MyFirstMode : MonoBehaviour
     {
         using var handler = new YetAnotherHttpHandler() { Http2Only = true };
         var channel = GrpcChannel.ForAddress(
-            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IMyFirstService>(channel);
-        var result = await client.SumAsync(x, y);   // Œ‹‰Ê‚ğóM
+        var result = await client.SumAsync(x, y);   // çµæœã‚’å—ä¿¡
         return result;
     }
 
     /// <summary>
-    /// Œ¸ZAPI
+    /// æ¸›ç®—API
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -71,9 +71,9 @@ public class MyFirstMode : MonoBehaviour
     {
         using var handler = new YetAnotherHttpHandler() { Http2Only = true };
         var channel = GrpcChannel.ForAddress(
-            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+            ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IMyFirstService>(channel);
-        var result = await client.SubAsync(x, y);   // Œ‹‰Ê‚ğóM
+        var result = await client.SubAsync(x, y);   // çµæœã‚’å—ä¿¡
         return result;
     }
 

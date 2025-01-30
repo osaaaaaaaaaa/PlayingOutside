@@ -7,23 +7,23 @@ using UnityEngine.UI;
 
 public class SettingUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
     [SerializeField] Slider sliderBGM;
     [SerializeField] Slider sliderSE;
     TopSceneUIManager topSceneUIManager;
 
-    #region ƒI[ƒfƒBƒIƒRƒ“ƒgƒ[ƒ‰[ŠÖŒW
+    #region ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼é–¢ä¿‚
     BGMController bgmController;
     List<SEController> seControllers;
     #endregion
 
     virtual protected void Start()
     {
-        // ŠeƒRƒ“ƒgƒ[ƒ‰[ŠÖŒW‚ğæ“¾
+        // å„ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼é–¢ä¿‚ã‚’å–å¾—
         bgmController = Camera.main.GetComponent<BGMController>();
-        seControllers = new List<SEController>(FindObjectsOfType<SEController>());  // ƒV[ƒ“ã‚Ì‘S‚Ä‚ÌSEController‚ğæ“¾
+        seControllers = new List<SEController>(FindObjectsOfType<SEController>());  // ã‚·ãƒ¼ãƒ³ä¸Šã®å…¨ã¦ã®SEControllerã‚’å–å¾—
 
         foreach (var ui in uiList)
         {
@@ -46,7 +46,7 @@ public class SettingUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// İ’èUI‚ğ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// è¨­å®šUIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public virtual void OnSelectButton()
     {
@@ -61,7 +61,7 @@ public class SettingUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// İ’èUI‚ğ”ñ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// è¨­å®šUIã‚’éè¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public virtual void OnBackButton()
     {

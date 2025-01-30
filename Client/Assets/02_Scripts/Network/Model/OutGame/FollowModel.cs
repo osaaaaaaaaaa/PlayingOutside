@@ -12,13 +12,13 @@ using UnityEngine;
 
 public class FollowModel : BaseModel
 {
-    // ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
     private static FollowModel instance;
     public static FollowModel Instance
     {
         get
         {
-            // GETƒvƒƒpƒeƒB‚ğŒÄ‚Î‚ê‚½‚Æ‚«‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é(‰‰ñ‚Ì‚İ)
+            // GETãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‘¼ã°ã‚ŒãŸã¨ãã«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹(åˆå›ã®ã¿)
             if (instance == null)
             {
                 GameObject gameObj = new GameObject("FollowModel");
@@ -30,24 +30,24 @@ public class FollowModel : BaseModel
     }
 
     /// <summary>
-    /// ƒ†[ƒU[î•ñæ“¾API
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—API
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
     public async UniTask<FollowingUser> ShowUserByNameAsync(string name)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IFollowService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             return await client.ShowUserByNameAsync(name);
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
             Debug.Log(e.Status.Detail);
             return null;
@@ -55,38 +55,38 @@ public class FollowModel : BaseModel
     }
 
     /// <summary>
-    /// ƒtƒHƒ[‚µ‚Ä‚¢‚éƒ†[ƒU[ˆê——æ“¾API
+    /// ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼ä¸€è¦§å–å¾—API
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     public async UniTask<FollowingUser[]> ShowFollowingUsersAsynk(int userId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IFollowService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             return await client.ShowFollowingUsersAsynk(userId);
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
             return null;
         }
     }
 
     /// <summary>
-    /// ƒtƒHƒ[“o˜^API
+    /// ãƒ•ã‚©ãƒ­ãƒ¼ç™»éŒ²API
     /// </summary>
     /// <param name="follow"></param>
     /// <returns></returns>
     public async UniTask<bool> RegistFollowAsync(int followingId, int followeeId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IFollowService>(channel);
 
         try
@@ -97,20 +97,20 @@ public class FollowModel : BaseModel
         catch (RpcException e)
         {
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI("ƒ†[ƒU[‚ÌƒtƒHƒ[“o˜^‚É¸”s‚µ‚Ü‚µ‚½B");
+            ErrorUIController.Instance.ShowErrorUI("ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ãƒ•ã‚©ãƒ­ãƒ¼ç™»éŒ²ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
             return false;
         }
     }
 
     /// <summary>
-    /// ƒtƒHƒ[‰ğœAPI
+    /// ãƒ•ã‚©ãƒ­ãƒ¼è§£é™¤API
     /// </summary>
     /// <param name="follow"></param>
     /// <returns></returns>
     public async UniTask<bool> RemoveFollowAsync(int followingId, int followeeId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IFollowService>(channel);
 
         try
@@ -121,7 +121,7 @@ public class FollowModel : BaseModel
         catch (RpcException e)
         {
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI("ƒ†[ƒU[‚ÌƒtƒHƒ[‰ğœ‚É¸”s‚µ‚Ü‚µ‚½B");
+            ErrorUIController.Instance.ShowErrorUI("ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ãƒ•ã‚©ãƒ­ãƒ¼è§£é™¤ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
             return false;
         }
     }

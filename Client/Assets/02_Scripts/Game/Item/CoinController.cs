@@ -7,7 +7,7 @@ public class CoinController : MonoBehaviour
     Vector3 defaultPower = new Vector3(7, 12, 7);
 
     /// <summary>
-    /// ƒhƒƒbƒvˆ—
+    /// ãƒ‰ãƒ­ãƒƒãƒ—å‡¦ç†
     /// </summary>
     public void Drop(int angleY)
     {

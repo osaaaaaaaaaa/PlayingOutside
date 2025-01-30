@@ -15,7 +15,7 @@ public class PlayerIsGroundController : MonoBehaviour
         {
             triggerIsGround = true;
 
-            // ’…’n‚ÌƒGƒtƒFƒNƒg¶¬
+            // ç€åœ°æ™‚ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”Ÿæˆ
             GetComponent<PlayerEffectController>().SetEffect(PlayerEffectController.EFFECT_ID.Landing);
         }
         else if (triggerIsGround && !IsGround()) 
@@ -25,17 +25,17 @@ public class PlayerIsGroundController : MonoBehaviour
     }
 
     /// <summary>
-    /// ’n–Ê”»’è—p
+    /// åœ°é¢åˆ¤å®šç”¨
     /// </summary>
     /// <returns></returns>
     public bool IsGround()
     {
-        Vector3 basePos = transform.position;    // ƒsƒ{ƒbƒg‚ª’†S‚É‚ ‚é‚½‚ß’²®‚·‚é
-        Vector3 leftStartPos = basePos - Vector3.right * rayWeight;      // ¶‘¤‚Ìn“_
-        Vector3 rightStartPos = basePos + Vector3.right * rayWeight;    // ‰E‘¤‚Ìn“_
-        Vector3 forwardStartPos = basePos - Vector3.back * rayWeight;   // ‘O‚Ìn“_
-        Vector3 backStartPos = basePos + Vector3.back * rayWeight;      // Œã‚ë‚Ìn“_
-        Vector3 endPosition = basePos - Vector3.up * rayHeight;     // I“_(‰º)
+        Vector3 basePos = transform.position;    // ãƒ”ãƒœãƒƒãƒˆãŒä¸­å¿ƒã«ã‚ã‚‹ãŸã‚èª¿æ•´ã™ã‚‹
+        Vector3 leftStartPos = basePos - Vector3.right * rayWeight;      // å·¦å´ã®å§‹ç‚¹
+        Vector3 rightStartPos = basePos + Vector3.right * rayWeight;    // å³å´ã®å§‹ç‚¹
+        Vector3 forwardStartPos = basePos - Vector3.back * rayWeight;   // å‰ã®å§‹ç‚¹
+        Vector3 backStartPos = basePos + Vector3.back * rayWeight;      // å¾Œã‚ã®å§‹ç‚¹
+        Vector3 endPosition = basePos - Vector3.up * rayHeight;     // çµ‚ç‚¹(ä¸‹)
 
         Debug.DrawLine(leftStartPos, endPosition, Color.red);
         Debug.DrawLine(rightStartPos, endPosition, Color.red);

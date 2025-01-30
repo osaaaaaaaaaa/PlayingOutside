@@ -6,16 +6,16 @@ using static Shared.Interfaces.Model.Entity.EnumManager;
 
 public class PlayerItemController : MonoBehaviour
 {
-    #region ƒRƒ“ƒgƒ[ƒ‰[ŠÖŒW
+    #region ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼é–¢ä¿‚
     PlayerController playerController;
     PlayerEffectController effectController;
     PlayerAudioController audioController;
     #endregion
 
-    #region ƒAƒCƒeƒ€ŠÖŒW
+    #region ã‚¢ã‚¤ãƒ†ãƒ é–¢ä¿‚
     public EnumManager.ITEM_ID slotItemId = EnumManager.ITEM_ID.None;
     public Dictionary<EnumManager.ITEM_ID, float> itemEffectTimeList { get; private set; } = new Dictionary<EnumManager.ITEM_ID, float>();
-    bool isOnUseButton = false; // ƒAƒCƒeƒ€g—pƒŠƒNƒGƒXƒg‚ªŠ®—¹‚·‚é‚Ü‚Å˜A‘±‚Å‰Ÿ‚¹‚È‚¢‚æ‚¤‚É‚·‚é
+    bool isOnUseButton = false; // ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨ãƒªã‚¯ã‚¨ã‚¹ãƒˆãŒå®Œäº†ã™ã‚‹ã¾ã§é€£ç¶šã§æŠ¼ã›ãªã„ã‚ˆã†ã«ã™ã‚‹
     #endregion
 
     private void OnEnable()
@@ -35,7 +35,7 @@ public class PlayerItemController : MonoBehaviour
         List<EnumManager.ITEM_ID> keyList = new List<EnumManager.ITEM_ID>(itemEffectTimeList.Keys);
         List<EnumManager.ITEM_ID> effectsToRemove = new List<EnumManager.ITEM_ID>();
 
-        // ƒAƒCƒeƒ€‚ÌŒø‰ÊŠÔ‚ğŒv‘ª‚·‚é
+        // ã‚¢ã‚¤ãƒ†ãƒ ã®åŠ¹æœæ™‚é–“ã‚’è¨ˆæ¸¬ã™ã‚‹
         foreach (var key in keyList)
         {
             itemEffectTimeList[key] -= Time.deltaTime;
@@ -46,7 +46,7 @@ public class PlayerItemController : MonoBehaviour
             }
         }
 
-        // I—¹‚µ‚½Œø‰Ê‚ğíœ
+        // çµ‚äº†ã—ãŸåŠ¹æœã‚’å‰Šé™¤
         foreach (var key in effectsToRemove)
         {
             ClearItem(key);
@@ -75,7 +75,7 @@ public class PlayerItemController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€ƒXƒƒbƒg‚Éİ’è‚·‚é
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã‚¹ãƒ­ãƒƒãƒˆã«è¨­å®šã™ã‚‹
     /// </summary>
     /// <param name="itemId"></param>
     public void SetItemSlot(EnumManager.ITEM_ID itemId)
@@ -84,7 +84,7 @@ public class PlayerItemController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€g—pˆ—
+    /// ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨å‡¦ç†
     /// </summary>
     /// <param name="_itemId"></param>
     public void UseItem(EnumManager.ITEM_ID _itemId)
@@ -102,7 +102,7 @@ public class PlayerItemController : MonoBehaviour
 
         }
 
-        // Œø‰ÊŠÔ‚ğİ’è‚·‚é
+        // åŠ¹æœæ™‚é–“ã‚’è¨­å®šã™ã‚‹
         if(itemEffectTime > 0)
         {
             if (itemEffectTimeList.ContainsKey(slotItemId))
@@ -120,17 +120,17 @@ public class PlayerItemController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€g—pƒ{ƒ^ƒ“
+    /// ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨ãƒœã‚¿ãƒ³
     /// </summary>
     public async void OnUseItemButton()
     {
         if (isOnUseButton || slotItemId == ITEM_ID.None || slotItemId == ITEM_ID.ItemBox || slotItemId == ITEM_ID.Coin) return;
         isOnUseButton = true;
-        // ƒAƒCƒeƒ€g—pƒŠƒNƒGƒXƒg‘—M
+        // ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨ãƒªã‚¯ã‚¨ã‚¹ãƒˆé€ä¿¡
         await RoomModel.Instance.UseItemAsynk(slotItemId);
 
 
-        // ƒT[ƒo[‚ÉÚ‘±‚µ‚Ä‚¢‚È‚¢ê‡
+        // ã‚µãƒ¼ãƒãƒ¼ã«æ¥ç¶šã—ã¦ã„ãªã„å ´åˆ
         if(RoomModel.Instance.userState != RoomModel.USER_STATE.joined) UseItem(slotItemId);
     }
 }

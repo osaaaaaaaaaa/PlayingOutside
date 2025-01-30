@@ -12,13 +12,13 @@ using UnityEngine;
 
 public class RatingModel : BaseModel
 {
-    // ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
     private static RatingModel instance;
     public static RatingModel Instance
     {
         get
         {
-            // GETƒvƒƒpƒeƒB‚ğŒÄ‚Î‚ê‚½‚Æ‚«‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é(‰‰ñ‚Ì‚İ)
+            // GETãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‘¼ã°ã‚ŒãŸã¨ãã«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹(åˆå›ã®ã¿)
             if (instance == null)
             {
                 GameObject gameObj = new GameObject("RatingModel");
@@ -32,56 +32,56 @@ public class RatingModel : BaseModel
     public int Rating { get; private set; } = 0;
 
     /// <summary>
-    /// ‘Sƒ†[ƒU[‚ğ‘ÎÛ‚É‚µ‚½ƒ‰ƒ“ƒLƒ“ƒOæ“¾API
+    /// å…¨ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’å¯¾è±¡ã«ã—ãŸãƒ©ãƒ³ã‚­ãƒ³ã‚°å–å¾—API
     /// </summary>
     /// <returns></returns>
     public async UniTask<RatingRanking[]> ShowGlobalRatingRanking()
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IRatingService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             return await client.ShowGlobalRatingRanking();
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI("ƒ‰ƒ“ƒLƒ“ƒO‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½B");
+            ErrorUIController.Instance.ShowErrorUI("ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
             return null;
         }
     }
 
     /// <summary>
-    /// ƒtƒHƒ[‚µ‚Ä‚¢‚éƒ†[ƒU[‚ğ‘ÎÛ‚É‚µ‚½ƒ‰ƒ“ƒLƒ“ƒOæ“¾API
+    /// ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’å¯¾è±¡ã«ã—ãŸãƒ©ãƒ³ã‚­ãƒ³ã‚°å–å¾—API
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     public async UniTask<RatingRanking[]> ShowFollowedUsersRatingRanking(int userId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IRatingService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             return await client.ShowFollowedUsersRatingRanking(userId);
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
-            ErrorUIController.Instance.ShowErrorUI("ƒ‰ƒ“ƒLƒ“ƒO‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½B");
+            ErrorUIController.Instance.ShowErrorUI("ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
             return null;
         }
     }
 
     /// <summary>
-    /// ƒŒ[ƒeƒBƒ“ƒOXVAPI
+    /// ãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°æ›´æ–°API
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="addRating"></param>
@@ -89,41 +89,41 @@ public class RatingModel : BaseModel
     public async UniTask UpdateRatingAsync(int userId, int ratingDelta)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IRatingService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             await client.UpdateRatingAsync(userId, ratingDelta);
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
         }
     }
 
     /// <summary>
-    /// ƒŒ[ƒeƒBƒ“ƒOæ“¾API
+    /// ãƒ¬ãƒ¼ãƒ†ã‚£ãƒ³ã‚°å–å¾—API
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
     public async UniTask<int> ShowRatingAsync(int userId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IRatingService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             this.Rating = await client.ShowRatingAsync(userId);
             return this.Rating;
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
             return 0;
         }

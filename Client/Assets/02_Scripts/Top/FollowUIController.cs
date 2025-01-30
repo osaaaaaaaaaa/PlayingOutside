@@ -10,12 +10,12 @@ using UnityEngine.UI;
 
 public class FollowUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
     [SerializeField] List<Text> titleTextList;
 
-    #region ƒ†[ƒU[ƒŠƒXƒgŠÖŒW
+    #region ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒªã‚¹ãƒˆé–¢ä¿‚
     [SerializeField] GameObject scrollViewUser;
     [SerializeField] Transform contentViewUser;
     [SerializeField] Text changeButtonText;
@@ -23,7 +23,7 @@ public class FollowUIController : MonoBehaviour
     [SerializeField] GameObject userCntTextObj;
     #endregion
 
-    #region ƒ†[ƒU[ŒŸõŠÖŒW
+    #region ãƒ¦ãƒ¼ã‚¶ãƒ¼æ¤œç´¢é–¢ä¿‚
     [SerializeField] GameObject scrollViewSerch;
     [SerializeField] Transform contentViewSerch;
     [SerializeField] GameObject inputFieldSerchUserName;
@@ -71,7 +71,7 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒHƒ[UI‚ğ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ•ã‚©ãƒ­ãƒ¼UIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public async void OnSelectButton()
     {
@@ -104,14 +104,14 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒHƒ[UI‚ğ”ñ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ•ã‚©ãƒ­ãƒ¼UIã‚’éè¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnBackButton()
     {
         if (topSceneUIManager.IsTaskRunning) return;
         topSceneUIManager.IsTaskRunning = true;
 
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewUser)
         {
             Destroy(child.gameObject);
@@ -123,7 +123,7 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒtƒHƒ[|ƒtƒHƒƒ[ƒŠƒXƒg‚ÉØ‚è‘Ö‚¦‚éƒ{ƒ^ƒ“
+    /// ãƒ•ã‚©ãƒ­ãƒ¼|ãƒ•ã‚©ãƒ­ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã«åˆ‡ã‚Šæ›¿ãˆã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnChangeContentButton()
     {
@@ -135,7 +135,7 @@ public class FollowUIController : MonoBehaviour
         {
             case CONTENT_TYPE.FOLLOW:
                 contentType = CONTENT_TYPE.FOLLOWER;
-                changeButtonText.text = "ƒtƒHƒ[";
+                changeButtonText.text = "ãƒ•ã‚©ãƒ­ãƒ¼";
                 foreach (var title in titleTextList)
                 {
                     title.text = "FOLLOWER";
@@ -143,7 +143,7 @@ public class FollowUIController : MonoBehaviour
                 break;
             case CONTENT_TYPE.FOLLOWER:
                 contentType = CONTENT_TYPE.FOLLOW;
-                changeButtonText.text = "ƒtƒHƒƒ[";
+                changeButtonText.text = "ãƒ•ã‚©ãƒ­ãƒ¯ãƒ¼";
                 foreach (var title in titleTextList)
                 {
                     title.text = "FOLLOW";
@@ -151,7 +151,7 @@ public class FollowUIController : MonoBehaviour
                 break;
         }
 
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewUser)
         {
             Destroy(child.gameObject);
@@ -159,7 +159,7 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ†[ƒU[ŒŸõƒƒjƒ…[‚ÉØ‚è‘Ö‚¦‚éƒ{ƒ^ƒ“
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æ¤œç´¢ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«åˆ‡ã‚Šæ›¿ãˆã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnChangeSerchUserMenu()
     {
@@ -171,7 +171,7 @@ public class FollowUIController : MonoBehaviour
 
         inputFieldSerchUserName.GetComponent<InputField>().text = "";
 
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewSerch)
         {
             Destroy(child.gameObject);
@@ -179,14 +179,14 @@ public class FollowUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// –¼‘O‚Åƒ†[ƒU[‚ğŒŸõ‚·‚é
+    /// åå‰ã§ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’æ¤œç´¢ã™ã‚‹
     /// </summary>
     public async void SerchUserByName()
     {
         var inputField = inputFieldSerchUserName.GetComponent<InputField>();
         inputField.interactable = false;
 
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewSerch)
         {
             Destroy(child.gameObject);
@@ -203,7 +203,7 @@ public class FollowUIController : MonoBehaviour
         errorTextSerch.SetActive(user == null);
         if (user == null)
         {
-            Debug.Log("ƒ†[ƒU[‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½");
+            Debug.Log("ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ");
             return;
         }
 

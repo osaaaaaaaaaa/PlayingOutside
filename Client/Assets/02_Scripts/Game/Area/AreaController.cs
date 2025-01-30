@@ -9,17 +9,17 @@ using Shared.Interfaces.Model.Entity;
 
 public class AreaController : MonoBehaviour
 {
-    #region ƒRƒ“ƒgƒ[ƒ‰[ŠÖŒW
+    #region ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼é–¢ä¿‚
     [SerializeField] RelayGameDirector gameDirector;
     [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] List<ItemSpawner> itemSpawnerList;
     public List<ItemSpawner> ItemSpawnerList { get { return itemSpawnerList; } }
     #endregion
 
-    [SerializeField] List<GameObject> startPoints;    // ŠeƒGƒŠƒA‚ÌƒXƒ^[ƒg’n“_
-    [SerializeField] List<GameObject> gimmicks;       // ƒGƒŠƒA–ˆ‚ÌƒMƒ~ƒbƒN
+    [SerializeField] List<GameObject> startPoints;    // å„ã‚¨ãƒªã‚¢ã®ã‚¹ã‚¿ãƒ¼ãƒˆåœ°ç‚¹
+    [SerializeField] List<GameObject> gimmicks;       // ã‚¨ãƒªã‚¢æ¯ã®ã‚®ãƒŸãƒƒã‚¯
     
-    #region UIŠÖŒW
+    #region UIé–¢ä¿‚
     [SerializeField] GameObject finishUI;
     [SerializeField] GameObject spectatingUI;
     [SerializeField] GameObject imageBlackObj;
@@ -72,19 +72,19 @@ public class AreaController : MonoBehaviour
     }
 
     /// <summary>
-    /// Œ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½ˆ—
+    /// ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸå‡¦ç†
     /// </summary>
     public IEnumerator CurrentAreaClearCoroutine(GameObject player)
     {
         seController.PlayAudio();
         isClearedArea = false;
         bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
-        // ƒT[ƒo[‚È‚µ‚Ìê‡‚Ì‚İg—pAÅI“I‚ÉisDebug‚ğíœ
+        // ã‚µãƒ¼ãƒãƒ¼ãªã—ã®å ´åˆã®ã¿ä½¿ç”¨ã€æœ€çµ‚çš„ã«isDebugã‚’å‰Šé™¤
         if (gameDirector.isDebug)
         {
             if (isLastArea)
             {
-                Debug.Log("ƒS[ƒ‹!!");
+                Debug.Log("ã‚´ãƒ¼ãƒ«!!");
             }
             else
             {
@@ -92,101 +92,101 @@ public class AreaController : MonoBehaviour
                 StartCoroutine(RestarningGameCoroutine(currentAreaId + 1, player, 1));
             }
 
-            // ‚±‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~
+            // ã“ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢
             yield break;
         }
 
-        // ƒGƒŠƒAƒNƒŠƒAˆ—‚ğƒŠƒNƒGƒXƒg
+        // ã‚¨ãƒªã‚¢ã‚¯ãƒªã‚¢å‡¦ç†ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         gameDirector.OnAreaCleared();
 
-        // ‚Ü‚¾‘¼‚ÉƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚Ä‚¢‚È‚¢ƒvƒŒƒCƒ„[‚ª‚¢‚é‚©ƒ`ƒFƒbƒN
+        // ã¾ã ä»–ã«ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ã¦ã„ãªã„ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
         if (targetCameraController.IsOtherTarget())
         {
-            // ƒtƒF[ƒhƒCƒ“
+            // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
             imageBlackObj.SetActive(true);
             imageBlack.DOFade(1f, fadeTime).SetEase(Ease.Linear).OnComplete(() => {
-                // ŠÏí—p‚ÌUI‚ğ•\¦‚·‚é
+                // è¦³æˆ¦ç”¨ã®UIã‚’è¡¨ç¤ºã™ã‚‹
                 spectatingUI.GetComponent<SpectatingUI>().InitUI(true);
             });
             yield return new WaitForSeconds(fadeTime);
         }
 
-        // ŠÏí‰æ–Ê‚ğ•\¦‚·‚é‚±‚Æ‚ª‚Å‚«‚½ê‡
+        // è¦³æˆ¦ç”»é¢ã‚’è¡¨ç¤ºã™ã‚‹ã“ã¨ãŒã§ããŸå ´åˆ
         if (spectatingUI.activeSelf)
         {
             imageBlack.DOFade(0f, fadeTime).SetEase(Ease.Linear).OnComplete(() => { imageBlackObj.SetActive(false); });
         }
         else
         {
-            // ©•ª‚ªÅŒã‚ÉƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½ê‡
+            // è‡ªåˆ†ãŒæœ€å¾Œã«ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸå ´åˆ
             StartCoroutine(ReadyNextAreaCoroutine());
         }
     }
 
     /// <summary>
-    /// Ÿ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ
+    /// æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™
     /// </summary>
     public IEnumerator ReadyNextAreaCoroutine()
     {
         if(isClearedArea) yield break;
         isClearedArea = true;
-        Debug.Log(currentAreaId + "ƒGƒŠƒAˆÚ“®€”õ");
+        Debug.Log(currentAreaId + "ã‚¨ãƒªã‚¢ç§»å‹•æº–å‚™");
 
         DOTween.Kill(imageBlack);
         bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
         float animSec = (imageBlackObj.activeSelf) ? 0f : fadeTime;
 
-        // ‘€ì‚ğ–³Œø‰»‚·‚é
+        // æ“ä½œã‚’ç„¡åŠ¹åŒ–ã™ã‚‹
         gameDirector.characterList[RoomModel.Instance.ConnectionId].SetActive(false);
 
         if (isLastArea)
         {
-            // Œ»İ‚ÌƒGƒŠƒA‚ªÅŒã‚ÌƒGƒŠƒA‚Ìê‡‚ÍƒQ[ƒ€I—¹‚ÌUI‚ğ•\¦
+            // ç¾åœ¨ã®ã‚¨ãƒªã‚¢ãŒæœ€å¾Œã®ã‚¨ãƒªã‚¢ã®å ´åˆã¯ã‚²ãƒ¼ãƒ çµ‚äº†æ™‚ã®UIã‚’è¡¨ç¤º
             finishUI.SetActive(true);
 
-            yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // —]‰C‚ÌŠÔ‚ğ‰ÁZ
+            yield return new WaitForSeconds(finishUI.GetComponent<FinishUI>().animSec + 1f);  // ä½™éŸ»ã®æ™‚é–“ã‚’åŠ ç®—
         }
 
-        // ƒtƒF[ƒhƒCƒ“
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
         imageBlackObj.SetActive(true);
         imageBlack.DOFade(1f, animSec).SetEase(Ease.Linear).OnComplete(() => {
 
-            // ŠÏí—p‚ÌUI‚ğ”ñ•\¦‚·‚é
+            // è¦³æˆ¦ç”¨ã®UIã‚’éè¡¨ç¤ºã™ã‚‹
             spectatingUI.GetComponent<SpectatingUI>().InitUI(false);
 
-            // Œ»İ‚ÌƒGƒŠƒA‚ğ“P‹
+            // ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’æ’¤å»
             itemSpawnerList[(int)currentAreaId].enabled = false;
             gimmicks[(int)currentAreaId].SetActive(false);
 
-            // Ÿ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹‚µ‚½ƒŠƒNƒGƒXƒg
+            // æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ã—ãŸãƒªã‚¯ã‚¨ã‚¹ãƒˆ
             gameDirector.OnReadyNextArea(isLastArea);
         });
     }
 
     /// <summary>
-    /// ƒtƒF[ƒhƒAƒEƒgŒã‚ÉƒQ[ƒ€ÄŠJ
+    /// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆå¾Œã«ã‚²ãƒ¼ãƒ å†é–‹
     /// </summary>
     public IEnumerator RestarningGameCoroutine(EnumManager.RELAY_AREA_ID nextAreaId,GameObject player ,float restarningWaitSec)
     {
         if (!isClearedArea) yield break;
         currentAreaId = nextAreaId;
-        Debug.Log("ƒGƒŠƒA‚ÌIDF"+ (int)currentAreaId);
+        Debug.Log("ã‚¨ãƒªã‚¢ã®IDï¼š"+ (int)currentAreaId);
 
-        // Ÿ‚ÌƒGƒŠƒA‚Ì€”õ
+        // æ¬¡ã®ã‚¨ãƒªã‚¢ã®æº–å‚™
         itemSpawnerList[(int)currentAreaId].enabled = true;
         gimmicks[(int)currentAreaId].SetActive(true);
 
-        // Ÿ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é && ƒJƒƒ‰‚ğƒZƒbƒgƒAƒbƒv
+        // æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹ && ã‚«ãƒ¡ãƒ©ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
         player.GetComponent<PlayerController>().InitPlayer(startPoints[(int)currentAreaId].transform);
         targetCameraController.InitCamera(player.transform, (int)currentAreaId,RoomModel.Instance.ConnectionId);
 
-        // ƒtƒF[ƒhƒAƒEƒg
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
         imageBlack.DOFade(0f, fadeTime).SetEase(Ease.Linear).OnComplete(() =>
         {
             imageBlackObj.SetActive(false);
         });
 
-        // w’è‚³‚ê‚½ŠÔ·‚Å“®‚¯‚é‚æ‚¤‚É‚·‚é
+        // æŒ‡å®šã•ã‚ŒãŸæ™‚é–“å·®ã§å‹•ã‘ã‚‹ã‚ˆã†ã«ã™ã‚‹
         yield return new WaitForSeconds(fadeTime + restarningWaitSec);
         isClearedArea = false;
         player.SetActive(true);

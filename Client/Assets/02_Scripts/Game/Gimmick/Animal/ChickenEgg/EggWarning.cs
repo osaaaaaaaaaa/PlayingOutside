@@ -21,7 +21,7 @@ public class EggWarning : MonoBehaviour
         if(collision.gameObject.layer == 6 && !isGeneratedEgg)
         {
             isGeneratedEgg = true;
-            transform.GetChild(0).gameObject.SetActive(true);   // Warningƒp[ƒeƒBƒNƒ‹ON
+            transform.GetChild(0).gameObject.SetActive(true);   // Warningãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ON
 
             eggBullet = Instantiate(eggBulletPrefab, eggGeneratePoint, Quaternion.identity);
             var defaultScale = eggBullet.transform.localScale;
@@ -29,7 +29,7 @@ public class EggWarning : MonoBehaviour
 
             var sequence = DOTween.Sequence();
             sequence.Append(eggBullet.transform.DOJump(this.transform.position, jumpPower, 1, 2f).SetDelay(0.5f).SetEase(Ease.InBack)
-                .OnComplete(() => { Invoke("Destroys", 0.05f); }))   // ‘‚·‚¬‚Äƒ_ƒ[ƒW”»’è‚ªæ‚ê‚È‚¢‚½‚ß
+                .OnComplete(() => { Invoke("Destroys", 0.05f); }))   // æ—©ã™ãã¦ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ¤å®šãŒå–ã‚Œãªã„ãŸã‚
                 .Join(eggBullet.transform.DOScale(defaultScale, 0.5f).SetDelay(1.8f));
             sequence.Play();
         }

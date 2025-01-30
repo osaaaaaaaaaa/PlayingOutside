@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ItemSpawner : MonoBehaviour
 {
-    [SerializeField] List<GameObject> itemPrefabs = new List<GameObject>(); // “‚hq~
+    [SerializeField] List<GameObject> itemPrefabs = new List<GameObject>(); // å”è¾›å­~
     [SerializeField] Transform rangeMin;
     [SerializeField] Transform rangeMax;
     [SerializeField] float spawnIntervalMin = 5f;

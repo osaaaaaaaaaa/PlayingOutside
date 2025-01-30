@@ -8,11 +8,11 @@ using static Shared.Interfaces.Model.Entity.EnumManager;
 
 public class SelectMapUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
 
-    #region SEŠÖŒW
+    #region SEé–¢ä¿‚
     [SerializeField] SEController seController;
     [SerializeField] AudioClip selectSE;
     [SerializeField] AudioClip closeSE;
@@ -72,17 +72,17 @@ public class SelectMapUIController : MonoBehaviour
         if(RoomModel.Instance != null)
         {
             if(RoomModel.Instance.userState == RoomModel.USER_STATE.joined) 
-                hostName.text = "Œ»İ‚ÌƒzƒXƒgF" + RoomModel.Instance.MasterName;
+                hostName.text = "ç¾åœ¨ã®ãƒ›ã‚¹ãƒˆï¼š" + RoomModel.Instance.MasterName;
 
         }
         else
         {
-            hostName.text = "Œ»İ‚ÌƒzƒXƒgF‘¶İ‚µ‚Ü‚¹‚ñ";
+            hostName.text = "ç¾åœ¨ã®ãƒ›ã‚¹ãƒˆï¼šå­˜åœ¨ã—ã¾ã›ã‚“";
         }
     }
 
     /// <summary>
-    /// UI‚Ì•\¦E”ñ•\¦
+    /// UIã®è¡¨ç¤ºãƒ»éè¡¨ç¤º
     /// </summary>
     /// <param name="isVisibility"></param>
     public void ToggleUIVisibility(bool isVisibility)
@@ -108,7 +108,7 @@ public class SelectMapUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ{ƒ^ƒ“‘€ì‚ğ‚Å‚«‚È‚­‚·‚é
+    /// ãƒœã‚¿ãƒ³æ“ä½œã‚’ã§ããªãã™ã‚‹
     /// </summary>
     public void DisableButton()
     {
@@ -118,7 +118,7 @@ public class SelectMapUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘I‘ğ’Ê’m‚ª—ˆ‚½‚Ìˆ—
+    /// é¸æŠé€šçŸ¥ãŒæ¥ãŸæ™‚ã®å‡¦ç†
     /// </summary>
     /// <param name="id"></param>
     public void OnSelectRelayArea(EnumManager.SELECT_RELAY_AREA_ID id)
@@ -142,7 +142,7 @@ public class SelectMapUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘I‘ğ’Ê’m‚ª—ˆ‚½‚Ìˆ—
+    /// é¸æŠé€šçŸ¥ãŒæ¥ãŸæ™‚ã®å‡¦ç†
     /// </summary>
     /// <param name="id"></param>
     public void OnSelectFinalMap(EnumManager.SELECT_FINALGAME_AREA_ID id)
@@ -166,7 +166,7 @@ public class SelectMapUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒJƒ“ƒgƒŠ[ƒŠƒŒ[ƒ}ƒbƒv‚Ì‘I‘ğˆ—
+    /// ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ãƒãƒƒãƒ—ã®é¸æŠå‡¦ç†
     /// </summary>
     /// <param name="index"></param>
     public void SelectRelayMap(int index)
@@ -194,7 +194,7 @@ public class SelectMapUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÅI‹£‹Zƒ}ƒbƒv‚Ì‘I‘ğˆ—
+    /// æœ€çµ‚ç«¶æŠ€ãƒãƒƒãƒ—ã®é¸æŠå‡¦ç†
     /// </summary>
     /// <param name="index"></param>
     public void SelectFinalGameMap(int index)

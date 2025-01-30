@@ -8,14 +8,14 @@ using UnityEngine.UI;
 
 public class FinalResultSceneDirector : MonoBehaviour
 {
-    #region ƒLƒƒƒ‰ƒNƒ^[ŠÖŒW
+    #region ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼é–¢ä¿‚
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] List<GameObject> characterPrefabList;
-    Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ƒ†[ƒU[‚ÌƒLƒƒƒ‰ƒNƒ^[î•ñ
-    List<Guid> leavedUserIdList = new List<Guid>(); // “r’†‘Şo‚µ‚½ƒ†[ƒU[ID
+    Dictionary<Guid, GameObject> characterList = new Dictionary<Guid, GameObject>();  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼æƒ…å ±
+    List<Guid> leavedUserIdList = new List<Guid>(); // é€”ä¸­é€€å‡ºã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ID
     #endregion
 
-    #region ƒp[ƒeƒBƒNƒ‹EUIŠÖŒW
+    #region ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãƒ»UIé–¢ä¿‚
     [SerializeField] FinalResultSceneParticleController particleController;
     [SerializeField] TotalScoreUIController totalScoreUIController;
     [SerializeField] GameObject crownPrefab;
@@ -28,20 +28,20 @@ public class FinalResultSceneDirector : MonoBehaviour
 
     private void Start()
     {
-        // ŠÖ”‚ğ“o˜^‚·‚é
+        // é–¢æ•°ã‚’ç™»éŒ²ã™ã‚‹
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnTransitionFinalResultSceneUser += this.NotifyTransitionFinalResultSceneAllUsers;
 
         SetupScene();
 
-        // ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚É‘JˆÚŠ®—¹ƒŠƒNƒGƒXƒg
+        // æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã«é·ç§»å®Œäº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         TransitionFinalResultScene();
     }
 
     void OnDisable()
     {
-        // ƒV[ƒ“‘JˆÚ‚ÉŠÖ”‚Ì“o˜^‚ğ‰ğœ
+        // ã‚·ãƒ¼ãƒ³é·ç§»æ™‚ã«é–¢æ•°ã®ç™»éŒ²ã‚’è§£é™¤
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnTransitionFinalResultSceneUser -= this.NotifyTransitionFinalResultSceneAllUsers;
@@ -60,12 +60,12 @@ public class FinalResultSceneDirector : MonoBehaviour
     {
         GenerateCharacters();
 
-        // ƒ[ƒh‰æ–Ê‚ğ•Â‚¶‚é
+        // ãƒ­ãƒ¼ãƒ‰ç”»é¢ã‚’é–‰ã˜ã‚‹
         SceneControler.Instance.StopSceneLoad();
     }
 
     /// <summary>
-    /// ƒLƒƒƒ‰ƒNƒ^[¶¬ˆ—
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”Ÿæˆå‡¦ç†
     /// </summary>
     void GenerateCharacters()
     {
@@ -75,24 +75,24 @@ public class FinalResultSceneDirector : MonoBehaviour
         {
             var value = user.Value;
 
-            // ƒLƒƒƒ‰ƒNƒ^[¶¬,
+            // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”Ÿæˆ,
             GameObject character = Instantiate(characterPrefabList[value.UserData.Character_Id - 1]);
             characterList[user.Key] = character;
             character.name = value.UserData.Name;
 
-            // ƒvƒŒƒCƒ„[‚Ì‰Šú‰»ˆ—
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ–å‡¦ç†
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[value.JoinOrder - 1], isMyCharacter);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
-            // ƒ†[ƒU[–¼‚Ì‰Šú‰»ˆ—
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼åã®åˆæœŸåŒ–å‡¦ç†
             Color colorText = isMyCharacter ? Color.white : Color.green;
             character.GetComponent<PlayerUIController>().InitUI(value.UserData.Name, colorText);
 
-            // ƒŒƒCƒ„[ƒ^ƒO‚ğ•ÏX
+            // ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¿ã‚°ã‚’å¤‰æ›´
             character.layer = isMyCharacter ? 3 : 7;
 
-            // ‘Sˆõ‚ªƒV[ƒ“‘JˆÚŠ®—¹‚·‚é‚Ü‚ÅPlayerController‚ğŠO‚·
+            // å…¨å“¡ãŒã‚·ãƒ¼ãƒ³é·ç§»å®Œäº†ã™ã‚‹ã¾ã§PlayerControllerã‚’å¤–ã™
             character.GetComponent<PlayerController>().enabled = false;
 
             if (isMyCharacter)
@@ -104,7 +104,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘ŞºƒŠƒNƒGƒXƒg
+    /// é€€å®¤ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void LeaveRoom()
     {
@@ -116,13 +116,13 @@ public class FinalResultSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Şº’Ê’mˆ—
+    /// é€€å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     void NotifyLeavedUser(Guid connectionId)
     {
         if (connectionId == RoomModel.Instance.ConnectionId)
         {
-            // ©•ª‚ª‘Şo‚·‚éê‡‚Í‘S‚Äíœ
+            // è‡ªåˆ†ãŒé€€å‡ºã™ã‚‹å ´åˆã¯å…¨ã¦å‰Šé™¤
             foreach (var character in characterList.Values)
             {
                 Destroy(character);
@@ -133,7 +133,7 @@ public class FinalResultSceneDirector : MonoBehaviour
         {
             if (isResultAnnounced)
             {
-                // ŠY“–‚ÌƒLƒƒƒ‰ƒNƒ^[íœ&ƒŠƒXƒg‚©‚çíœ
+                // è©²å½“ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å‰Šé™¤&ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
                 DOTween.Kill(characterList[connectionId]);
                 Destroy(characterList[connectionId]);
                 characterList.Remove(connectionId);
@@ -146,12 +146,12 @@ public class FinalResultSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXVƒŠƒNƒGƒXƒg
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void UpdatePlayerState()
     {
         if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId) 
-            || characterList[RoomModel.Instance.ConnectionId] == null) return;   // ©•ª‚Ì‘¶İƒ`ƒFƒbƒN
+            || characterList[RoomModel.Instance.ConnectionId] == null) return;   // è‡ªåˆ†ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
         var character = characterList[RoomModel.Instance.ConnectionId];
         PlayerState playerState = new PlayerState()
         {
@@ -164,21 +164,21 @@ public class FinalResultSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXV’Ê’mˆ—
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
-        if (!characterList.ContainsKey(connectionId)) return;   // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        if (!characterList.ContainsKey(connectionId)) return;   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 
-        // ˆÚ“®E‰ñ“]EƒAƒjƒ[ƒVƒ‡ƒ“ˆ—
+        // ç§»å‹•ãƒ»å›è»¢ãƒ»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
         characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
     }
 
     /// <summary>
-    /// ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚É‘JˆÚ‚µ‚½ˆ—
+    /// æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã«é·ç§»ã—ãŸå‡¦ç†
     /// </summary>
     async void TransitionFinalResultScene()
     {
@@ -186,7 +186,7 @@ public class FinalResultSceneDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Sˆõ‚ª‘JˆÚ‚Å‚«‚½’Ê’m
+    /// å…¨å“¡ãŒé·ç§»ã§ããŸé€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="playerState"></param>
@@ -200,12 +200,12 @@ public class FinalResultSceneDirector : MonoBehaviour
                 winnerIdList.Add(resultData.connectionId);
             }
         }
-        Debug.Log("ƒŠƒUƒ‹ƒgƒV[ƒ“‚Å‚·");
+        Debug.Log("ãƒªã‚¶ãƒ«ãƒˆã‚·ãƒ¼ãƒ³ã§ã™");
         StartCoroutine(ShowResultsCoroutine(result, winnerIdList));
     }
 
     /// <summary>
-    /// Œ‹‰Ê”­•\ŠJnƒRƒ‹[ƒ`ƒ“
+    /// çµæœç™ºè¡¨é–‹å§‹ã‚³ãƒ«ãƒ¼ãƒãƒ³
     /// </summary>
     /// <returns></returns>
     IEnumerator ShowResultsCoroutine(ResultData[] result,List<Guid> winnerIdList)
@@ -219,22 +219,22 @@ public class FinalResultSceneDirector : MonoBehaviour
         totalScoreUIController.StopAnim();
         yield return new WaitForSeconds(0.5f);
 
-        // ‚PˆÊ‚ÌƒvƒŒƒCƒ„[‚É‰¤Š¥‚ğƒZƒbƒg‚·‚é
+        // ï¼‘ä½ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ç‹å† ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
         foreach (var winnerId in winnerIdList) 
         {
             Instantiate(crownPrefab, characterList[winnerId].transform);
         }
-        yield return new WaitForSeconds(1f);    // ‰¤Š¥‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚·‚éŠÔ
+        yield return new WaitForSeconds(1f);    // ç‹å† ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã™ã‚‹æ™‚é–“
 
         foreach (var winnerId in winnerIdList)
         {
             particleController.GenerateSparksParticles(characterList[winnerId].transform);
         }
         particleController.GenarateConfettiParticle();
-        yield return new WaitForSeconds(2f);  // ƒp[ƒeƒBƒNƒ‹‚Ì¶‘¶ŠÔ
+        yield return new WaitForSeconds(2f);  // ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®ç”Ÿå­˜æ™‚é–“
 
         StartCoroutine(UpdateCoroutine());
-        // “r’†‘Şo‚µ‚½ƒ†[ƒU[‚ğíœ‚·‚é
+        // é€”ä¸­é€€å‡ºã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹
         isResultAnnounced = true;
         foreach (var id in leavedUserIdList)
         {
@@ -243,14 +243,14 @@ public class FinalResultSceneDirector : MonoBehaviour
             characterList.Remove(id);
         }
 
-        // ƒvƒŒƒCƒ„[‚Ì‘€ì‚ğ‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
         characterControlUI.SetColorAlphaButtons(1);
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
 
-        // ‘Şº‚ª‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        // é€€å®¤ãŒã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
         btnLeave.SetActive(true);
 
-        // BGMÄ¶
+        // BGMå†ç”Ÿ
         Camera.main.GetComponent<BGMController>().PlayAudio();
     }
 }

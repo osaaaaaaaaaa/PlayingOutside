@@ -37,7 +37,7 @@ public class TotalScoreUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// スコアアニメーション再生
+    /// 繧ｹ繧ｳ繧｢繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ蜀咲函
     /// </summary>
     public void PlayAnim()
     {
@@ -47,14 +47,14 @@ public class TotalScoreUIController : MonoBehaviour
         {
             if (textParents[i].activeSelf)
             {
-                // 4桁でランダムな数字をアニメーション
+                // 4譯√〒繝ｩ繝ｳ繝繝縺ｪ謨ｰ蟄励ｒ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ
                 textScores[i].DOText("0000", 9999, true, ScrambleMode.Numerals).SetEase(Ease.Linear); 
             }
         }
     }
 
     /// <summary>
-    /// スコアアニメーションを停止する
+    /// 繧ｹ繧ｳ繧｢繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧貞●豁｢縺吶ｋ
     /// </summary>
     public void StopAnim()
     {

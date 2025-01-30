@@ -17,30 +17,30 @@ public class RelayGameDirector : MonoBehaviour
     [SerializeField] SpectatingUI spectatingUI;
     [SerializeField] GameObject countDownUI;
 
-    #region ƒRƒ“ƒgƒ[ƒ‰[ŠÖŒW
+    #region ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼é–¢ä¿‚
     [SerializeField] AreaController areaController;
     [SerializeField] TargetCameraController targetCameraController;
     [SerializeField] CharacterControlUI characterControlUI;
     [SerializeField] UserScoreController userScoreController;
     #endregion
 
-    #region ƒLƒƒƒ‰ƒNƒ^[ŠÖŒW
+    #region ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼é–¢ä¿‚
     [SerializeField] List<Transform> characterStartPoints;
     [SerializeField] List<GameObject> characterPrefabList;
-    public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ƒ†[ƒU[‚ÌƒLƒƒƒ‰ƒNƒ^[î•ñ
+    public Dictionary<Guid,GameObject> characterList { get; private set; }  = new Dictionary<Guid,GameObject>();  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼æƒ…å ±
     #endregion
 
-    #region ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Æ“¯Šú‚·‚éƒMƒ~ƒbƒN
+    #region ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã¨åŒæœŸã™ã‚‹ã‚®ãƒŸãƒƒã‚¯
     Dictionary<string, Goose> gooseObjList = new Dictionary<string, Goose>();
     Dictionary<string, MoveSetRoot> movingObjectList = new Dictionary<string, MoveSetRoot>();
     #endregion
 
-    #region “®•¨‚ÌƒMƒ~ƒbƒN
+    #region å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯
     [SerializeField] List<GameObject> animalGimmicks;
     Dictionary<string,GameObject> animalGimmickList = new Dictionary<string, GameObject>();
     #endregion
 
-    #region A•¨‚ÌƒMƒ~ƒbƒNŠÖŒW
+    #region æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯é–¢ä¿‚
     [SerializeField] List<PlantGroupController> plantGroupControllers;
     bool isDestroyPlantRequest;
     bool isDestroyedPlants;
@@ -48,12 +48,12 @@ public class RelayGameDirector : MonoBehaviour
 
     Dictionary<string, GameObject> itemList = new Dictionary<string, GameObject>();
 
-    #region ƒQ[ƒ€I—¹ŠÖŒW
+    #region ã‚²ãƒ¼ãƒ çµ‚äº†é–¢ä¿‚
     Coroutine coroutineFinishGame;
     bool isFinishedGame;
     #endregion
 
-    #region ƒJƒEƒ“ƒgƒ_ƒEƒ“ŠÖŒW
+    #region ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–¢ä¿‚
     Coroutine coroutineCountDown;
     const int maxTime = 16;
     int currentTime;
@@ -73,7 +73,7 @@ public class RelayGameDirector : MonoBehaviour
         isGameStartCountDownOver = false;
         currentTime = maxTime;
 
-        // ŠÖ”‚ğ“o˜^‚·‚é
+        // é–¢æ•°ã‚’ç™»éŒ²ã™ã‚‹
         RoomModel.Instance.OnLeavedUser += this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser += this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnUpdateMasterClientUser += this.NotifyUpdatedMasterClient;
@@ -96,7 +96,7 @@ public class RelayGameDirector : MonoBehaviour
         RoomModel.Instance.OnDestroyPlantsGimmickUser += this.NotifyDestroyPlantsGimmickUser;
         RoomModel.Instance.OnTriggeringPlantGimmickUser += this.NotifyTriggeringPlantGimmickUser;
 
-        // [©“®ƒ}ƒbƒ`ƒ“ƒOŠ®—¹Œã] Q‰ÁÒ‚ª©•ª‚¾‚¯‚¾‚Á‚½ê‡
+        // [è‡ªå‹•ãƒãƒƒãƒãƒ³ã‚°å®Œäº†å¾Œ] å‚åŠ è€…ãŒè‡ªåˆ†ã ã‘ã ã£ãŸå ´åˆ
         if (RoomModel.Instance.JoinedUsers.Count == 1)
         {
             OnOnlyPlayerRemaining();
@@ -108,7 +108,7 @@ public class RelayGameDirector : MonoBehaviour
 
     void OnDisable()
     {
-        // ƒV[ƒ“‘JˆÚ‚ÉŠÖ”‚Ì“o˜^‚ğ‰ğœ
+        // ã‚·ãƒ¼ãƒ³é·ç§»æ™‚ã«é–¢æ•°ã®ç™»éŒ²ã‚’è§£é™¤
         RoomModel.Instance.OnLeavedUser -= this.NotifyLeavedUser;
         RoomModel.Instance.OnUpdatePlayerStateUser -= this.NotifyUpdatedPlayerState;
         RoomModel.Instance.OnUpdateMasterClientUser -= this.NotifyUpdatedMasterClient;
@@ -144,7 +144,7 @@ public class RelayGameDirector : MonoBehaviour
                     isMasterClient = true;
                     if (!isDestroyPlantRequest)
                     {
-                        // ‚Ü‚¾A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚µ‚Ä‚¢‚È‚¢ê‡
+                        // ã¾ã æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã—ã¦ã„ãªã„å ´åˆ
                         DestroyPlantsGimmickAsynk();
                     }
                     UpdateMasterClientAsynk();
@@ -171,21 +171,21 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// Q‰ÁÒ‚ª©•ª1l‚¾‚Á‚½‚Æ‚«‚Ìˆ—
+    /// å‚åŠ è€…ãŒè‡ªåˆ†1äººã ã£ãŸã¨ãã®å‡¦ç†
     /// </summary>
     async void OnOnlyPlayerRemaining()
     {
-        // ‘Şoˆ—
+        // é€€å‡ºå‡¦ç†
         StopCoroutine(UpdateCoroutine());
         if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         await RoomModel.Instance.LeaveAsync();
 
         UnityAction errorActoin = CallSceneLoadMethod;
-        ErrorUIController.Instance.ShowErrorUI("‘¼‚Ìƒ†[ƒU[‚ªØ’f‚µAÅŒã‚ÌQ‰ÁÒ‚É‚È‚Á‚½‚½‚ßAƒ‹[ƒ€‚©‚ç‘Şº‚µ‚Ü‚·B", errorActoin);
+        ErrorUIController.Instance.ShowErrorUI("ä»–ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒåˆ‡æ–­ã—ã€æœ€å¾Œã®å‚åŠ è€…ã«ãªã£ãŸãŸã‚ã€ãƒ«ãƒ¼ãƒ ã‹ã‚‰é€€å®¤ã—ã¾ã™ã€‚", errorActoin);
     }
 
     /// <summary>
-    /// ƒV[ƒ“‘JˆÚ‚ÌŠÖ”‚ğŒÄ‚Ô
+    /// ã‚·ãƒ¼ãƒ³é·ç§»ã®é–¢æ•°ã‚’å‘¼ã¶
     /// </summary>
     public void CallSceneLoadMethod()
     {
@@ -197,7 +197,7 @@ public class RelayGameDirector : MonoBehaviour
     {
         GenerateCharacters();
 
-        // ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Æ“¯Šú‚·‚éƒIƒuƒWƒFƒNƒg‚ğæ“¾‚µ‚Äİ’è‚·‚é
+        // ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã¨åŒæœŸã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã—ã¦è¨­å®šã™ã‚‹
         areaController.ToggleAllGimmicks(true);
         var movingRootObjs = new List<MoveSetRoot>(FindObjectsOfType<MoveSetRoot>());
         var gooseObjs = new List<Goose>(FindObjectsOfType<Goose>());
@@ -211,21 +211,21 @@ public class RelayGameDirector : MonoBehaviour
             gooseObjList.Add(item.name, item);
         }
 
-        // “®•¨‚ÌƒMƒ~ƒbƒN‚ğİ’è
+        // å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’è¨­å®š
         foreach (var item in animalGimmicks)
         {
             animalGimmickList.Add(item.name, item);
         }
 
-        // ƒ[ƒh‰æ–Ê‚ğ•Â‚¶‚é
+        // ãƒ­ãƒ¼ãƒ‰ç”»é¢ã‚’é–‰ã˜ã‚‹
         SceneControler.Instance.StopSceneLoad();
 
-        // ”•bŒã‚ÉƒJƒEƒ“ƒgƒ_ƒEƒ“‚ªŠJn
+        // æ•°ç§’å¾Œã«ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ãŒé–‹å§‹
         gameStartCountDown.CallPlayAnim();
     }
 
     /// <summary>
-    /// ƒLƒƒƒ‰ƒNƒ^[¶¬ˆ—
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”Ÿæˆå‡¦ç†
     /// </summary>
     void GenerateCharacters()
     {
@@ -235,29 +235,29 @@ public class RelayGameDirector : MonoBehaviour
         {
             var value = user.Value;
 
-            // ƒLƒƒƒ‰ƒNƒ^[¶¬,
+            // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ç”Ÿæˆ,
             GameObject character = Instantiate(characterPrefabList[value.UserData.Character_Id - 1]);
             characterList[user.Key] = character;
             character.name = user.Value.UserData.Name;
 
-            // ƒvƒŒƒCƒ„[‚Ì‰Šú‰»ˆ—
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ–å‡¦ç†
             bool isMyCharacter = user.Key == RoomModel.Instance.ConnectionId;
             character.GetComponent<PlayerController>().InitPlayer(characterStartPoints[user.Value.JoinOrder - 1],isMyCharacter);
             character.GetComponent<PlayerController>().ToggleGravityAndColliders(false);
             character.GetComponent<AudioListener>().enabled = isMyCharacter;
 
-            // ƒ†[ƒU[–¼‚Ì‰Šú‰»ˆ—
+            // ãƒ¦ãƒ¼ã‚¶ãƒ¼åã®åˆæœŸåŒ–å‡¦ç†
             Color colorText = isMyCharacter ? Color.white : Color.green;
             character.GetComponent<PlayerUIController>().InitUI(user.Value.UserData.Name, colorText);
 
-            // ƒŒƒCƒ„[ƒ^ƒO‚ğ•ÏX
+            // ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¿ã‚°ã‚’å¤‰æ›´
             character.layer = isMyCharacter ? 3 : 7;
-            // ƒQ[ƒ€‚ªŠJn‚·‚é‚Ü‚Å‚ÍPlayerController‚ğŠO‚·
+            // ã‚²ãƒ¼ãƒ ãŒé–‹å§‹ã™ã‚‹ã¾ã§ã¯PlayerControllerã‚’å¤–ã™
             character.GetComponent<PlayerController>().enabled = false;
 
             if (isMyCharacter)
             {
-                targetCameraController.InitCamera(character.transform, 0, user.Key);    // ©•ª‚Ìƒ‚ƒfƒ‹‚ÉƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ğİ’è
+                targetCameraController.InitCamera(character.transform, 0, user.Key);    // è‡ªåˆ†ã®ãƒ¢ãƒ‡ãƒ«ã«ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¨­å®š
                 characterControlUI.SetupButtonEvent(character);
             }
 
@@ -266,7 +266,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘ŞºƒŠƒNƒGƒXƒg
+    /// é€€å®¤ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void LeaveRoom()
     {
@@ -278,13 +278,13 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Şº’Ê’mˆ—
+    /// é€€å®¤é€šçŸ¥å‡¦ç†
     /// </summary>
     void NotifyLeavedUser(Guid connectionId)
     {
         if (connectionId == RoomModel.Instance.ConnectionId)
         {
-            // ©•ª‚ª‘Şo‚·‚éê‡‚Í‘S‚Äíœ
+            // è‡ªåˆ†ãŒé€€å‡ºã™ã‚‹å ´åˆã¯å…¨ã¦å‰Šé™¤
             foreach (var character in characterList.Values)
             {
                 Destroy(character);
@@ -293,12 +293,12 @@ public class RelayGameDirector : MonoBehaviour
         }
         else
         {
-            // ŠY“–‚ÌƒLƒƒƒ‰ƒNƒ^[íœ&ƒŠƒXƒg‚©‚çíœ
+            // è©²å½“ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å‰Šé™¤&ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
             DOTween.Kill(characterList[connectionId]);
             Destroy(characterList[connectionId]);
             characterList.Remove(connectionId);
 
-            // ©•ª‚ªÅŒã‚Ìˆêl‚É‚È‚Á‚½ê‡‚ÍƒQ[ƒ€‚ğI—¹‚·‚é
+            // è‡ªåˆ†ãŒæœ€å¾Œã®ä¸€äººã«ãªã£ãŸå ´åˆã¯ã‚²ãƒ¼ãƒ ã‚’çµ‚äº†ã™ã‚‹
             if (characterList.Count == 1 && isStartGame && !isFinishedGame)
             {
                 if (coroutineFinishGame == null) coroutineFinishGame = StartCoroutine(FinishGameCoroutine());
@@ -325,11 +325,11 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXVƒŠƒNƒGƒXƒg
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void UpdatePlayerState()
     {
-        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
         var character = characterList[RoomModel.Instance.ConnectionId];
         if(character.GetComponent<PlayerController>().enabled)
         {
@@ -345,17 +345,17 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[î•ñXV’Ê’mˆ—
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±æ›´æ–°é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyUpdatedPlayerState(Guid connectionId, PlayerState playerState)
     {
         if (!isGameStartCountDownOver) return;
 
-        // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
         if (!characterList.ContainsKey(connectionId)) return;
 
-        // ˆÚ“®E‰ñ“]EƒAƒjƒ[ƒVƒ‡ƒ“ˆ—
+        // ç§»å‹•ãƒ»å›è»¢ãƒ»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
         characterList[connectionId].SetActive(playerState.isActiveSelf);
         characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
         characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
@@ -363,13 +363,13 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ìî•ñXVƒŠƒNƒGƒXƒg
+    /// ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æƒ…å ±æ›´æ–°ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void UpdateMasterClientAsynk()
     {
-        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        if (!characterList.ContainsKey(RoomModel.Instance.ConnectionId)) return;   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 
-        // ƒ‹[ƒg‚É‰ˆ‚Á‚Ä“®‚­ƒIƒuƒWƒFƒNƒg‚Ìî•ñæ“¾
+        // ãƒ«ãƒ¼ãƒˆã«æ²¿ã£ã¦å‹•ãã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±å–å¾—
         List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
         foreach (var obj in movingObjectList.Values)
         {
@@ -387,7 +387,7 @@ public class RelayGameDirector : MonoBehaviour
             }
         }
 
-        // ƒKƒ`ƒ‡ƒE‚Ìî•ñæ“¾
+        // ã‚¬ãƒãƒ§ã‚¦ã®æƒ…å ±å–å¾—
         List<GooseState> gooseObjStates = new List<GooseState>();
         foreach (var obj in gooseObjList.Values)
         {
@@ -427,34 +427,34 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚Ìî•ñXV’Ê’mˆ—
+    /// ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®æƒ…å ±æ›´æ–°é€šçŸ¥å‡¦ç†
     /// </summary>
     /// <param name="user"></param>
     void NotifyUpdatedMasterClient(Guid connectionId, MasterClient masterClient)
     {
         if (!isGameStartCountDownOver) return;
 
-        // ƒvƒŒƒCƒ„[‚Ì‘¶İƒ`ƒFƒbƒN
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
         if (!characterList.ContainsKey(connectionId)) return;
 
         if (masterClient.playerState != null)
         {
             PlayerState playerState = masterClient.playerState;
 
-            // ˆÚ“®E‰ñ“]EƒAƒjƒ[ƒVƒ‡ƒ“ˆ—
+            // ç§»å‹•ãƒ»å›è»¢ãƒ»ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
             characterList[connectionId].SetActive(playerState.isActiveSelf);
             characterList[connectionId].transform.DOMove(playerState.position, waitSeconds).SetEase(Ease.Linear);
             characterList[connectionId].transform.DORotate(playerState.angle, waitSeconds).SetEase(Ease.Linear);
             characterList[connectionId].GetComponent<PlayerAnimatorController>().SetInt(playerState.animationId);
         }
 
-        // ƒIƒuƒWƒFƒNƒg‚Ì“¯Šú
+        // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®åŒæœŸ
         foreach (var obj in masterClient.objectStates)
         {
             movingObjectList[obj.name].SetPotition(obj, waitSeconds);
         }
 
-        // ƒKƒ`ƒ‡ƒE‚Ì“¯Šú
+        // ã‚¬ãƒãƒ§ã‚¦ã®åŒæœŸ
         foreach (var goose in masterClient.gooseStates)
         {
             gooseObjList[goose.name].UpdateState(goose, waitSeconds);
@@ -463,7 +463,7 @@ public class RelayGameDirector : MonoBehaviour
 
 
     /// <summary>
-    /// ƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“I—¹ƒŠƒNƒGƒXƒg
+    /// ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³çµ‚äº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void OnCountdownOver()
     {
@@ -472,23 +472,23 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒQ[ƒ€ŠJn’Ê’m
+    /// ã‚²ãƒ¼ãƒ é–‹å§‹é€šçŸ¥
     /// </summary>
     void NotifyStartGame()
     {
-        // ƒQ[ƒ€ŠJn‘O‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“‚ğ”ñ•\¦‚É‚·‚é
+        // ã‚²ãƒ¼ãƒ é–‹å§‹å‰ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã‚’éè¡¨ç¤ºã«ã™ã‚‹
         gameStartCountDown.PlayCountDownOverAnim();
 
         isStartGame = true;
 
-        // ƒQ[ƒ€I—¹ˆ—
+        // ã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†
         if (isFinishedGame)
         {
             if (coroutineFinishGame == null) coroutineFinishGame = StartCoroutine(FinishGameCoroutine());
             return;
         }
 
-        // ƒvƒŒƒCƒ„[‚Ì‘€ì‚ğ‚Å‚«‚é‚æ‚¤‚É‚·‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
         foreach(var character in characterList.Values)
         {
             character.GetComponent<PlayerController>().ToggleGravityAndColliders(true);
@@ -498,12 +498,12 @@ public class RelayGameDirector : MonoBehaviour
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = true;
         StartCoroutine(UpdateCoroutine());
 
-        // ƒAƒCƒeƒ€‚ÌƒXƒ|[ƒ“ŠJn
+        // ã‚¢ã‚¤ãƒ†ãƒ ã®ã‚¹ãƒãƒ¼ãƒ³é–‹å§‹
         areaController.ActiveItemSpawner();
     }
 
     /// <summary>
-    /// Œ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½ˆ—‚ğƒŠƒNƒGƒXƒg
+    /// ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸå‡¦ç†ã‚’ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void OnAreaCleared()
     {
@@ -511,71 +511,71 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// Œ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½’Ê’m
+    /// ç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸé€šçŸ¥
     /// </summary>
     void NotifyAreaClearedUser(Guid connectionId,string userName, bool isClearedAllUsers)
     {
-        // ƒNƒŠƒA‚µ‚½ƒ†[ƒU[–¼‚ğ•\¦‚·‚é
-        Debug.Log(userName + "‚ª“Ë”j");
+        // ã‚¯ãƒªã‚¢ã—ãŸãƒ¦ãƒ¼ã‚¶ãƒ¼åã‚’è¡¨ç¤ºã™ã‚‹
+        Debug.Log(userName + "ãŒçªç ´");
 
-        // ©•ªˆÈŠO‚ªƒNƒŠƒA‚µ‚½ê‡
+        // è‡ªåˆ†ä»¥å¤–ãŒã‚¯ãƒªã‚¢ã—ãŸå ´åˆ
         if (RoomModel.Instance.ConnectionId != connectionId)
         {
             characterList[connectionId].GetComponent<PlayerEffectController>().SetEffect(PlayerEffectController.EFFECT_ID.AreaCleared);
             characterList[connectionId].SetActive(false);
         }
 
-        // ‘S‚Ä‚Ìƒ†[ƒU[‚ªƒNƒŠƒA‚µ‚½ê‡
+        // å…¨ã¦ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒã‚¯ãƒªã‚¢ã—ãŸå ´åˆ
         if (isClearedAllUsers)
         {
-            // ƒJƒEƒ“ƒgƒ_ƒEƒ“‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~‚·‚é
+            // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã™ã‚‹
             if(coroutineCountDown != null) StopCoroutine(coroutineCountDown);
             coroutineCountDown = null;
 
-            // ‘Sˆõ‚ªŒ»İ‚ÌƒGƒŠƒA‚ğƒNƒŠƒA‚µ‚½ê‡AŸ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ğ‚·‚é
+            // å…¨å“¡ãŒç¾åœ¨ã®ã‚¨ãƒªã‚¢ã‚’ã‚¯ãƒªã‚¢ã—ãŸå ´åˆã€æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ã‚’ã™ã‚‹
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
             return;
         }
 
-        // ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ª©•ª‚Ìê‡‚Íˆ—‚ğI—¹
+        // ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒè‡ªåˆ†ã®å ´åˆã¯å‡¦ç†ã‚’çµ‚äº†
         if (targetCameraController.currentTargetId == RoomModel.Instance.ConnectionId) return;
-        characterList[connectionId].SetActive(false);   // ”ñ•\¦‚É‚È‚Á‚Ä‚¢‚È‚¢ê‡‚ª‚ ‚é‚½‚ß
+        characterList[connectionId].SetActive(false);   // éè¡¨ç¤ºã«ãªã£ã¦ã„ãªã„å ´åˆãŒã‚ã‚‹ãŸã‚
 
-        // ‘¼‚ÉƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ÌØ‚è‘Ö‚¦æ‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN
+        // ä»–ã«ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆå…ˆãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
         bool isTarget = targetCameraController.IsOtherTarget();
         if (targetCameraController.activeTargetCnt == 1) spectatingUI.SetupButton(false);
 
-        // Œ»İ‚ÌƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ÆƒNƒŠƒA‚µ‚½l‚ª“¯ˆêl•¨‚©‚Ç‚¤‚©
+        // ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã‚¯ãƒªã‚¢ã—ãŸäººãŒåŒä¸€äººç‰©ã‹ã©ã†ã‹
         if (isTarget && connectionId == targetCameraController.currentTargetId)
         {
-            // ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ÌØ‚è‘Ö‚¦æ‚ª‘¶İ‚·‚éê‡‚ÍØ‚è‘Ö‚¦‚é
+            // ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆå…ˆãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯åˆ‡ã‚Šæ›¿ãˆã‚‹
             spectatingUI.OnChangeTargetBtn();
         }
     }
 
     /// <summary>
-    /// Ÿ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹ƒŠƒNƒGƒXƒg
+    /// æ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void OnReadyNextArea(bool isLastArea)
     {
-        // ƒJƒEƒ“ƒgƒ_ƒEƒ“‚ÌƒRƒ‹[ƒ`ƒ“‚ğ’â~‚·‚é
+        // ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã®ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’åœæ­¢ã™ã‚‹
         if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         coroutineCountDown = null;
 
         if (isLastArea)
         {
-            // ƒQ[ƒ€I—¹ƒŠƒNƒGƒXƒg
+            // ã‚²ãƒ¼ãƒ çµ‚äº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
             OnFinishGame();
         }
         else
         {
-            // Œ»İ‚ÌƒGƒŠƒA‚ªÅŒã‚ÌƒGƒŠƒA‚Å‚Í‚È‚¢ê‡
+            // ç¾åœ¨ã®ã‚¨ãƒªã‚¢ãŒæœ€å¾Œã®ã‚¨ãƒªã‚¢ã§ã¯ãªã„å ´åˆ
             await RoomModel.Instance.ReadyNextAreaAsynk();
         }
     }
 
     /// <summary>
-    /// ‘Sˆõ‚ªŸ‚ÌƒGƒŠƒA‚ÉˆÚ“®‚·‚é€”õ‚ªŠ®—¹‚µ‚½’Ê’m
+    /// å…¨å“¡ãŒæ¬¡ã®ã‚¨ãƒªã‚¢ã«ç§»å‹•ã™ã‚‹æº–å‚™ãŒå®Œäº†ã—ãŸé€šçŸ¥
     /// </summary>
     void NotifyRedyNextAreaAllUsers(float restarningWaitSec, EnumManager.RELAY_AREA_ID nextAreaId)
     {
@@ -587,12 +587,12 @@ public class RelayGameDirector : MonoBehaviour
         var myCharacter = characterList[RoomModel.Instance.ConnectionId];
         myCharacter.SetActive(false);
 
-        // ƒQ[ƒ€ÄŠJˆ—
+        // ã‚²ãƒ¼ãƒ å†é–‹å‡¦ç†
         StartCoroutine(areaController.RestarningGameCoroutine(nextAreaId, myCharacter,restarningWaitSec));
     }
 
     /// <summary>
-    /// ƒ†[ƒU[‚ÌŠƒ|ƒCƒ“ƒgXV’Ê’m
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®æ‰€æŒãƒã‚¤ãƒ³ãƒˆæ›´æ–°é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="score"></param>
@@ -602,8 +602,8 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒGƒŠƒAƒNƒŠƒA‚ÌƒJƒEƒ“ƒgƒ_ƒEƒ“ŠJn’Ê’m
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªóM)
+    /// ã‚¨ãƒªã‚¢ã‚¯ãƒªã‚¢æ™‚ã®ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é–‹å§‹é€šçŸ¥
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå—ä¿¡)
     /// </summary>
     void NotifyStartCountDown()
     {
@@ -611,8 +611,8 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒJƒEƒ“ƒgƒ_ƒEƒ“ˆ—
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªˆ—)
+    /// ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³å‡¦ç†
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå‡¦ç†)
     /// </summary>
     public async void OnCountDown()
     {
@@ -623,7 +623,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒJƒEƒ“ƒgƒ_ƒEƒ“’Ê’m
+    /// ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³é€šçŸ¥
     /// </summary>
     /// <param name="currentTime"></param>
     void NotifyCountDownUser(int currentTime)
@@ -633,7 +633,7 @@ public class RelayGameDirector : MonoBehaviour
         countDownUI.SetActive(true);
         countDownUI.GetComponent<CountDownUI>().UpdateText(currentTime);
 
-        // ‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚¢‚È‚¢ && ƒJƒEƒ“ƒgƒ_ƒEƒ“‚ª0ˆÈ‰º‚É‚È‚Á‚½‚çAŸ‚ÌƒGƒŠƒA‚Ö‹­§ˆÚ“®
+        // ã¾ã ã‚¯ãƒªã‚¢ã—ã¦ã„ãªã„ && ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ãŒ0ä»¥ä¸‹ã«ãªã£ãŸã‚‰ã€æ¬¡ã®ã‚¨ãƒªã‚¢ã¸å¼·åˆ¶ç§»å‹•
         if (!areaController.isClearedArea && currentTime == 0)
         {
             StartCoroutine(areaController.ReadyNextAreaCoroutine());
@@ -641,7 +641,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€æ“¾’Ê’m
+    /// ã‚¢ã‚¤ãƒ†ãƒ å–å¾—é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemName"></param>
@@ -667,7 +667,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€g—p’Ê’m
+    /// ã‚¢ã‚¤ãƒ†ãƒ ä½¿ç”¨é€šçŸ¥
     /// </summary>
     /// <param name="connectionId"></param>
     /// <param name="itemId"></param>
@@ -677,7 +677,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ì”jŠü’Ê’m
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç ´æ£„é€šçŸ¥
     /// </summary>
     /// <param name="itemName"></param>
     void NotifyDestroyItemUser(string itemName)
@@ -689,7 +689,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒCƒeƒ€‚Ì¶¬’Ê’m
+    /// ã‚¢ã‚¤ãƒ†ãƒ ã®ç”Ÿæˆé€šçŸ¥
     /// </summary>
     /// <param name="spawnPoint"></param>
     /// <param name="itemId"></param>
@@ -703,7 +703,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// “®“I‚ÈƒIƒuƒWƒFƒNƒg‚Ì¶¬’Ê’m
+    /// å‹•çš„ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆé€šçŸ¥
     /// </summary>
     /// <param name="spawnObject"></param>
     void NotifySpawnObjectUser(SpawnObject spawnObject)
@@ -712,7 +712,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// “®•¨‚ÌƒMƒ~ƒbƒN”­“®’Ê’m
+    /// å‹•ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•é€šçŸ¥
     /// </summary>
     /// <param name="name"></param>
     /// <param name="option"></param>
@@ -734,8 +734,8 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚·‚éƒŠƒNƒGƒXƒg
-    /// (ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg‚ªÀs)
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã™ã‚‹ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
+    /// (ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆãŒå®Ÿè¡Œ)
     /// </summary>
     async void DestroyPlantsGimmickAsynk()
     {
@@ -752,7 +752,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”jŠü‚·‚é’Ê’m
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç ´æ£„ã™ã‚‹é€šçŸ¥
     /// </summary>
     /// <param name="names"></param>
     void NotifyDestroyPlantsGimmickUser(string[] names)
@@ -768,7 +768,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// A•¨‚ÌƒMƒ~ƒbƒN‚ğ”­“®‚·‚é’Ê’m
+    /// æ¤ç‰©ã®ã‚®ãƒŸãƒƒã‚¯ã‚’ç™ºå‹•ã™ã‚‹é€šçŸ¥
     /// </summary>
     /// <param name="name"></param>
     void NotifyTriggeringPlantGimmickUser(string name)
@@ -783,7 +783,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒQ[ƒ€I—¹‚ªŠ®—¹‚µ‚½ƒŠƒNƒGƒXƒg
+    /// ã‚²ãƒ¼ãƒ çµ‚äº†ãŒå®Œäº†ã—ãŸãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     public async void OnFinishGame()
     {
@@ -791,7 +791,7 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘Sˆõ‚Ì(ƒJƒ“ƒgƒŠ[ƒŠƒŒ[‚É‚¨‚¢‚Ä‚Ì)ƒQ[ƒ€I—¹ˆ—‚ªŠ®—¹‚µ‚½’Ê’m
+    /// å…¨å“¡ã®(ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ã«ãŠã„ã¦ã®)ã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†ãŒå®Œäº†ã—ãŸé€šçŸ¥
     /// </summary>
     void NotifyFinishGameUser(string nextSceneName)
     {
@@ -800,17 +800,17 @@ public class RelayGameDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// ‘S‚Ä‚Ì‹£‹Z‚ğI—¹‚µAƒŠƒUƒ‹ƒgƒV[ƒ“‚ÖˆÚ“®‚·‚é’Ê’m
+    /// å…¨ã¦ã®ç«¶æŠ€ã‚’çµ‚äº†ã—ã€ãƒªã‚¶ãƒ«ãƒˆã‚·ãƒ¼ãƒ³ã¸ç§»å‹•ã™ã‚‹é€šçŸ¥
     /// </summary>
     void NotifyAfterFinalGameUser()
     {
-        // ÅIŒ‹‰Ê”­•\ƒV[ƒ“‚É‘JˆÚ
+        // æœ€çµ‚çµæœç™ºè¡¨ã‚·ãƒ¼ãƒ³ã«é·ç§»
         StopCoroutine(UpdateCoroutine());
         SceneControler.Instance.StartSceneLoad("FinalResultsScene");
     }
 
     /// <summary>
-    /// ƒQ[ƒ€I—¹€”õ
+    /// ã‚²ãƒ¼ãƒ çµ‚äº†æº–å‚™
     /// </summary>
     public IEnumerator FinishGameCoroutine()
     {
@@ -818,15 +818,15 @@ public class RelayGameDirector : MonoBehaviour
         if (coroutineCountDown != null) StopCoroutine(coroutineCountDown);
         coroutineCountDown = null;
 
-        // ‘€ì‚ğ–³Œø‰»‚·‚é
+        // æ“ä½œã‚’ç„¡åŠ¹åŒ–ã™ã‚‹
         characterList[RoomModel.Instance.ConnectionId].GetComponent<PlayerController>().enabled = false;
-        characterList[RoomModel.Instance.ConnectionId].layer = 8;   // ƒMƒ~ƒbƒN‚È‚Ç‚Ì“–‚½‚è”»’è‚ğ–³‚­‚·
+        characterList[RoomModel.Instance.ConnectionId].layer = 8;   // ã‚®ãƒŸãƒƒã‚¯ãªã©ã®å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡ãã™
 
-        // ƒQ[ƒ€I—¹‚ÌUI‚ğ•\¦
+        // ã‚²ãƒ¼ãƒ çµ‚äº†æ™‚ã®UIã‚’è¡¨ç¤º
         areaController.FinishUI.SetActive(true);
-        yield return new WaitForSeconds(areaController.FinishUI.GetComponent<FinishUI>().animSec + 1f);  // —]‰C‚ÌŠÔ‚ğ‰ÁZ
+        yield return new WaitForSeconds(areaController.FinishUI.GetComponent<FinishUI>().animSec + 1f);  // ä½™éŸ»ã®æ™‚é–“ã‚’åŠ ç®—
 
-        // ƒQ[ƒ€I—¹ƒŠƒNƒGƒXƒg
+        // ã‚²ãƒ¼ãƒ çµ‚äº†ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         OnFinishGame();
     }
 }

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class EditPlayerUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
 
@@ -42,7 +42,7 @@ public class EditPlayerUIController : MonoBehaviour
             ui.transform.DOScale(endScale, 0.2f).SetEase(setEase);
         }
 
-        // ƒLƒƒƒ‰ƒNƒ^[‚ÌƒvƒƒtƒB[ƒ‹‚ğ•\¦E”ñ•\¦
+        // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã‚’è¡¨ç¤ºãƒ»éè¡¨ç¤º
         for (int i = 0; i < characterProfiles.Count; i++)
         {
             if (isVisibility)
@@ -57,7 +57,7 @@ public class EditPlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[•ÒWUI‚ğ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç·¨é›†UIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnSelectButton()
     {
@@ -76,7 +76,7 @@ public class EditPlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[•ÒWUI‚ğ”ñ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç·¨é›†UIã‚’éè¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnBackButton()
     {
@@ -89,21 +89,21 @@ public class EditPlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒXƒNƒ[ƒ‹ƒrƒ…[‚ğØ‚è‘Ö‚¦‚éƒ{ƒ^ƒ“
+    /// ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnChangeScrollViewButton()
     {
         foreach(var scrollView in scrollViewList)
         {
-            // •\¦E”ñ•\¦Ø‚è‘Ö‚¦
+            // è¡¨ç¤ºãƒ»éè¡¨ç¤ºåˆ‡ã‚Šæ›¿ãˆ
             scrollView.gameObject.SetActive(!scrollView.gameObject.activeSelf);
         }
-        if (scrollViewList[0].gameObject.activeSelf) changeButtonText.text = "ƒGƒ‚[ƒg";
-        if (!scrollViewList[0].gameObject.activeSelf) changeButtonText.text = "ƒLƒƒƒ‰ƒNƒ^[";
+        if (scrollViewList[0].gameObject.activeSelf) changeButtonText.text = "ã‚¨ãƒ¢ãƒ¼ãƒˆ";
+        if (!scrollViewList[0].gameObject.activeSelf) changeButtonText.text = "ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼";
     }
 
     /// <summary>
-    /// ƒ†[ƒU[–¼‚ğ•ÒW‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼åã‚’ç·¨é›†ã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnEditUserNameButton()
     {
@@ -114,14 +114,14 @@ public class EditPlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ†[ƒU[–¼‚ğ•ÏX‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼åã‚’å¤‰æ›´ã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public async void OnUpdateUserNameButtonAsync()
     {
         if (userName.text.Length <= 0 || userName.text == UserModel.Instance.UserName) return;
         if (NGWordModel.Instance.ContainsNGWord(userName.text))
         {
-            ErrorUIController.Instance.ShowErrorUI("g—p‚Å‚«‚È‚¢ƒ[ƒh‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B");
+            ErrorUIController.Instance.ShowErrorUI("ä½¿ç”¨ã§ããªã„ãƒ¯ãƒ¼ãƒ‰ãŒå«ã¾ã‚Œã¦ã„ã¾ã™ã€‚");
             return;
         }
 
@@ -150,7 +150,7 @@ public class EditPlayerUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒLƒƒƒ‰ƒNƒ^[ID•ÏXƒ{ƒ^ƒ“
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼IDå¤‰æ›´ãƒœã‚¿ãƒ³
     /// </summary>
     public async void OnUpdateCharacterIDButton(int characterId)
     {
@@ -169,7 +169,7 @@ public class EditPlayerUIController : MonoBehaviour
             return;
         }
 
-        // ƒLƒƒƒ‰ƒNƒ^[‚ÌƒvƒƒtƒB[ƒ‹‚ğ•ÏX‚·‚é
+        // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ã‚’å¤‰æ›´ã™ã‚‹
         for(int i = 0; i < characterProfiles.Count; i++)
         {
             if (i == characterId - 1) characterProfiles[i].SetActive(true);

@@ -10,7 +10,7 @@ using UnityEngine.TextCore.Text;
 
 public class TargetCameraController : MonoBehaviour
 {
-    #region ‹£‹ZwƒJƒ“ƒgƒŠ[ƒŠƒŒ[x‚ÌŠeƒGƒŠƒA–ˆ‚ÌƒJƒƒ‰İ’è
+    #region ç«¶æŠ€ã€ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ã€ã®å„ã‚¨ãƒªã‚¢æ¯ã®ã‚«ãƒ¡ãƒ©è¨­å®š
     [SerializeField] List<Vector3> rotate;
     [SerializeField] List<Vector3> followOffset;
     #endregion
@@ -19,9 +19,9 @@ public class TargetCameraController : MonoBehaviour
     CinemachineVirtualCamera cameraVirtual;
     CinemachineTransposer cameraTransposer;
 
-    int targetIndex;  // Œ»İ’Ç‚Á‚Ä‚¢‚éƒ^[ƒQƒbƒg‚ÌƒCƒ“ƒfƒbƒNƒX”Ô†
-    public Guid currentTargetId { get; private set; }   // Œ»İ’Ç‚Á‚Ä‚¢‚éƒ^[ƒQƒbƒg‚ÌKey
-    public int activeTargetCnt { get; private set; }    // Ø‚è‘Ö‚¦‚é‚±‚Æ‚ª‚Å‚«‚éƒ^[ƒQƒbƒg‚Ì‘ÎÛ‚Ì”
+    int targetIndex;  // ç¾åœ¨è¿½ã£ã¦ã„ã‚‹ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç•ªå·
+    public Guid currentTargetId { get; private set; }   // ç¾åœ¨è¿½ã£ã¦ã„ã‚‹ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®Key
+    public int activeTargetCnt { get; private set; }    // åˆ‡ã‚Šæ›¿ãˆã‚‹ã“ã¨ãŒã§ãã‚‹ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¯¾è±¡ã®æ•°
 
     [SerializeField] int debug_areaId = 0;
 
@@ -53,39 +53,39 @@ public class TargetCameraController : MonoBehaviour
     {
         if (target != null)
         {
-            // Œ³‚ÌDamping‚ğ•Û
+            // å…ƒã®Dampingã‚’ä¿æŒ
             float defDampingX = cameraTransposer.m_XDamping;
             float defDampingY = cameraTransposer.m_YDamping;
             float defDampingZ = cameraTransposer.m_ZDamping;
 
-            // Damping‚ğˆê“I‚ÉƒŠƒZƒbƒg
+            // Dampingã‚’ä¸€æ™‚çš„ã«ãƒªã‚»ãƒƒãƒˆ
             cameraTransposer.m_XDamping = 0;
             cameraTransposer.m_YDamping = 0;
             cameraTransposer.m_ZDamping = 0;
 
-            // ƒ^[ƒQƒbƒg‚ğˆê’U‰ğœ‚µ‚Äu‚ÉˆÚ“®
+            // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ä¸€æ—¦è§£é™¤ã—ã¦ç¬æ™‚ã«ç§»å‹•
             cameraVirtual.Follow = null;
             cameraVirtual.LookAt = null;
             transform.position = target.position + cameraTransposer.m_FollowOffset;
 
-            // ƒ^[ƒQƒbƒg‚ğÄİ’è
+            // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å†è¨­å®š
             cameraVirtual.Follow = target;
             cameraVirtual.LookAt = target;
             currentTargetId = targetId;
 
-            // ’x‰„Às‚ÅDamping‚ğŒ³‚É–ß‚·
+            // é…å»¶å®Ÿè¡Œã§Dampingã‚’å…ƒã«æˆ»ã™
             StartCoroutine(ResetDamping(defDampingX, defDampingY, defDampingZ));
         }
 
         if (rotate.Count == 0 || followOffset.Count == 0 || areaId == 0) return;
 
-        // ‹£‹ZwƒJƒ“ƒgƒŠ[ƒŠƒŒ[x‚Åg—p
+        // ç«¶æŠ€ã€ã‚«ãƒ³ãƒˆãƒªãƒ¼ãƒªãƒ¬ãƒ¼ã€ã§ä½¿ç”¨
         transform.eulerAngles = rotate[areaId];
         cameraTransposer.m_FollowOffset = followOffset[areaId];
     }
 
     /// <summary>
-    /// ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ÌØ‚è‘Ö‚¦æ‚ğ’T‚·&&Ø‚è‘Ö‚¦‚é
+    /// ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆå…ˆã‚’æ¢ã™&&åˆ‡ã‚Šæ›¿ãˆã‚‹
     /// </summary>
     /// <returns></returns>
     public bool SearchAndChangeTarget()
@@ -93,15 +93,15 @@ public class TargetCameraController : MonoBehaviour
         bool isSucsess = false;
         activeTargetCnt = 0;
 
-        // ƒLƒƒƒ‰ƒNƒ^[‚ÌKey‚ğæ“¾
+        // ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®Keyã‚’å–å¾—
         Guid[] guidCharacters = new Guid[gameDirector.characterList.Count];
         guidCharacters = gameDirector.characterList.Keys.ToArray();
 
-        // ƒ^[ƒQƒbƒg‚ÌŒŸõŠJn
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ¤œç´¢é–‹å§‹
         int tmpTargetIndex = targetIndex;
         for (int i = 0; i < guidCharacters.Length; i++)
         {
-            // key‚ğæ“¾
+            // keyã‚’å–å¾—
             tmpTargetIndex++;
             tmpTargetIndex = tmpTargetIndex < guidCharacters.Length ? tmpTargetIndex : 0;
             Guid key = guidCharacters[tmpTargetIndex];
@@ -109,7 +109,7 @@ public class TargetCameraController : MonoBehaviour
             if (!isSucsess && key != RoomModel.Instance.ConnectionId
                 && currentTargetId != key && gameDirector.characterList[key].activeSelf)
             {
-                // ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒgØ‚è‘Ö‚¦
+                // ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆåˆ‡ã‚Šæ›¿ãˆ
                 InitCamera(gameDirector.characterList[key].transform, 0, key);
                 isSucsess = true;
                 targetIndex = tmpTargetIndex;
@@ -122,7 +122,7 @@ public class TargetCameraController : MonoBehaviour
     }
 
     /// <summary>
-    /// (©•ª‚ğœ‚­)‘¼‚Éƒ^[ƒQƒbƒg‚Æ‚È‚éƒvƒŒƒCƒ„[‚ª‚¢‚é‚©ƒ`ƒFƒbƒN
+    /// (è‡ªåˆ†ã‚’é™¤ã)ä»–ã«ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
     /// </summary>
     /// <returns></returns>
     public bool IsOtherTarget()

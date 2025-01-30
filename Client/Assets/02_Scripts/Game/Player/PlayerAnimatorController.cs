@@ -15,10 +15,10 @@ public class PlayerAnimatorController : MonoBehaviour
     PlayerSkillController skillController;
     PlayerAudioController audioController;
 
-    // ƒmƒbƒNƒoƒbƒN’†‚©‚Ç‚¤‚©
+    // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ä¸­ã‹ã©ã†ã‹
     bool isKnockBackAnim;
 
-    #region ƒƒbƒVƒ…ŠÖŒW
+    #region ãƒ¡ãƒƒã‚·ãƒ¥é–¢ä¿‚
     [SerializeField] List<SkinnedMeshRenderer> skinnedMeshs;
     [SerializeField] MeshRenderer meshMain;
     #endregion
@@ -48,7 +48,7 @@ public class PlayerAnimatorController : MonoBehaviour
         Emoto_NenrikiDance
     }
 
-    // Å‰‚ÌƒGƒ‚[ƒgID
+    // æœ€åˆã®ã‚¨ãƒ¢ãƒ¼ãƒˆID
     public static ANIM_ID firstEmoteId = ANIM_ID.Emote_Bittan;
 
     private void Awake()
@@ -77,7 +77,7 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         if (isKnockBackAnim && GetComponent<PlayerIsGroundController>().IsGround())
         {
-            // ƒmƒbƒNƒoƒbƒN‚ğI—¹‚µAƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
+            // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã‚’çµ‚äº†ã—ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿ
             isKnockBackAnim = false;
             var angle = transform.eulerAngles;
             transform.eulerAngles = new Vector3(0, angle.y, angle.z);
@@ -87,16 +87,16 @@ public class PlayerAnimatorController : MonoBehaviour
 
     public void PlayAnimationFromFrame(float targetFlame,string animName)
     {
-        // ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌStateInfo‚ğæ“¾
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®StateInfoã‚’å–å¾—
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        // ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‘S‘ÌƒtƒŒ[ƒ€”‚ğŒvZ
+        // ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å…¨ä½“ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’è¨ˆç®—
         int totalFrames = Mathf.RoundToInt(stateInfo.length * stateInfo.speed * stateInfo.speedMultiplier * 60f);
 
-        // w’èƒtƒŒ[ƒ€‚ğ³‹K‰»ƒ^ƒCƒ€‚É•ÏŠ· (0`1)
+        // æŒ‡å®šãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æ­£è¦åŒ–ã‚¿ã‚¤ãƒ ã«å¤‰æ› (0ï½1)
         float normalizedTime = targetFlame / totalFrames;
 
-        // w’è‚µ‚½ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ³‹K‰»ƒ^ƒCƒ€‚©‚çÄ¶
+        // æŒ‡å®šã—ãŸã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ­£è¦åŒ–ã‚¿ã‚¤ãƒ ã‹ã‚‰å†ç”Ÿ
         animator.Play(animName, 0, normalizedTime);
     }
 
@@ -126,12 +126,12 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒŒƒCƒ„[—p
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”¨
     /// </summary>
     /// <param name="id"></param>
     public void SetInt(ANIM_ID id)
     {
-        if (!playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // ‘€ì•s”\ó‘Ô&&“¯‚¶ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚µ‚æ‚¤‚Æ‚µ‚½ê‡
+        if (!playerController.IsControlEnabled && GetAnimId() == (int)id) return;    // æ“ä½œä¸èƒ½çŠ¶æ…‹&&åŒã˜ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†ç”Ÿã—ã‚ˆã†ã¨ã—ãŸå ´åˆ
 
         if (id == ANIM_ID.Skill1_Hurricane || id == ANIM_ID.Skill2_Screwkick || id == ANIM_ID.Skill3_MachAura
             || id == ANIM_ID.Skill4_RollKick || id == ANIM_ID.Skill5_Stamp_Stamp)
@@ -158,14 +158,14 @@ public class PlayerAnimatorController : MonoBehaviour
         }
         if(id == ANIM_ID.Jump)
         {
-            animator.Play("Jump", 0, 0); // ‰‚ß‚©‚çÄ¶‚·‚é
+            animator.Play("Jump", 0, 0); // åˆã‚ã‹ã‚‰å†ç”Ÿã™ã‚‹
         }
 
-        // •à‚­‚ÌSEŠÖŒW
+        // æ­©ãæ™‚ã®SEé–¢ä¿‚
         if (id == ANIM_ID.Run || id == ANIM_ID.RunFast) audioController.PlayRunningSourse();
         else if(audioController != null) audioController.StopRunningSourse();
 
-        // ƒ‹[ƒv‚µ‚Ä‚¢‚éƒXƒLƒ‹‚ÌSE‚ğ’â~‚·‚é
+        // ãƒ«ãƒ¼ãƒ—ã—ã¦ã„ã‚‹ã‚¹ã‚­ãƒ«ã®SEã‚’åœæ­¢ã™ã‚‹
         if (GetAnimId() == (int)ANIM_ID.MachKick && id != ANIM_ID.MachKick) audioController.StopLoopSkillSourse();
 
         animator.SetInteger("animation", (int)id);
@@ -173,7 +173,7 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// NPC—p
+    /// NPCç”¨
     /// </summary>
     /// <param name="id"></param>
     public void SetInt(int id)
@@ -212,7 +212,7 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ID‚ğæ“¾
+    /// å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³IDã‚’å–å¾—
     /// </summary>
     /// <returns></returns>
     public int GetAnimId()
@@ -221,7 +221,7 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒGƒ‚[ƒg‚ğÄ¶’†‚©‚Ç‚¤‚©
+    /// ã‚¨ãƒ¢ãƒ¼ãƒˆã‚’å†ç”Ÿä¸­ã‹ã©ã†ã‹
     /// </summary>
     /// <returns></returns>
     public bool IsPlayingEmoteAnim()
@@ -238,7 +238,7 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚µ‚½
+    /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã—ãŸ
     /// </summary>
     public void OnEndAnim(bool isEndSkillAnim)
     {
@@ -249,7 +249,7 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒmƒbƒNƒoƒbƒN‰‰o
+    /// ãƒãƒƒã‚¯ãƒãƒƒã‚¯æ¼”å‡º
     /// </summary>
     public void PlayKnockBackAnim()
     {
@@ -262,20 +262,20 @@ public class PlayerAnimatorController : MonoBehaviour
     }
 
     /// <summary>
-    /// —§‚¿ã‚ª‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚µ‚½
+    /// ç«‹ã¡ä¸ŠãŒã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒçµ‚äº†ã—ãŸ
     /// </summary>
     public void OnEndStandUpAnim() 
     {
         playerController.IsStandUp = true;
 
-        // –³“Gó‘Ô‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
+        // ç„¡æ•µçŠ¶æ…‹ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
         StopCoroutine(FlashCoroutine());
         StartCoroutine(FlashCoroutine());
         SetInt(ANIM_ID.IdleB);
     }
 
     /// <summary>
-    /// “_–Åˆ—
+    /// ç‚¹æ»…å‡¦ç†
     /// </summary>
     /// <returns></returns>
     IEnumerator FlashCoroutine()

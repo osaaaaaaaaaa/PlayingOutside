@@ -28,19 +28,19 @@ public class SpectatingUI : MonoBehaviour
 
     public void OnChangeTargetBtn()
     {
-        // ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚ÌØ‚è‘Ö‚¦‚É¬Œ÷‚µ‚½ê‡
+        // ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆ‡ã‚Šæ›¿ãˆã«æˆåŠŸã—ãŸå ´åˆ
         if (camera.SearchAndChangeTarget())
         {
             textTargetName.SetActive(true);
             btnChangeTarget.SetActive(true);
 
-            // –¼‘Oæ“¾•ƒeƒLƒXƒg•ÏX
+            // åå‰å–å¾—ï¼†ãƒ†ã‚­ã‚¹ãƒˆå¤‰æ›´
             var name = RoomModel.Instance.JoinedUsers[camera.currentTargetId].UserData.Name;
-            textTargetName.GetComponent<Text>().text = name + "‚ğŠÏí’†";
+            textTargetName.GetComponent<Text>().text = name + "ã‚’è¦³æˆ¦ä¸­";
             SetupButton(true);
         }
 
-        // ƒJƒƒ‰‚Ìƒ^[ƒQƒbƒg‚Ì‘ÎÛ‚ª‚Pl‚µ‚©‚¢‚È‚¢(‚±‚êˆÈãØ‚è‘Ö‚¦‚ç‚ê‚È‚¢)ê‡
+        // ã‚«ãƒ¡ãƒ©ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¯¾è±¡ãŒï¼‘äººã—ã‹ã„ãªã„(ã“ã‚Œä»¥ä¸Šåˆ‡ã‚Šæ›¿ãˆã‚‰ã‚Œãªã„)å ´åˆ
         if (camera.activeTargetCnt == 1) SetupButton(false);
     }
 

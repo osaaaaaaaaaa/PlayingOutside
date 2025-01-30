@@ -34,7 +34,7 @@ public class Lotus : MonoBehaviour
                 }
                 else
                 {
-                    // ƒmƒbƒNƒ_ƒEƒ“ó‘Ô‚È‚Ç‚Ìê‡
+                    // ãƒãƒƒã‚¯ãƒ€ã‚¦ãƒ³çŠ¶æ…‹ãªã©ã®å ´åˆ
                     rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
                     rb.AddForce(collision.gameObject.transform.up * addPower);
                 }
@@ -46,7 +46,7 @@ public class Lotus : MonoBehaviour
     {
         if (character.layer != 8)
         {
-            // ƒmƒbƒNƒ_ƒEƒ“ó‘ÔˆÈŠO‚Ìê‡‚ÍƒWƒƒƒ“ƒvƒAƒjƒ[ƒVƒ‡ƒ“
+            // ãƒãƒƒã‚¯ãƒ€ã‚¦ãƒ³çŠ¶æ…‹ä»¥å¤–ã®å ´åˆã¯ã‚¸ãƒ£ãƒ³ãƒ—ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
             character.GetComponent<PlayerAnimatorController>().SetInt(PlayerAnimatorController.ANIM_ID.Jump);
         }
 

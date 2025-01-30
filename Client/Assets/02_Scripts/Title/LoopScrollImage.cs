@@ -25,7 +25,7 @@ public class LoopScrollImage : MonoBehaviour
 	{
 		if (m_material)
 		{
-			// x‚Æy‚Ì’l‚ª0 ` 1‚ÅƒŠƒs[ƒg‚·‚é‚æ‚¤‚É‚·‚é
+			// xã¨yã®å€¤ãŒ0 ï½ 1ã§ãƒªãƒ”ãƒ¼ãƒˆã™ã‚‹ã‚ˆã†ã«ã™ã‚‹
 			var x = Mathf.Repeat(Time.time * m_offsetSpeed.x, k_maxLength);
 			var y = Mathf.Repeat(Time.time * m_offsetSpeed.y, k_maxLength);
 			var offset = new Vector2(x, y);
@@ -35,7 +35,7 @@ public class LoopScrollImage : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		// ƒQ[ƒ€‚ğ‚â‚ß‚½Œã‚Éƒ}ƒeƒŠƒAƒ‹‚ÌOffset‚ğ–ß‚µ‚Ä‚¨‚­
+		// ã‚²ãƒ¼ãƒ ã‚’ã‚„ã‚ãŸå¾Œã«ãƒãƒ†ãƒªã‚¢ãƒ«ã®Offsetã‚’æˆ»ã—ã¦ãŠã
 		if (m_material)
 		{
 			m_material.SetTextureOffset(k_propName, Vector2.zero);

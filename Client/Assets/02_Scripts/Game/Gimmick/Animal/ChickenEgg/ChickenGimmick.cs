@@ -7,24 +7,24 @@ using UnityEngine.TextCore.Text;
 
 public class ChickenGimmick : MonoBehaviour
 {
-    #region ’e‚Ì’…’e’n“_‚ÌPrefab‚Æ¶¬”ÍˆÍ
+    #region å¼¾ã®ç€å¼¾åœ°ç‚¹ã®Prefabã¨ç”Ÿæˆç¯„å›²
     [SerializeField] GameObject eggWarningPrefab;
     [SerializeField] GameObject eggWarningMegaPrefab;
     [SerializeField] Transform minRange;
     [SerializeField] Transform maxRange;
     #endregion
 
-    #region áŠQ•¨‚Ì‚ ‚é”ÍˆÍ
+    #region éšœå®³ç‰©ã®ã‚ã‚‹ç¯„å›²
     [SerializeField] List<GameObject> obstacles;
     List<Vector3> obstaclesMaxRange = new List<Vector3>();
     List<Vector3> obstaclesMinRange = new List<Vector3>();
     #endregion
 
-    #region ğŒŠÖŒW
+    #region æ¡ä»¶é–¢ä¿‚
     [SerializeField] bool isMegaChicken = false;
-    [SerializeField] bool isOneShot;    // ƒXƒNƒŠƒvƒg‚ªƒAƒNƒeƒBƒuó‘Ô‚É‚È‚é‚½‚Ñ‚ÉA‚P“x‚Ì‚İƒMƒ~ƒbƒN‚ğ”­“®‚·‚é
-    [SerializeField] int maxEggNum = 3; // ƒ^[ƒQƒbƒg1l‚É‚Â‚«”­Ë‚·‚é—‘‚ÌÅ‘å”
-    bool isTriggering;  // ”­“®Ï‚İ‚©‚Ç‚¤‚©
+    [SerializeField] bool isOneShot;    // ã‚¹ã‚¯ãƒªãƒ—ãƒˆãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã«ãªã‚‹ãŸã³ã«ã€ï¼‘åº¦ã®ã¿ã‚®ãƒŸãƒƒã‚¯ã‚’ç™ºå‹•ã™ã‚‹
+    [SerializeField] int maxEggNum = 3; // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ1äººã«ã¤ãç™ºå°„ã™ã‚‹åµã®æœ€å¤§æ•°
+    bool isTriggering;  // ç™ºå‹•æ¸ˆã¿ã‹ã©ã†ã‹
     #endregion
 
     List<GameObject> targetList = new List<GameObject>();
@@ -99,7 +99,7 @@ public class ChickenGimmick : MonoBehaviour
     }
 
     /// <summary>
-    /// ’e‚Ì’…’e’n“_‚ğ¶¬‚·‚é
+    /// å¼¾ã®ç€å¼¾åœ°ç‚¹ã‚’ç”Ÿæˆã™ã‚‹
     /// </summary>
     /// <param name="points"></param>
     public void GenerateEggBulletWarning(Vector3[] points)
@@ -155,7 +155,7 @@ public class ChickenGimmick : MonoBehaviour
     }
 
     /// <summary>
-    /// ’e‚Ì’…’e’n“_‚ğæ“¾‚·‚é
+    /// å¼¾ã®ç€å¼¾åœ°ç‚¹ã‚’å–å¾—ã™ã‚‹
     /// </summary>
     /// <returns></returns>
     List<Vector3> GetWarningPoints()
@@ -215,7 +215,7 @@ public class ChickenGimmick : MonoBehaviour
     }
 
     /// <summary>
-    /// áŠQ•¨‚ÆÀ•W‚ª‚©‚Ô‚Á‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN
+    /// éšœå®³ç‰©ã¨åº§æ¨™ãŒã‹ã¶ã£ã¦ã„ãªã„ã‹ãƒã‚§ãƒƒã‚¯
     /// </summary>
     /// <param name="point"></param>
     /// <returns></returns>
@@ -234,31 +234,31 @@ public class ChickenGimmick : MonoBehaviour
     }
 
     /// <summary>
-    /// áŠQ•¨‚Ì’¸“_À•W(0:max,1:min)‚ğæ“¾‚·‚é
+    /// éšœå®³ç‰©ã®é ‚ç‚¹åº§æ¨™(0:max,1:min)ã‚’å–å¾—ã™ã‚‹
     /// </summary>
     /// <returns></returns>
     Vector3[] GetObstacleRanges(GameObject obstacle)
     {
-        // ƒIƒuƒWƒFƒNƒg‚ªMeshFilter‚ğ‚Á‚Ä‚¢‚é‚±‚Æ‚ğŠm”F
+        // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒMeshFilterã‚’æŒã£ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèª
         MeshFilter meshFilter = obstacle.GetComponent<MeshFilter>();
         if (meshFilter == null) return null;
 
-        // Meshî•ñ‚ğæ“¾
+        // Meshæƒ…å ±ã‚’å–å¾—
         Mesh mesh = meshFilter.mesh;
         Vector3[] vertices = mesh.vertices;
         Vector3 maxRange = Vector3.zero;
         Vector3 minRange = Vector3.zero;
 
-        // ƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·‚µ‚Ä’¸“_‚ÌˆÊ’u‚ğo—Í
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›ã—ã¦é ‚ç‚¹ã®ä½ç½®ã‚’å‡ºåŠ›
         for (int i = 0; i < vertices.Length; i++)
         {
-            Vector3 worldPosition = obstacle.transform.TransformPoint(vertices[i]); // ƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·
+            Vector3 worldPosition = obstacle.transform.TransformPoint(vertices[i]); // ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›
 
-            // ‰‰ñ‚Ì‚İİ’è
+            // åˆå›æ™‚ã®ã¿è¨­å®š
             if(maxRange == Vector3.zero) maxRange = worldPosition;
             if(minRange == Vector3.zero) minRange = worldPosition;
 
-            // Å‘å‚ÆÅ¬‚Ì’¸“_‚ğæ“¾‚·‚é
+            // æœ€å¤§ã¨æœ€å°ã®é ‚ç‚¹ã‚’å–å¾—ã™ã‚‹
             if (maxRange.x < worldPosition.x) maxRange.x = worldPosition.x;
             if (maxRange.z < worldPosition.z) maxRange.z = worldPosition.z;
             if (minRange.x > worldPosition.x) minRange.x = worldPosition.x;
@@ -272,8 +272,8 @@ public class ChickenGimmick : MonoBehaviour
     }
 
     /// <summary>
-    /// [ƒ}ƒXƒ^[ƒNƒ‰ƒCƒAƒ“ƒg—p]
-    /// ’e‚Ì’…’e’n“_‚ğ‹¤—L‚·‚é
+    /// [ãƒã‚¹ã‚¿ãƒ¼ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆç”¨]
+    /// å¼¾ã®ç€å¼¾åœ°ç‚¹ã‚’å…±æœ‰ã™ã‚‹
     /// </summary>
     /// <param name="name"></param>
     /// <param name="points"></param>

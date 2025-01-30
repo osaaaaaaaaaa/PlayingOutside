@@ -45,7 +45,7 @@ public class MoveSetRoot : MonoBehaviour
     }
 
     /// <summary>
-    /// 再生再開処理
+    /// 蜀咲函蜀埼幕蜃ｦ逅�
     /// </summary>
     /// <param name="_elapsedTime"></param>
     public void ResumeTween()
@@ -55,7 +55,7 @@ public class MoveSetRoot : MonoBehaviour
     }
 
     /// <summary>
-    /// 現在位置の同期(マスタークライアントから受信)
+    /// 迴ｾ蝨ｨ菴咲ｽｮ縺ｮ蜷梧悄(繝槭せ繧ｿ繝ｼ繧ｯ繝ｩ繧､繧｢繝ｳ繝医°繧牙女菫｡)
     /// </summary>
     /// <param name="movingObjectState"></param>
     /// <param name="animSec"></param>

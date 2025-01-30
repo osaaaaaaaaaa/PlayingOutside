@@ -7,16 +7,16 @@ using Server.Model.Entity;
 
 public class RankingUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
 
-    #region ‘Sƒ†[ƒU[‚Ìƒ‰ƒ“ƒLƒ“ƒOŠÖŒW
+    #region å…¨ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢ä¿‚
     [SerializeField] GameObject scrollViewGlobal;
     [SerializeField] Transform contentViewGlobal;
     #endregion
 
-    #region ƒtƒHƒ[‚µ‚Ä‚¢‚éƒ†[ƒU[‚Ì‚İ‚Ìƒ‰ƒ“ƒLƒ“ƒOŠÖŒW
+    #region ãƒ•ã‚©ãƒ­ãƒ¼ã—ã¦ã„ã‚‹ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ã¿ã®ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢ä¿‚
     [SerializeField] GameObject scrollViewFollowing;
     [SerializeField] Transform contentViewFollowing;
     #endregion
@@ -49,7 +49,7 @@ public class RankingUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ‰ƒ“ƒLƒ“ƒOUI‚ğ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ©ãƒ³ã‚­ãƒ³ã‚°UIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public async void OnSelectButton()
     {
@@ -64,7 +64,7 @@ public class RankingUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ‰ƒ“ƒLƒ“ƒOUI‚ğ”ñ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ©ãƒ³ã‚­ãƒ³ã‚°UIã‚’éè¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnBackButton()
     {
@@ -79,7 +79,7 @@ public class RankingUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ‰ƒ“ƒLƒ“ƒO‚Ì•\¦“à—e‚ğØ‚è‘Ö‚¦‚é
+    /// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®è¡¨ç¤ºå†…å®¹ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
     /// </summary>
     public void SwitchContentView()
     {
@@ -90,10 +90,10 @@ public class RankingUIController : MonoBehaviour
 
     async void ShowGlobalRanking()
     {
-        switchViewText.text = "ƒtƒHƒ[‚Ì‚İ";
+        switchViewText.text = "ãƒ•ã‚©ãƒ­ãƒ¼ã®ã¿";
         scrollViewFollowing.SetActive(false);
         scrollViewGlobal.SetActive(true);
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewGlobal)
         {
             Destroy(child.gameObject);
@@ -104,7 +104,7 @@ public class RankingUIController : MonoBehaviour
         {
             List<RatingRanking> rankingUserList = new List<RatingRanking>(rankingUsers);
 
-            // ~‡‚Éƒ\[ƒg
+            // é™é †ã«ã‚½ãƒ¼ãƒˆ
             rankingUserList.Sort((a, b) => b.Rating - a.Rating);
 
             for (int i = 0; i < rankingUserList.Count; i++)
@@ -120,10 +120,10 @@ public class RankingUIController : MonoBehaviour
 
     async void ShowFollowingRanking()
     {
-        switchViewText.text = "‘Sƒ†[ƒU[";
+        switchViewText.text = "å…¨ãƒ¦ãƒ¼ã‚¶ãƒ¼";
         scrollViewGlobal.SetActive(false);
         scrollViewFollowing.SetActive(true);
-        // ƒXƒNƒ[ƒ‹ƒrƒ…[‚ÌƒRƒ“ƒeƒ“ƒc‚Ì’†g‚ğƒNƒŠƒA‚·‚é
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ãƒ“ãƒ¥ãƒ¼ã®ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ä¸­èº«ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
         foreach (Transform child in contentViewFollowing)
         {
             Destroy(child.gameObject);
@@ -140,7 +140,7 @@ public class RankingUIController : MonoBehaviour
                 Rating = RatingModel.Instance.Rating,
             });
 
-            // ~‡‚Éƒ\[ƒg
+            // é™é †ã«ã‚½ãƒ¼ãƒˆ
             rankingUserList.Sort((a, b) => b.Rating - a.Rating);
 
             for (int i = 0; i < rankingUserList.Count; i++)

@@ -22,7 +22,7 @@ public class FollowUserUI : MonoBehaviour
         targetUserId = user.UserId;
         iconImg.sprite = characterIcon;
         userNameText.text = user.UserName;
-        rateText.text = "ƒŒ[ƒgF" + user.Rating;
+        rateText.text = "ãƒ¬ãƒ¼ãƒˆï¼š" + user.Rating;
         mutualFollowerIcon.SetActive(user.IsMutualFollow);
         inserButton.SetActive(!IsFollowing);
         inserButton.GetComponent<Button>().interactable = true;
@@ -34,7 +34,7 @@ public class FollowUserUI : MonoBehaviour
     {
         inserButton.GetComponent<Button>().interactable = false;
 
-        // ƒtƒHƒ[“o˜^ˆ—
+        // ãƒ•ã‚©ãƒ­ãƒ¼ç™»éŒ²å‡¦ç†
         bool isSucsess = await FollowModel.Instance.RegistFollowAsync(UserModel.Instance.UserId, targetUserId);
         removeButton.GetComponent<Button>().interactable = true;
         if (!isSucsess) return;
@@ -48,7 +48,7 @@ public class FollowUserUI : MonoBehaviour
     {
         removeButton.GetComponent<Button>().interactable = false;
 
-        // ƒtƒHƒ[‰ğœˆ—
+        // ãƒ•ã‚©ãƒ­ãƒ¼è§£é™¤å‡¦ç†
         bool isSucsess = await FollowModel.Instance.RemoveFollowAsync(UserModel.Instance.UserId, targetUserId);
         inserButton.GetComponent<Button>().interactable = true;
         if (!isSucsess) return;

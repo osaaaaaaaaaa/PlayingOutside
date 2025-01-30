@@ -80,7 +80,7 @@ public class Goose : MonoBehaviour
             {
                 if (target == null) return;
 
-                // ’ÇÕ”ÍˆÍŠO,ƒ^[ƒQƒbƒg‚ª–³“Gó‘Ô,ƒ^[ƒQƒbƒg‚Æ‚ÌŠÔ‚É’n–Ê‚ª‚È‚¢ê‡
+                // è¿½è·¡ç¯„å›²å¤–,ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒç„¡æ•µçŠ¶æ…‹,ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã®é–“ã«åœ°é¢ãŒãªã„å ´åˆ
                 float targetDis = Mathf.Abs(Vector3.Distance(transform.position, target.transform.position));
                 float disY = Mathf.Abs(transform.position.y - target.transform.position.y);
                 if (targetDis > trackingDis || disY > 1 
@@ -104,7 +104,7 @@ public class Goose : MonoBehaviour
 
         if (currentTarget != null)
         {
-            // ’ÇÕ”ÍˆÍ‚©‚ç—£‚ê‚½ || æ‚É’n–Ê‚ª‚È‚¢ || –³“Gó‘Ô‚Ìê‡
+            // è¿½è·¡ç¯„å›²ã‹ã‚‰é›¢ã‚ŒãŸ || å…ˆã«åœ°é¢ãŒãªã„ || ç„¡æ•µçŠ¶æ…‹ã®å ´åˆ
             float distance = Mathf.Abs(Vector3.Distance(transform.position, currentTarget.transform.position));
             if (distance > trackingDis || !IsGround(currentTarget.transform.position) || currentTarget.GetComponent<PlayerController>().IsInvincible)
             {
@@ -115,7 +115,7 @@ public class Goose : MonoBehaviour
                 return;
             }
 
-            // ƒ^[ƒQƒbƒg‚Æ‚Ì‹——£‚ªË’ö‹——£‚Ìê‡
+            // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã®è·é›¢ãŒå°„ç¨‹è·é›¢ã®å ´åˆ
             if (distance <= attackDis)
             {
                 Attack();
@@ -170,7 +170,7 @@ public class Goose : MonoBehaviour
     void DOMove(ANIM_ID playAnimId, float trackingSpeed)
     {
         SetAnimId(playAnimId);
-        transform.forward = Vector3.Slerp(transform.forward, new Vector3(moveX, 0, moveZ), Time.deltaTime * 30f);   // ‰ñ“]‘¬“x‚ğ‚©‚¯‚é
+        transform.forward = Vector3.Slerp(transform.forward, new Vector3(moveX, 0, moveZ), Time.deltaTime * 30f);   // å›è»¢é€Ÿåº¦ã‚’ã‹ã‘ã‚‹
         rb.velocity = new Vector3(moveX * trackingSpeed, rb.velocity.y, moveZ * trackingSpeed);
     }
 
@@ -212,10 +212,10 @@ public class Goose : MonoBehaviour
 
     public void Attack()
     {
-        // ƒ^[ƒQƒbƒg‚Ì•ûŒü‚ğŒü‚­
+        // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ–¹å‘ã‚’å‘ã
         var dir = currentTarget.transform.position - transform.position;
         var lookAtRotation = Quaternion.LookRotation(dir, Vector3.up);
-        var angles = Vector3.Scale(lookAtRotation.eulerAngles, Vector3.up); // ƒvƒŒƒCƒ„[‚Ìƒsƒ{ƒbƒg‚ª‘«Œ³‚Ì‚½‚ßYˆÈŠO‚Í0‚É‚·‚é
+        var angles = Vector3.Scale(lookAtRotation.eulerAngles, Vector3.up); // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ”ãƒœãƒƒãƒˆãŒè¶³å…ƒã®ãŸã‚Yä»¥å¤–ã¯0ã«ã™ã‚‹
         transform.eulerAngles = angles;
 
         isControllEnable = true;
@@ -255,7 +255,7 @@ public class Goose : MonoBehaviour
     }
 
     /// <summary>
-    /// ©•ª‚Æƒ^[ƒQƒbƒg‚Æ‚ÌŠÔ‚É’n–Ê‚ª‚ ‚é‚©ƒ`ƒFƒbƒN
+    /// è‡ªåˆ†ã¨ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã®é–“ã«åœ°é¢ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
     /// </summary>
     /// <param name="targetPos"></param>
     /// <returns></returns>
@@ -275,7 +275,7 @@ public class Goose : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<BoundaryAreaCollider>())
         {
-            // êŠO‚É—‚¿‚½ê‡
+            // å ´å¤–ã«è½ã¡ãŸå ´åˆ
             transform.position = startPos;
         }
     }

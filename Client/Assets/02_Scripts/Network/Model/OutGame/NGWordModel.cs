@@ -14,13 +14,13 @@ public class NGWordModel : BaseModel
 {
     public List<string> NGWords { get; private set; } = new List<string>();
 
-    // ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
     private static NGWordModel instance;
     public static NGWordModel Instance
     {
         get
         {
-            // GETƒvƒƒpƒeƒB‚ğŒÄ‚Î‚ê‚½‚Æ‚«‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é(‰‰ñ‚Ì‚İ)
+            // GETãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‘¼ã°ã‚ŒãŸã¨ãã«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹(åˆå›ã®ã¿)
             if (instance == null)
             {
                 GameObject gameObj = new GameObject("NGWordModel");
@@ -32,18 +32,18 @@ public class NGWordModel : BaseModel
     }
 
     /// <summary>
-    /// NGƒ[ƒhæ“¾API
+    /// NGãƒ¯ãƒ¼ãƒ‰å–å¾—API
     /// </summary>
     /// <returns></returns>
     public async UniTask<string[]> ShowNGWordAsync()
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<INGWordService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             var response = await client.ShowNGWordAsync();
             NGWords = new List<string>(response);
             NGWords.Add(" ");
@@ -51,7 +51,7 @@ public class NGWordModel : BaseModel
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e.Status.Detail);
             return null;
         }

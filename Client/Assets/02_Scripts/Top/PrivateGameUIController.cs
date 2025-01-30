@@ -8,11 +8,11 @@ using Server.Model.Entity;
 
 public class PrivateGameUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
 
-    #region ‰‚ß‚É•\Ž¦‚³‚ê‚éƒƒjƒ…[
+    #region åˆã‚ã«è¡¨ç¤ºã•ã‚Œã‚‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼
     [SerializeField] GameObject menu;
     [SerializeField] InputField inputFieldRoomName;
     [SerializeField] GameObject buttonJoinRoom;
@@ -50,7 +50,7 @@ public class PrivateGameUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒ‰ƒCƒx[ƒgƒ}ƒbƒ`UI‚ð•\Ž¦‚·‚éƒ{ƒ^ƒ“
+    /// ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆãƒžãƒƒãƒUIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnSelectButton()
     {
@@ -63,7 +63,7 @@ public class PrivateGameUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒvƒ‰ƒCƒx[ƒgƒ}ƒbƒ`UI‚ð•Â‚¶‚éƒ{ƒ^ƒ“
+    /// ãƒ—ãƒ©ã‚¤ãƒ™ãƒ¼ãƒˆãƒžãƒƒãƒUIã‚’é–‰ã˜ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnBackButton()
     {
@@ -75,14 +75,14 @@ public class PrivateGameUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ŽQ‰Á‚·‚éƒ{ƒ^ƒ“
+    /// å‚åŠ ã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnJoinButton()
     {
         if (inputFieldRoomName.text == "") return;
         if (NGWordModel.Instance.ContainsNGWord(inputFieldRoomName.text))
         {
-            ErrorUIController.Instance.ShowErrorUI("Žg—p‚Å‚«‚È‚¢ƒ[ƒh‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B");
+            ErrorUIController.Instance.ShowErrorUI("ä½¿ç”¨ã§ããªã„ãƒ¯ãƒ¼ãƒ‰ãŒå«ã¾ã‚Œã¦ã„ã¾ã™ã€‚");
             return;
         }
 

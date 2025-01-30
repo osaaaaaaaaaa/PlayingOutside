@@ -15,20 +15,20 @@ using UnityEngine;
 
 public class UserModel : BaseModel
 {
-    #region ƒ†[ƒU[î•ñ
+    #region ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±
     public string AuthToken { get; private set; } = "";
     public int UserId { get; private set; } = 0;
     public string UserName { get; private set; } = "";
     public int CharacterId { get; private set; } = 0;
     #endregion
 
-    // ƒCƒ“ƒXƒ^ƒ“ƒXì¬
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ä½œæˆ
     private static UserModel instance;
     public static UserModel Instance
     {
         get
         {
-            // GETƒvƒƒpƒeƒB‚ğŒÄ‚Î‚ê‚½‚Æ‚«‚ÉƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚·‚é(‰‰ñ‚Ì‚İ)
+            // GETãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‘¼ã°ã‚ŒãŸã¨ãã«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã™ã‚‹(åˆå›ã®ã¿)
             if (instance == null)
             {
                 GameObject gameObj = new GameObject("UserModel");
@@ -40,7 +40,7 @@ public class UserModel : BaseModel
     }
 
     /// <summary>
-    /// ƒ†[ƒU[î•ñ‚ğƒ[ƒJƒ‹‚É•Û‘¶‚·‚é
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã‚’ãƒ­ãƒ¼ã‚«ãƒ«ã«ä¿å­˜ã™ã‚‹
     /// </summary>
     public void SaveUserData()
     {
@@ -52,19 +52,19 @@ public class UserModel : BaseModel
         saveData.SEVolume = AudioVolume.SeVolume;
 
         string json = JsonConvert.SerializeObject(saveData);
-        // Application.persistentDataPath‚ÍOS–ˆ‚Å•Û‘¶êŠ‚ªŒÅ’è‚³‚ê‚Ä‚¢‚é
+        // Application.persistentDataPathã¯OSæ¯ã§ä¿å­˜å ´æ‰€ãŒå›ºå®šã•ã‚Œã¦ã„ã‚‹
         var writer = new StreamWriter(Application.persistentDataPath + "/saveData.json");
         writer.Write(json);
-        writer.Flush();     // ‚·‚®‚É‘‚«o‚·‚æ‚¤–½—ß‚·‚é
+        writer.Flush();     // ã™ãã«æ›¸ãå‡ºã™ã‚ˆã†å‘½ä»¤ã™ã‚‹
         writer.Close();
     }
 
     /// <summary>
-    /// ƒ†[ƒU[î•ñ‚ğƒ[ƒJƒ‹‚©‚ç“Ç‚İ‚Ş
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã‚’ãƒ­ãƒ¼ã‚«ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€
     /// </summary>
     public bool LoadUserData()
     {
-        // ƒtƒ@ƒCƒ‹‚Ì‘¶İƒ`ƒFƒbƒN
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
         if (!File.Exists(Application.persistentDataPath + "/saveData.json")) return false;
 
         var reader = new StreamReader(Application.persistentDataPath + "/saveData.json");
@@ -80,50 +80,50 @@ public class UserModel : BaseModel
     }
 
     /// <summary>
-    /// ƒ†[ƒU[“o˜^API
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼ç™»éŒ²API
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
     public async UniTask<string> RegistUserAsync(string name)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IUserService>(channel);
         try
         {
-            // “o˜^¬Œ÷
+            // ç™»éŒ²æˆåŠŸ
             var user = await client.RegistUserAsync(name);
             AuthToken = user.Token;
             UserId = user.Id;
             UserName = user.Name;
             CharacterId = user.Character_Id;
 
-            // ƒ[ƒJƒ‹‚É•Û‘¶
+            // ãƒ­ãƒ¼ã‚«ãƒ«ã«ä¿å­˜
             SaveUserData();
 
             return null;
         }
         catch(RpcException e)
         {
-            // “o˜^¸”s
+            // ç™»éŒ²å¤±æ•—
             Debug.Log(e);
-            return "ƒ†[ƒU[‚Ì“o˜^‚É¸”s‚µ‚Ü‚µ‚½B’ÊMŠÂ‹«‚Ì—Ç‚¢Š‚Å—V‚Ô‚©AƒAƒvƒŠ‚ğÄ‹N“®‚µ‚Ä‚­‚¾‚³‚¢B";
+            return "ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ç™»éŒ²ã«å¤±æ•—ã—ã¾ã—ãŸã€‚é€šä¿¡ç’°å¢ƒã®è‰¯ã„æ‰€ã§éŠã¶ã‹ã€ã‚¢ãƒ—ãƒªã‚’å†èµ·å‹•ã—ã¦ãã ã•ã„ã€‚";
         }
     }
 
     /// <summary>
-    /// ƒ†[ƒU[î•ñæ“¾API
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—API
     /// </summary>
     /// <returns></returns>
     public async UniTask<string> ShowUserAsync(int userId)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IUserService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             var user = await client.ShowUserAsync(userId);
             AuthToken = user.Token;
             UserId = user.Id;
@@ -134,7 +134,7 @@ public class UserModel : BaseModel
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
             return e.Status.Detail;
         }
@@ -142,19 +142,19 @@ public class UserModel : BaseModel
     }
 
     /// <summary>
-    /// ƒ†[ƒU[î•ñXVAPI
+    /// ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±æ›´æ–°API
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
     public async UniTask<string> UpdateUserAsync(User request)
     {
         var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // ’ÊMŒo˜Hì¬
+        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler }); // é€šä¿¡çµŒè·¯ä½œæˆ
         var client = MagicOnionClient.Create<IUserService>(channel);
 
         try
         {
-            // æ“¾¬Œ÷
+            // å–å¾—æˆåŠŸ
             await client.UpdateUserAsync(request);
             UserName = request.Name;
             CharacterId = request.Character_Id;
@@ -162,9 +162,9 @@ public class UserModel : BaseModel
         }
         catch (RpcException e)
         {
-            // æ“¾¸”s
+            // å–å¾—å¤±æ•—
             Debug.Log(e);
-            return "ƒ†[ƒU[î•ñ‚ğXV‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B";
+            return "ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ã‚’æ›´æ–°ã§ãã¾ã›ã‚“ã§ã—ãŸã€‚";
         }
     }
 }

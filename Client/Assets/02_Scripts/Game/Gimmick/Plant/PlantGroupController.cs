@@ -26,7 +26,7 @@ public class PlantGroupController : MonoBehaviour
     }
 
     /// <summary>
-    /// ”jŠü‚·‚éA•¨‚Ì’Š‘I
+    /// ç ´æ£„ã™ã‚‹æ¤ç‰©ã®æŠ½é¸
     /// </summary>
     /// <returns></returns>
     int[] LotteryDestroyIndexs()
@@ -34,7 +34,7 @@ public class PlantGroupController : MonoBehaviour
         int[] indexs = new int[destroyCnt];
         for (int i = 0; i < indexs.Length; i++)
         {
-            indexs[i] = 99999;  // ”äŠr‚Å‚«‚È‚­‚È‚é‚½‚ßA‰Šú’l‚ğ0‚©‚ç•Ï‚¦‚é
+            indexs[i] = 99999;  // æ¯”è¼ƒã§ããªããªã‚‹ãŸã‚ã€åˆæœŸå€¤ã‚’0ã‹ã‚‰å¤‰ãˆã‚‹
         }
 
         for (int i = 0; i < indexs.Length; i++)
@@ -54,12 +54,12 @@ public class PlantGroupController : MonoBehaviour
     }
 
     /// <summary>
-    /// ”jŠü‚·‚é‘ÎÛ‚Ì–¼‘Oæ“¾
+    /// ç ´æ£„ã™ã‚‹å¯¾è±¡ã®åå‰å–å¾—
     /// </summary>
     /// <returns></returns>
     public string[] GetDestroyPlantNames()
     {
-        // ”jŠüÏ‚İ‚Å‚ ‚ê‚Îˆ—‚ğI—¹
+        // ç ´æ£„æ¸ˆã¿ã§ã‚ã‚Œã°å‡¦ç†ã‚’çµ‚äº†
         for (int cnt = 0; cnt < hidePlants.Count; cnt++)
         {
             if (hidePlants[cnt] == null)
@@ -76,12 +76,12 @@ public class PlantGroupController : MonoBehaviour
             if (hidePlants[index] != null)
             {
                 names[i] = hidePlants[index].name;
-                Debug.Log("”jŠü‚·‚é–¼‘OF" + names[i]);
+                Debug.Log("ç ´æ£„ã™ã‚‹åå‰ï¼š" + names[i]);
             }
             else
             {
                 names[i] = "";
-                Debug.Log(this.name + "‚Ì’Š‘I‚Ånull‚ª”­¶[" + index + "]");
+                Debug.Log(this.name + "ã®æŠ½é¸ã§nullãŒç™ºç”Ÿ[" + index + "]");
             }
             i++;
         }
@@ -90,7 +90,7 @@ public class PlantGroupController : MonoBehaviour
 
     }
     /// <summary>
-    /// A•¨‚ğ”jŠü‚·‚é
+    /// æ¤ç‰©ã‚’ç ´æ£„ã™ã‚‹
     /// </summary>
     /// <param name="indexs"></param>
     public void DestroyPlants(string[] names)

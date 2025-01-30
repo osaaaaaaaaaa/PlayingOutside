@@ -21,14 +21,14 @@ public class MegaCoop : MonoBehaviour
     {
         if (isPlayAnim) return;
 
-        // ƒ_ƒ[ƒWƒRƒ‰ƒCƒ_[‚Ìæ“¾ƒ`ƒFƒbƒN
+        // ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®å–å¾—ãƒã‚§ãƒƒã‚¯
         var damageCompornent = other.GetComponent<DamageCollider>();
         if (damageCompornent == null) return;
 
         var playerController = damageCompornent.root.GetComponent<PlayerController>();
         if (playerController != null)
         {
-            // NPC‚Å‚Í‚È‚¢ê‡
+            // NPCã§ã¯ãªã„å ´åˆ
             if (playerController.gameObject.layer == 3)
             {
                 if (RoomModel.Instance.userState == RoomModel.USER_STATE.joined)
@@ -44,7 +44,7 @@ public class MegaCoop : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ_ƒ[ƒW‚ğó‚¯‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚·‚é
+    /// ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’å—ã‘ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†ç”Ÿã™ã‚‹
     /// </summary>
     public void PlayDamageAnim()
     {
@@ -57,16 +57,16 @@ public class MegaCoop : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒMƒ~ƒbƒN”­“®ƒŠƒNƒGƒXƒg
+    /// ã‚®ãƒŸãƒƒã‚¯ç™ºå‹•ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
     /// </summary>
     async void PlayCoopGimmickAsynk()
     {
-        // Tween”­“®ƒŠƒNƒGƒXƒg
+        // Tweenç™ºå‹•ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
         await RoomModel.Instance.TriggerMegaCoopAsynk();
     }
 
     /// <summary>
-    /// ƒƒKŒ{‚ª‰B‚ê‚éˆ—‚ªŠ®—¹‚µ‚½‚Æ‚«
+    /// ãƒ¡ã‚¬é¶ãŒéš ã‚Œã‚‹å‡¦ç†ãŒå®Œäº†ã—ãŸã¨ã
     /// </summary>
     public async void OnHideMegaChickenTween()
     {
@@ -81,7 +81,7 @@ public class MegaCoop : MonoBehaviour
     }
 
     /// <summary>
-    /// Œ{¬‰®‚ÌƒMƒ~ƒbƒNI—¹’Ê’m‚ğóM‚µ‚½‚Æ‚«
+    /// é¶å°å±‹ã®ã‚®ãƒŸãƒƒã‚¯çµ‚äº†é€šçŸ¥ã‚’å—ä¿¡ã—ãŸã¨ã
     /// </summary>
     public void OnTriggerEnd()
     {

@@ -55,7 +55,7 @@ public class HidePlant : MonoBehaviour
     }
 
     /// <summary>
-    /// 植物のギミックを発動するリクエストを送信する
+    /// 讀咲黄縺ｮ繧ｮ繝溘ャ繧ｯ繧堤匱蜍輔☆繧九Μ繧ｯ繧ｨ繧ｹ繝医ｒ騾∽ｿ｡縺吶ｋ
     /// </summary>
     public async void ShowPlantAsynk()
     {

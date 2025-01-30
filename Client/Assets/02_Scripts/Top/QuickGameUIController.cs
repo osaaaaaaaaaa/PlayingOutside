@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class QuickGameUIController : MonoBehaviour
 {
-    #region TweenƒAƒjƒ[ƒVƒ‡ƒ“‚·‚éUI‚Ìe
+    #region Tweenã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹UIã®è¦ª
     [SerializeField] List<GameObject> uiList;
     #endregion
 
-    #region ƒI[ƒfƒBƒIŠÖŒW
+    #region ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªé–¢ä¿‚
     [SerializeField] AudioClip joinSE;
     AudioSource audioSource;
     #endregion
@@ -57,7 +57,7 @@ public class QuickGameUIController : MonoBehaviour
     public void InitUserFrame(int index)
     {
         icons[index].enabled = false;
-        texts[index].text = "ó•t’†...";
+        texts[index].text = "å—ä»˜ä¸­...";
         loadingObjs[index].SetActive(true);
     }
 
@@ -70,7 +70,7 @@ public class QuickGameUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒNƒCƒbƒNƒQ[ƒ€UI‚ğ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ã‚¯ã‚¤ãƒƒã‚¯ã‚²ãƒ¼ãƒ UIã‚’è¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnSelectButton()
     {
@@ -81,7 +81,7 @@ public class QuickGameUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒNƒCƒbƒNƒQ[ƒ€UI‚ğ”ñ•\¦‚·‚éƒ{ƒ^ƒ“
+    /// ã‚¯ã‚¤ãƒƒã‚¯ã‚²ãƒ¼ãƒ UIã‚’éè¡¨ç¤ºã™ã‚‹ãƒœã‚¿ãƒ³
     /// </summary>
     public void OnBackButton()
     {

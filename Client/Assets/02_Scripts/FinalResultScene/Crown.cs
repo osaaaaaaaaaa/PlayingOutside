@@ -14,7 +14,7 @@ public class Crown : MonoBehaviour
         transform.localScale = Vector3.zero;
         Vector3 angles = transform.eulerAngles;
 
-        // 回転しながらサイズが大きくなるアニメーション
+        // 蝗櫁ｻ｢縺励↑縺後ｉ繧ｵ繧､繧ｺ縺悟､ｧ縺阪￥縺ｪ繧九い繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ
         var sequence = DOTween.Sequence();
         sequence.Append(transform.DORotate(new Vector3(angles.x, 360, 0), animSec, RotateMode.FastBeyond360).SetEase(Ease.OutBack))
             .Join(transform.DOScale(scaleEndVal, animSec).SetEase(Ease.OutElastic));

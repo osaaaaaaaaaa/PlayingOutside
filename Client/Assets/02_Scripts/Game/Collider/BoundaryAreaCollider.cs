@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class BoundaryAreaCollider : MonoBehaviour
 {
-    #region êŠO‚Éo‚½Û‚ÉAŠƒRƒCƒ“‚ğƒhƒƒbƒv‚·‚é”ÍˆÍ
-    [SerializeField] Transform rangePointA; // position‚Ìƒpƒ‰ƒ[ƒ^‚ğ‘S‚ÄrangePointB‚æ‚è¬‚³‚­‚·‚é
-    [SerializeField] Transform rangePointB; // position‚Ìƒpƒ‰ƒ[ƒ^‚ğ‘S‚ÄrangePointA‚æ‚è‘å‚«‚­‚·‚é
+    #region å ´å¤–ã«å‡ºãŸéš›ã«ã€æ‰€æŒã‚³ã‚¤ãƒ³ã‚’ãƒ‰ãƒ­ãƒƒãƒ—ã™ã‚‹ç¯„å›²
+    [SerializeField] Transform rangePointA; // positionã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å…¨ã¦rangePointBã‚ˆã‚Šå°ã•ãã™ã‚‹
+    [SerializeField] Transform rangePointB; // positionã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å…¨ã¦rangePointAã‚ˆã‚Šå¤§ããã™ã‚‹
     #endregion
 
     private void OnTriggerEnter(Collider other)

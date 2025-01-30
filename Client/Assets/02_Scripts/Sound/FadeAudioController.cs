@@ -9,7 +9,7 @@ public class FadeAudioController : MonoBehaviour
     public bool IsFadeing {  get; private set; }
     const float fadeDuration = 0.5f;
 
-    // インスタンス作成
+    // 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ菴懈��
     public static FadeAudioController Instance;
     private void Awake()
     {
