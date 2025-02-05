@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// クライアント側からサーバー側を呼び出す関数のインターフェイス
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections.Generic;
@@ -11,10 +15,6 @@ namespace Shared.Interfaces.StreamingHubs
 {
     public interface IRoomHub : IStreamingHub<IRoomHub, IRoomHubReceiver>
     {
-        //*********************************************************
-        // クライアント側からサーバー側を呼び出す関数を定義する
-        //*********************************************************
-
         /// <summary>
         /// ロビー入室
         /// </summary>

@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// ルームに参加中のユーザースコア
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using Server.Model.Entity;
 using System;
 using System.Collections.Generic;

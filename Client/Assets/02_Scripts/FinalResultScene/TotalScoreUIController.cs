@@ -1,3 +1,7 @@
+//*********************************************************
+// 各プレイヤーのトータルスコアを操作するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

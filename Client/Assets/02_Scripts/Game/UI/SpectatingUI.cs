@@ -1,3 +1,7 @@
+//*********************************************************
+// 観戦中のUIを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System;
 using System.Collections;
 using System.Collections.Generic;

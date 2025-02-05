@@ -1,4 +1,8 @@
-﻿using System;
+﻿//*********************************************************
+// クライアント・サーバーでシェアしたい定数の情報
+// Author:Rui Enomoto
+//*********************************************************
+using System;
 using System.Collections.Generic;
 using System.Text;
 

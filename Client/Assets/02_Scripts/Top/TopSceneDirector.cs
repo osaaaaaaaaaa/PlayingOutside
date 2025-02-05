@@ -1,3 +1,7 @@
+//*********************************************************
+// Topシーンのディレクター
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;

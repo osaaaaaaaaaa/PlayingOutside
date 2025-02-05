@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターがアイテムを使用するのを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;

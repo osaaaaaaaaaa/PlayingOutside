@@ -1,3 +1,7 @@
+//*********************************************************
+// カントリーリレーシーンの各エリアを管理する
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -79,7 +83,8 @@ public class AreaController : MonoBehaviour
         seController.PlayAudio();
         isClearedArea = false;
         bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
-        // サーバーなしの場合のみ使用、最終的にisDebugを削除
+
+        // デバック用
         if (gameDirector.isDebug)
         {
             if (isLastArea)
@@ -130,7 +135,6 @@ public class AreaController : MonoBehaviour
     {
         if(isClearedArea) yield break;
         isClearedArea = true;
-        Debug.Log(currentAreaId + "エリア移動準備");
 
         DOTween.Kill(imageBlack);
         bool isLastArea = (currentAreaId == EnumManager.LastAreaId);
@@ -170,7 +174,6 @@ public class AreaController : MonoBehaviour
     {
         if (!isClearedArea) yield break;
         currentAreaId = nextAreaId;
-        Debug.Log("エリアのID："+ (int)currentAreaId);
 
         // 次のエリアの準備
         itemSpawnerList[(int)currentAreaId].enabled = true;

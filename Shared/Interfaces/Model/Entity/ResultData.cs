@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// 最終結果発表シーンで使用するユーザーのリザルト情報
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using Server.Model.Entity;
 using System;
 using System.Collections.Generic;

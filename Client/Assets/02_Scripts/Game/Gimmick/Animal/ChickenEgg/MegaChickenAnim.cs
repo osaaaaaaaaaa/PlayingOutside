@@ -1,3 +1,7 @@
+//*********************************************************
+// メガサイズの鶏のTweenアニメーション
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +27,9 @@ public class MegaChickenAnim : MonoBehaviour
         chickenGimmick.enabled = false;
     }
 
+    /// <summary>
+    /// 鶏小屋から出てくるアニメーション
+    /// </summary>
     public void PlayShowAnim()
     {
         var endMoveVal = animEndPos;
@@ -47,6 +54,9 @@ public class MegaChickenAnim : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// 鶏小屋に戻るアニメーション
+    /// </summary>
     public void PlayHideAnim()
     {
         var endMoveVal = animStartPos;

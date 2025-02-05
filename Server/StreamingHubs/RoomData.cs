@@ -1,4 +1,8 @@
-﻿using Shared.Interfaces.Model.Entity;
+﻿//*********************************************************
+// ルーム情報
+// Author:Rui Enomoto
+//*********************************************************
+using Shared.Interfaces.Model.Entity;
 
 namespace Server.StreamingHubs
 {

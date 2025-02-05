@@ -1,3 +1,7 @@
+//*********************************************************
+// Titleシーンのディレクター
+// Author:Rui Enomoto
+//*********************************************************
 using Server.Model.Entity;
 using Shared.Interfaces.Model.Entity;
 using System;

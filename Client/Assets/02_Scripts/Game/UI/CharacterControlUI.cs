@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターを操作するUIのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System;

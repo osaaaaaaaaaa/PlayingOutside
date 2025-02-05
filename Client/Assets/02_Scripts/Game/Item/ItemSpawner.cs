@@ -1,3 +1,7 @@
+//*********************************************************
+// 指定した範囲でランダムなタイミングでアイテムを生成するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System.Collections;
 using System.Collections.Generic;

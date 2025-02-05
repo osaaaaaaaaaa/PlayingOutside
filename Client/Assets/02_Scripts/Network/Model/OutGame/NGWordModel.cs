@@ -1,3 +1,7 @@
+//*********************************************************
+// NGワードを管理するモデル
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Net.Http;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;

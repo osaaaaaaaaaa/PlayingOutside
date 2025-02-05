@@ -1,3 +1,7 @@
+//*********************************************************
+// 地中に隠れている植物のギミックのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,6 +43,9 @@ public class HidePlant : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 地中から出てくる処理
+    /// </summary>
     public void ShowPlant()
     {
         if (isActive) return;

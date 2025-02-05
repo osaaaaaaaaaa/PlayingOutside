@@ -1,3 +1,7 @@
+//*********************************************************
+// 通信エラー時にエラー内容を表示するUIのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

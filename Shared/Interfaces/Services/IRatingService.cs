@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// レーティング関係のAPIのインターフェイス
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using System;
 using System.Collections.Generic;
 using System.Text;

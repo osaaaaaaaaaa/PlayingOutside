@@ -1,3 +1,7 @@
+//*********************************************************
+// 一時的にキャラクターの親オブジェクトを変更する
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

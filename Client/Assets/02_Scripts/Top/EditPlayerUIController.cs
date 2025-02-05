@@ -1,3 +1,7 @@
+//*********************************************************
+// プレイヤー情報を編集するUIのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using Server.Model.Entity;
 using System.Collections;
@@ -138,6 +142,7 @@ public class EditPlayerUIController : MonoBehaviour
             Character_Id = UserModel.Instance.CharacterId,
         };
 
+        // ユーザー情報更新リクエスト
         var result = await UserModel.Instance.UpdateUserAsync(user);
         if (result != null)
         {
@@ -165,6 +170,7 @@ public class EditPlayerUIController : MonoBehaviour
             Character_Id = characterId
         };
 
+        // ユーザー情報更新リクエスト
         var result = await UserModel.Instance.UpdateUserAsync(user);
         if (result != null)
         {

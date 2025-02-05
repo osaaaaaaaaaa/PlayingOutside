@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// レーティング関係のAPI
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using MagicOnion.Server;
 using MySqlConnector;
 using Server.Model;

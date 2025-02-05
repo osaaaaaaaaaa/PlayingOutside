@@ -1,3 +1,7 @@
+//*********************************************************
+// 非表示になったときに自動破棄するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

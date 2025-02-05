@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターのエモートウインドウを表示・非表示するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;

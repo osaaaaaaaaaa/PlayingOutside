@@ -1,3 +1,7 @@
+//*********************************************************
+// サーバーとの通信処理をするスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Net.Http;
 using Cysharp.Threading.Tasks;
 using Grpc.Net.Client;
@@ -221,7 +225,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         JoinedUsers = new Dictionary<Guid, JoinedUser>();
         JoinedUser[] users = await roomHub.JoinLobbyAsynk(userId);
-        if(users != null) Debug.Log("ユーザー数" + users.Length);
 
         if (users == null)
         {
@@ -249,7 +252,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             // マッチングが完了している場合
             if (JoinedUsers[this.ConnectionId].IsMatching)
             {
-                Debug.Log("最後の人がマッチング完了");
                 await LeaveAsync();
             }
         }
@@ -264,7 +266,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         if (IsMatchingRunning)
         {
-            Debug.Log("マッチング完了通知");
             OnmatchingUser();
             ConnectionRoomName = roomName;
 
@@ -425,9 +426,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnUpdateMasterClient(Guid connectionId, MasterClient masterClient)
     {
         // アクション実行
-        if (userState == USER_STATE.joined)
+        if (userState == USER_STATE.joined && JoinedUsers.ContainsKey(connectionId))
         {
-            OnUpdateMasterClientUser(connectionId, masterClient);
+            OnUpdateMasterClientUser(connectionId, masterClient);   // null検知
         }
     }
 
@@ -449,8 +450,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     public void OnSelectGameMap(EnumManager.SELECT_RELAY_AREA_ID relayAreaId, EnumManager.SELECT_FINALGAME_AREA_ID finalGameStageId)
     {
-        Debug.Log(relayAreaId.ToString());
-        Debug.Log(finalGameStageId.ToString());
         if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
 
         OnSelectGameMapUser(relayAreaId, finalGameStageId);
@@ -480,7 +479,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     public void OnReady(int readyCnt, bool isTransitionGameScene)
     {
-        Debug.Log(userState.ToString());
         if (userState == USER_STATE.leave || userState == USER_STATE.leave_done) return;
 
         // アクション実行
@@ -576,7 +574,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
                     sceneName = "FinalGameScene_Chicken";
                     break;
             }
-            Debug.Log("次のゲーム：" + sceneName);
             OnFinishGameUser(sceneName);
         }
     }

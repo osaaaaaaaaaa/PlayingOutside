@@ -1,16 +1,20 @@
-﻿using MagicOnion.Client;
+﻿//*********************************************************
+// MagicOnionのシリアライザースクリプト
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion.Client;
 using MessagePack;
 using MessagePack.Resolvers;
 using MessagePack.Unity;
 
 /// <summary>
-/// MagicOnion逕ｨ繧､繝ｳ繧ｿ繝輔ぉ繝ｼ繧ｹ縺ｮ繧ｳ繝ｼ繝臥函謌�
+/// MagicOnion用インタフェースのコード生成
 /// </summary>
 [MagicOnionClientGeneration(typeof(Shared.Interfaces.Services.IMyFirstService))]
 partial class MagicOnionInitializer
 {
     /// <summary>
-    /// Resolver縺ｮ逋ｻ骭ｲ蜃ｦ逅�
+    /// Resolverの登録処理
     /// </summary>
     [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void RegisterResolvers()

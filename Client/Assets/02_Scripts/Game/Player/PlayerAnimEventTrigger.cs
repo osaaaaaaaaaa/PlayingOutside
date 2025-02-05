@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターのアニメーションから呼ぶスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

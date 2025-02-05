@@ -1,3 +1,7 @@
+//*********************************************************
+// 各ユーザーの所持ポイントを表示するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

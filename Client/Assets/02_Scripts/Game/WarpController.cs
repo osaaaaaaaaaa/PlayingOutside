@@ -1,3 +1,7 @@
+//*********************************************************
+// (デバック用)カントリーリレーシーンで各エリアのゴール前にワープするスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

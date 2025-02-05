@@ -1,3 +1,7 @@
+//*********************************************************
+// ボタンの画像の透明部分を押せなくするスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

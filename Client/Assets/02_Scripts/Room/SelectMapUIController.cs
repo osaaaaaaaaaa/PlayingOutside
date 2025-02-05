@@ -1,3 +1,7 @@
+//*********************************************************
+// Roomシーンでマップ選択のUIを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

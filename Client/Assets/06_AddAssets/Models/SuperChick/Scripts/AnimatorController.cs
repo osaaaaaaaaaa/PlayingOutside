@@ -23,8 +23,6 @@ namespace Suriyun
             string name = param[0];
             float value = (float)Convert.ToDouble(param[1]);
 
-            Debug.Log(name + " " + value);
-
             foreach (Animator a in animators)
             {
                 a.SetFloat(name, value);
@@ -37,8 +35,6 @@ namespace Suriyun
 
             string name = param[0];
             int value = Convert.ToInt32(param[1]);
-
-            Debug.Log(name + " " + value);
 
             foreach (Animator a in animators)
             {
@@ -54,8 +50,6 @@ namespace Suriyun
             string name = param[0];
             bool value = Convert.ToBoolean(param[1]);
 
-            Debug.Log(name + " " + value);
-
             foreach (Animator a in animators)
             {
                 a.SetBool(name, value);
@@ -68,8 +62,6 @@ namespace Suriyun
             string[] param = parameter.Split(separator);
 
             string name = param[0];
-
-            Debug.Log(name);
 
             foreach (Animator a in animators)
             {

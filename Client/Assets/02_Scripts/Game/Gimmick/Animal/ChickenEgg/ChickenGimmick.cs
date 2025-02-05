@@ -1,3 +1,7 @@
+//*********************************************************
+// 鶏のギミックのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System.Collections;

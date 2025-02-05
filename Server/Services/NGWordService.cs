@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// NGワード関係のAPI
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using MagicOnion.Server;
 using Server.Model.Context;
 using Server.Model.Entity;

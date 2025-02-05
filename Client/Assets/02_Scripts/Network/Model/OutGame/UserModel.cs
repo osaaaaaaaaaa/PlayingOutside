@@ -1,3 +1,7 @@
+//*********************************************************
+// ユーザー情報を管理するモデル
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Net.Http;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;
@@ -156,8 +160,11 @@ public class UserModel : BaseModel
         {
             // 取得成功
             await client.UpdateUserAsync(request);
-            UserName = request.Name;
+            UserName = (request.Name == null) ? UserName : request.Name;
             CharacterId = request.Character_Id;
+
+            // ローカルに保存
+            SaveUserData();
             return null;
         }
         catch (RpcException e)

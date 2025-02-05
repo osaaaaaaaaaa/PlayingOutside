@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿//*********************************************************
+// DBとの接続を管理するContext
+// Author:Rui Enomoto
+//*********************************************************
+using Microsoft.EntityFrameworkCore;
 using Server.Model.Entity;
 
 namespace Server.Model.Context
@@ -15,7 +19,6 @@ namespace Server.Model.Context
         public DbSet<NGWord> NG_Words { get; set; }
 
         // DBの接続先設定
-        //readonly string connectionString = "server=db-ge-04.mysql.database.azure.com;database=realtime_game;user=student;password=Yoshidajobi2023;";
         readonly string connectionString = $@"
         server={DbConnectionSettings.connectionBuilder.Server};
         database={DbConnectionSettings.connectionBuilder.Database};

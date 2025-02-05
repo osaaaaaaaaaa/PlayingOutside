@@ -1,3 +1,7 @@
+//*********************************************************
+// カントリーリレーシーンのディレクター
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;
@@ -373,6 +377,7 @@ public class RelayGameDirector : MonoBehaviour
         List<MovingObjectState> movingObjectStates = new List<MovingObjectState>();
         foreach (var obj in movingObjectList.Values)
         {
+            if(obj.gameObject == null) continue;
             if (obj.gameObject.activeSelf && movingObjectList[obj.name].pathTween != null)
             {
                 MovingObjectState movingObjectState = new MovingObjectState()
@@ -391,6 +396,7 @@ public class RelayGameDirector : MonoBehaviour
         List<GooseState> gooseObjStates = new List<GooseState>();
         foreach (var obj in gooseObjList.Values)
         {
+            if (obj.gameObject == null) continue;
             if (obj.gameObject.activeSelf)
             {
                 GooseState gooseState = new GooseState()
@@ -451,13 +457,19 @@ public class RelayGameDirector : MonoBehaviour
         // オブジェクトの同期
         foreach (var obj in masterClient.objectStates)
         {
-            movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+            if (movingObjectList.ContainsKey(obj.name))
+            {
+                movingObjectList[obj.name].SetPotition(obj, waitSeconds);
+            }   
         }
 
         // ガチョウの同期
         foreach (var goose in masterClient.gooseStates)
         {
-            gooseObjList[goose.name].UpdateState(goose, waitSeconds);
+            if (gooseObjList.ContainsKey(goose.name))
+            {
+                gooseObjList[goose.name].UpdateState(goose, waitSeconds);
+            }
         }
     }
 

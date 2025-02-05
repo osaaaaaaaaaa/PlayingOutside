@@ -1,3 +1,7 @@
+//*********************************************************
+// 地中に隠れている植物らを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,12 +80,10 @@ public class PlantGroupController : MonoBehaviour
             if (hidePlants[index] != null)
             {
                 names[i] = hidePlants[index].name;
-                Debug.Log("破棄する名前：" + names[i]);
             }
             else
             {
                 names[i] = "";
-                Debug.Log(this.name + "の抽選でnullが発生[" + index + "]");
             }
             i++;
         }

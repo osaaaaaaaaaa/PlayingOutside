@@ -1,4 +1,8 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿//*********************************************************
+// [IRoomHub,IRoomHubReceiver]インターフェイスの実装クラス
+// Author:Rui Enomoto
+//*********************************************************
+using Google.Protobuf.WellKnownTypes;
 using MagicOnion;
 using MagicOnion.Server.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -383,7 +387,7 @@ namespace Server.StreamingHubs
                 {
                     connectionId = roomData.JoinedUser.ConnectionId;
                     roomData.JoinedUser.IsMasterClient = true;
-                    Console.WriteLine("新しくマスタークライアント：" + roomData.JoinedUser.UserData.Name);
+                    Console.WriteLine("新しいマスタークライアント：" + roomData.JoinedUser.UserData.Name);
                     break;
                 }
             }
@@ -510,7 +514,6 @@ namespace Server.StreamingHubs
 
             var roomStorage = room.GetInMemoryStorage<RoomData>();
 
-            Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信");
             // [排他制御] 準備完了チェックが複数同時に処理すると、データの整合性に異常がでるため
             lock (roomStorage)
             {
@@ -528,7 +531,6 @@ namespace Server.StreamingHubs
                     if (roomData.UserState.isReadyRoom) readyCnt++;
                     if (roomData.JoinedUser.IsMatching) isMatching = true;
                 }
-                Console.WriteLine(roomStorage.Get(this.ConnectionId).JoinedUser.UserData.Name + "、完了リクエスト受信(" + readyCnt + ")");
 
                 // ゲームに参加する人数を取得 [自動マッチングからゲームに参加している場合:maxUsers]
                 int maxRequiredUsers = isMatching ? ConstantManager.userMaxCnt : roomDataList.Length;
@@ -569,8 +571,6 @@ namespace Server.StreamingHubs
                 if (data.UserState.isCountdownOver) return;
                 data.UserState.isCountdownOver = true;
 
-                Console.WriteLine(data.JoinedUser.UserData.Name + "がゲーム開始前のカウントダウン終了した");
-
                 // 全員がカウントダウン終了したかどうかチェック
                 roomDataList = roomStorage.AllValues.ToArray<RoomData>();
                 foreach (var roomData in roomDataList)
@@ -593,7 +593,6 @@ namespace Server.StreamingHubs
                         master.JoinedUser.IsStartMasterCountDown = true;
                         master.JoinedUser.IsFinishMasterCountDown = false;
                         this.BroadcastTo(room, master.JoinedUser.ConnectionId).OnStartCountDown();
-                        Console.WriteLine("最終競技でカウントダウン開始通知");
                     }
                 }
             }
@@ -611,7 +610,6 @@ namespace Server.StreamingHubs
                 var dataSelf = roomStorage.Get(this.ConnectionId);
                 if (dataSelf.UserState.isFinishGame) return;
                 dataSelf.UserState.isFinishGame = true;
-                Console.WriteLine(dataSelf.JoinedUser.UserData.Name + "がゲーム終了を迎えた");
 
                 // 全員がゲーム終了したかどうかチェック
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
@@ -636,7 +634,6 @@ namespace Server.StreamingHubs
                 {
                     // 全ての競技が終了した通知を配る
                     this.Broadcast(room).OnAfterFinalGame();
-                    Console.WriteLine("最終結果発表シーン");
                 }
                 else
                 {
@@ -960,10 +957,6 @@ namespace Server.StreamingHubs
                     roomData.UserState.isDestroyPlantsRequest = true;
                 }
 
-                foreach (string name in names)
-                {
-                    Console.WriteLine("破棄する植物：" + name);
-                }
                 this.Broadcast(this.room).OnDestroyPlantsGimmick(names);
             }
         }
@@ -990,7 +983,6 @@ namespace Server.StreamingHubs
                 var dataSelf = roomStorage.Get(this.ConnectionId);
                 dataSelf.UserState.triggeringPlantGimmickList.Add(name);
 
-                Console.WriteLine("発動する植物：" + name);
                 this.Broadcast(this.room).OnTriggeringPlantGimmick(name);
             }
         }
@@ -1099,7 +1091,6 @@ namespace Server.StreamingHubs
                 var data = roomStorage.Get(this.ConnectionId);
                 if (data.UserState.isReadyNextArea || data.UserState.isFinishGame) return;
                 data.UserState.isReadyNextArea = true;
-                Console.WriteLine(data.JoinedUser.UserData.Name + "の準備");
 
                 // 送信したユーザーがエリアをクリアできなかった場合
                 RoomData[] roomDataList = roomStorage.AllValues.ToArray<RoomData>();
@@ -1126,7 +1117,6 @@ namespace Server.StreamingHubs
                     }
 
                     // 次のエリアに移動させる準備
-                    Console.WriteLine("再開通知");
                     const float baseWaitSec = 0.8f;
 
                     var nextAreaId = GetNextAreaId(data.UserState.currentAreaId, data.JoinedUser.selectMidAreaId);
@@ -1233,7 +1223,6 @@ namespace Server.StreamingHubs
                 var data = roomStorage.Get(this.ConnectionId);
                 if (data.UserState.isTransitionFinalResultScene) return;
                 data.UserState.isTransitionFinalResultScene = true;
-                Console.WriteLine(data.JoinedUser.UserData.Name + "が最終結果発表シーンに移動");
 
                 // 全員が遷移したかどうかチェック
                 int transitionCnt = 0;

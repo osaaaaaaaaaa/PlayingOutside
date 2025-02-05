@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// フォローしているユーザー情報
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using System;
 using System.Security;
 

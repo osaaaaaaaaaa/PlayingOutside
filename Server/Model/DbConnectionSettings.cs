@@ -1,4 +1,8 @@
-﻿using MySqlConnector;
+﻿//*********************************************************
+// DBの接続先設定
+// Author:Rui Enomoto
+//*********************************************************
+using MySqlConnector;
 
 namespace Server.Model
 {

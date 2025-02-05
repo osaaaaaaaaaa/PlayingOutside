@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターから発する音を管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Threading.Tasks.Triggers;
 using System;
 using System.Collections;

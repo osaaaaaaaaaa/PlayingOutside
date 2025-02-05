@@ -1,3 +1,7 @@
+//*********************************************************
+// 最終結果発表シーンのディレクター
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;
 using System;
@@ -200,7 +204,6 @@ public class FinalResultSceneDirector : MonoBehaviour
                 winnerIdList.Add(resultData.connectionId);
             }
         }
-        Debug.Log("リザルトシーンです");
         StartCoroutine(ShowResultsCoroutine(result, winnerIdList));
     }
 

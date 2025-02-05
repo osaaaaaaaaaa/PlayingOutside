@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// NGワード情報
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using System;
 
 namespace Server.Model.Entity

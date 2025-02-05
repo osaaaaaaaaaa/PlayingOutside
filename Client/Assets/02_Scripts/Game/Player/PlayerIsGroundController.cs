@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターの足が地面に着いているかを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

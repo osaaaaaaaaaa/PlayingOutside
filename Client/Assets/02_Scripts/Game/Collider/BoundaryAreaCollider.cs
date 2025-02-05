@@ -1,3 +1,8 @@
+//*********************************************************
+// 場外判定用のスクリプト
+// Author:Rui Enomoto
+//*********************************************************
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,11 +36,11 @@ public class BoundaryAreaCollider : MonoBehaviour
             PlayerController playerController = obj.gameObject.GetComponent<PlayerController>();
             PlayerAnimatorController playerAnimatorController = obj.gameObject.GetComponent<PlayerAnimatorController>();
 
+            // プレイヤーのリスポーン処理
             playerController.Respawn();
             playerController.IsControlEnabled = false;
             playerController.IsStandUp = false;
             playerAnimatorController.SetInt(PlayerAnimatorController.ANIM_ID.Respawn);
-
             obj.gameObject.layer = 8;
             obj.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
@@ -43,6 +48,9 @@ public class BoundaryAreaCollider : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 場外にでたときの処理
+    /// </summary>
     async void OutOfBoundsAsynk()
     {
         if (rangePointA != null && rangePointB != null)

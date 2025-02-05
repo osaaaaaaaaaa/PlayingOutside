@@ -1,3 +1,7 @@
+//*********************************************************
+// 指定した向きに回転を続けるスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

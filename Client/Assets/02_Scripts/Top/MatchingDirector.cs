@@ -1,3 +1,7 @@
+//*********************************************************
+// 自動マッチングシステムを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;
@@ -82,7 +86,6 @@ public class MatchingDirector : MonoBehaviour
     /// </summary>
     void NotifyJoinedLobbyUser()
     {
-        Debug.Log("ロビー入室(" + "参加人数：" + RoomModel.Instance.JoinedUsers.Count + ")");
         foreach (var user in RoomModel.Instance.JoinedUsers.Values)
         {
             if(!userList.ContainsKey(user.ConnectionId)) 
@@ -119,7 +122,6 @@ public class MatchingDirector : MonoBehaviour
         if (isJoindUsersMax || isJoinTaskRunnning || isLeaveTaskRunning 
             || !RoomModel.Instance.IsMatchingRunning
             || RoomModel.Instance.JoinedUsers.Count == ConstantManager.userMaxCnt) return;
-        Debug.Log("退出リクエスト(" + "参加人数：" + RoomModel.Instance.JoinedUsers.Count + ")");
         isLeaveTaskRunning = true;
         RoomModel.Instance.IsMatchingRunning = false;
         isReceivedOnMatching = false;

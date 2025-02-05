@@ -1,3 +1,7 @@
+//*********************************************************
+// 音をフェードアウト(イン)するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;

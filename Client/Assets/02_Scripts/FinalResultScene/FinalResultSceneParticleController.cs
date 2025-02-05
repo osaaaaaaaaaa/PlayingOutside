@@ -1,3 +1,7 @@
+//*********************************************************
+// 最終結果発表シーンのパーティクルコントローラー
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

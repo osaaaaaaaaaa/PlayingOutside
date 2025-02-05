@@ -1,3 +1,7 @@
+//*********************************************************
+// ゲーム開始前のカウントダウンをするスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

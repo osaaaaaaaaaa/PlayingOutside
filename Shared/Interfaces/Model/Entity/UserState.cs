@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// ゲーム中のユーザー情報
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using Server.Model.Entity;
 using System;
 using System.Collections.Generic;

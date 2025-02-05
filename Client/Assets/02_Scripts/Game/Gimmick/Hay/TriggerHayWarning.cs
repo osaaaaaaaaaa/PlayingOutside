@@ -1,3 +1,7 @@
+//*********************************************************
+// 牧草ロールが迫ってくることをプレイヤーに知らせるスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

@@ -1,3 +1,7 @@
+//*********************************************************
+// 自動マッチング中のUIを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;

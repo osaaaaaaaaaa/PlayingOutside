@@ -1,3 +1,7 @@
+//*********************************************************
+// 牧草ロールを一定時間ごとに生成するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;

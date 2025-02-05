@@ -1,3 +1,7 @@
+//*********************************************************
+// 競技終了時に表示するFINISHというUIのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

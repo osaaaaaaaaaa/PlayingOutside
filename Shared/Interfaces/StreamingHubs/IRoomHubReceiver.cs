@@ -1,4 +1,8 @@
-﻿using Shared.Interfaces.Model.Entity;
+﻿//*********************************************************
+// サーバー側からクライアント側を呼び出す関数のインターフェイス
+// Author:Rui Enomoto
+//*********************************************************
+using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Text;

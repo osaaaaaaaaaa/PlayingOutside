@@ -1,3 +1,7 @@
+//*********************************************************
+// Roomシーンで準備完了をできるサークルのスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

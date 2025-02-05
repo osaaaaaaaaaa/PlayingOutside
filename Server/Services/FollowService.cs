@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// フォロー関係のAPI
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using MagicOnion.Server;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Identity;

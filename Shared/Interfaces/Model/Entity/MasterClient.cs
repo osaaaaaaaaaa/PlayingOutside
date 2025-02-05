@@ -1,4 +1,8 @@
-﻿using MessagePack;
+﻿//*********************************************************
+// ゲーム中のマスタークライアントの情報(各ルームにつき1人)
+// Author:Rui Enomoto
+//*********************************************************
+using MessagePack;
 using Server.Model.Entity;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,8 @@
-﻿using MagicOnion;
+﻿//*********************************************************
+// テスト用のAPIのインターフェイス
+// Author:Rui Enomoto
+//*********************************************************
+using MagicOnion;
 using MessagePack;
 using System;
 using System.Collections.Generic;

@@ -1,3 +1,7 @@
+//*********************************************************
+// Roomシーンのディレクター
+// Author:Rui Enomoto
+//*********************************************************
 using Shared.Interfaces.Model.Entity;
 using System;
 using System.Collections;
@@ -117,7 +121,6 @@ public class RoomDirector : MonoBehaviour
     public async void JoinRoom()
     {
         // 入室処理[ルーム名,ユーザーID(最終的にはローカルに保存してあるユーザーID)]
-        Debug.Log("[RoomScene]ルーム名：" + RoomModel.Instance.ConnectionRoomName);
         await RoomModel.Instance.JoinAsync(RoomModel.Instance.ConnectionRoomName, UserModel.Instance.UserId);
     }
 

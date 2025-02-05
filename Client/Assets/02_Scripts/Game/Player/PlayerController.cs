@@ -1,3 +1,7 @@
+//*********************************************************
+// キャラクターを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Cinemachine;
 using DG.Tweening;
 using Shared.Interfaces.Model.Entity;

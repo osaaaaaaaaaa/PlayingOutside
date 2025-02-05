@@ -1,3 +1,7 @@
+//*********************************************************
+// 指定したプレファブを生成するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Threading.Tasks.Triggers;
 using Shared.Interfaces.Model.Entity;
 using System.Collections;

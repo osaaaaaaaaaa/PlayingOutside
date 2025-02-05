@@ -1,3 +1,7 @@
+//*********************************************************
+// フォロー関係のUIを管理するスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using Server.Model.Entity;
@@ -203,7 +207,6 @@ public class FollowUIController : MonoBehaviour
         errorTextSerch.SetActive(user == null);
         if (user == null)
         {
-            Debug.Log("ユーザーが見つかりませんでした");
             return;
         }
 

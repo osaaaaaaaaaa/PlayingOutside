@@ -1,3 +1,7 @@
+//*********************************************************
+// 鶏が発射する卵の着弾地点のスクリプト
+// Author:Rui Enomoto
+//*********************************************************
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
