@@ -42,9 +42,13 @@
 │└ db\                 # Laravel用のdocker構成ファイル  
 │  
 ├ Client\              # Unityを使用したクライアントのプロジェクト  
+│  
 ├ Document\            # 通信処理の流れをまとめた、シーケンス図の格納先  
+│  
 ├ Server\              # MagicOnionフレームワークを使用したサーバーのプロジェクト  
+│  
 ├ Shared\              # クライアント・サーバーでインターフェイスを共有するプロジェクト  
+│  
 └ SharedOutput\        # Sharedプロジェクトの出力先  
 
 
