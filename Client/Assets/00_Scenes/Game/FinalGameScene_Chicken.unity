@@ -4331,7 +4331,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: d125e74967ddfaf4c874393c98230e0c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -27114,12 +27114,9 @@ MonoBehaviour:
   obstacles:
   - {fileID: 1992897027516972482}
   - {fileID: 715854775}
-  obstaclesMaxRange: []
-  obstaclesMinRange: []
   isMegaChicken: 1
   isOneShot: 1
   maxEggNum: 2
-  targetList: []
 --- !u!65 &9064266716412246084
 BoxCollider:
   m_ObjectHideFlags: 0
