@@ -33,7 +33,7 @@
 
 [ サーバー構成 ]
 ---  
-
+![Image](https://github.com/user-attachments/assets/09309d00-0e8a-4789-b97d-9a6b9616a973)　　
 
 [ フォルダ構成 ]
 ---  
