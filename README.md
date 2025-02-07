@@ -28,6 +28,15 @@
   ・Sourcetree  
   ・Docker / Docker Desktop  
   ・Azure  
+    <使用サービス>  
+    ・リソース グループ  
+    ・ストレージ  
+    ・仮想ネットワーク   
+    ・ネットワークセキュリティグループ  
+    ・サブネット  
+    ・Virtual Machines  
+    ・Azure Database for MySQL  
+    ・コンテナー レジストリ  
 〇使用エディター  
   ・PhpStorm2024.1  
 
