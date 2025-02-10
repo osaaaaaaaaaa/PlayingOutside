@@ -24,6 +24,7 @@ public class UserModel : BaseModel
     public int UserId { get; private set; } = 0;
     public string UserName { get; private set; } = "";
     public int CharacterId { get; private set; } = 0;
+    public bool IsReadTutorial { get; private set; } = false;
     #endregion
 
     // インスタンス作成
@@ -54,6 +55,7 @@ public class UserModel : BaseModel
         saveData.UserID = this.UserId;
         saveData.BGMVolume = AudioVolume.BgmVolume;
         saveData.SEVolume = AudioVolume.SeVolume;
+        saveData.IsReadTutorial = this.IsReadTutorial;
 
         string json = JsonConvert.SerializeObject(saveData);
         // Application.persistentDataPathはOS毎で保存場所が固定されている
@@ -78,9 +80,19 @@ public class UserModel : BaseModel
         this.UserId = saveData.UserID;
         this.UserName = saveData.Name;
         this.AuthToken = saveData.AuthToken;
+        this.IsReadTutorial = saveData.IsReadTutorial;
         AudioVolume.BgmVolume = saveData.BGMVolume;
         AudioVolume.SeVolume = saveData.SEVolume;
         return true;
+    }
+
+    /// <summary>
+    /// チュートリアルを読んだ時の処理
+    /// </summary>
+    public void OnReadTutorial()
+    {
+        this.IsReadTutorial = true;
+        SaveUserData();
     }
 
     /// <summary>

@@ -23,10 +23,10 @@ public class SelectMapUIController : MonoBehaviour
     [SerializeField] AudioClip buttonSE;
     #endregion
 
-
     [SerializeField] RoomDirector roomDirector;
     [SerializeField] GameObject panelBG;
     [SerializeField] GameObject panelSelectBtnsBarriar;
+    [SerializeField] GameObject panelHostSelectBtnsBarriar; // ホストに対して、ボタンを押せないようにする
     [SerializeField] Button btnShowPanel;
     [SerializeField] List<Button> btnSelectRelayMaps;
     [SerializeField] List<Button> btnSelectFinalMaps;
@@ -77,7 +77,6 @@ public class SelectMapUIController : MonoBehaviour
         {
             if(RoomModel.Instance.userState == RoomModel.USER_STATE.joined) 
                 hostName.text = "現在のホスト：" + RoomModel.Instance.MasterName;
-
         }
         else
         {
@@ -93,6 +92,16 @@ public class SelectMapUIController : MonoBehaviour
     {
         if (isVisibility) seController.PlayAudio(selectSE);
         else seController.PlayAudio(closeSE);
+
+        // ホストが準備完了中はマップを選択できないようにする
+        if (isVisibility && isMasterClient && roomDirector.IsReady)
+        {
+            panelHostSelectBtnsBarriar.SetActive(true);
+        }
+        else
+        {
+            panelHostSelectBtnsBarriar.SetActive(false);
+        }
 
         UpdateHostNameText();
         panelBG.SetActive(isVisibility);

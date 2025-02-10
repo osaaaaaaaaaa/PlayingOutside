@@ -17,8 +17,9 @@ public class SceneControler : MonoBehaviour
     [SerializeField] List<GameObject> eggAnimSets;
 
     string sceneName;
-    public static SceneControler Instance;
+    public float FadeSecTime { get; private set; } = 0.5f;
     public bool isLoading { get; private set; }
+    public static SceneControler Instance;
 
     private void Awake()
     {
@@ -107,7 +108,7 @@ public class SceneControler : MonoBehaviour
         var sequence = DOTween.Sequence();
         foreach (var item in images)
         {
-            sequence.Join(item.GetComponent<Image>().DOFade(1, 0.5f).SetEase(Ease.Linear));
+            sequence.Join(item.GetComponent<Image>().DOFade(1, FadeSecTime).SetEase(Ease.Linear));
         }
         sequence.Play().OnComplete(() => 
         { 
@@ -124,7 +125,7 @@ public class SceneControler : MonoBehaviour
         var sequence = DOTween.Sequence();
         foreach (var item in images)
         {
-            sequence.Join(item.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.Linear));
+            sequence.Join(item.GetComponent<Image>().DOFade(0, FadeSecTime).SetEase(Ease.Linear));
         }
         sequence.Play().OnComplete(() => { InitUI(false); });
     }

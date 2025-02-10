@@ -42,6 +42,7 @@ public class RoomDirector : MonoBehaviour
     const float timeoutSec = 10f;
     #endregion
 
+    public bool IsReady { get; private set; } = false;
     const float waitSeconds = 0.1f;
 
     private async void Start()
@@ -81,6 +82,10 @@ public class RoomDirector : MonoBehaviour
         RoomModel.Instance.OnSelectGameMapUser -= this.NotifySelectGameMapId;
     }
 
+    /// <summary>
+    /// 一定間隔で更新情報を送信する
+    /// </summary>
+    /// <returns></returns>
     IEnumerator UpdateCoroutine()
     {
         while (true)
@@ -90,6 +95,10 @@ public class RoomDirector : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 自動マッチング中にタイムアウト時間をカウント
+    /// </summary>
+    /// <returns></returns>
     IEnumerator TimeOutCoroutine()
     {
         bool isTimeOut = false;
@@ -109,7 +118,6 @@ public class RoomDirector : MonoBehaviour
 
     async void OnTimeOut()
     {
-
         StopCoroutine(UpdateCoroutine());
         await RoomModel.Instance.StartGameAsynk();
     }
@@ -286,6 +294,7 @@ public class RoomDirector : MonoBehaviour
     /// </summary>
     public async void OnReadyCircle(bool isReady)
     {
+        IsReady = isReady;
         btnLeave.interactable = !isReady;   // 準備完了中は退室ボタンを押せないようにする
         await RoomModel.Instance.ReadyAsynk(isReady);
     }

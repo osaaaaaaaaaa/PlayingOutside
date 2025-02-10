@@ -10,7 +10,7 @@ using MessagePack.Unity;
 /// <summary>
 /// MagicOnion用インタフェースのコード生成
 /// </summary>
-[MagicOnionClientGeneration(typeof(Shared.Interfaces.Services.IMyFirstService))]
+[MagicOnionClientGeneration(typeof(Shared.Interfaces.Services.IUserService))]
 partial class MagicOnionInitializer
 {
     /// <summary>

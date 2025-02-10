@@ -11,15 +11,8 @@ using UnityEngine;
 
 namespace Shared.Interfaces.StreamingHubs
 {
-    /// <summary>
-    /// サーバー側からクライアントを呼び出す関数を定義
-    /// </summary>
     public interface IRoomHubReceiver
     {
-        //*********************************************************
-        // サーバー側からクライアント側を呼び出す関数を定義する
-        //*********************************************************
-
         /// <summary>
         /// マッチング完了通知
         /// </summary>

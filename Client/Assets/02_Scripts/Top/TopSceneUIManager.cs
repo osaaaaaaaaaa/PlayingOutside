@@ -13,6 +13,8 @@ public class TopSceneUIManager : MonoBehaviour
     #region オーディオ関係
     [SerializeField] AudioClip selectSE;
     [SerializeField] AudioClip closeSE;
+    public AudioClip SelectSE { get { return selectSE; } }
+    public AudioClip CloseSE { get { return closeSE; } }
     SEController seController;
     #endregion
 

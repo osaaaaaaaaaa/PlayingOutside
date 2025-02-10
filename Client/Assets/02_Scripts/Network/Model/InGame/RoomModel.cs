@@ -184,7 +184,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         if (pauseStatus)
         {
             Debug.Log("アプリが一時停止(バックグラウンドに行った)");
-            if(userState == USER_STATE.joined)
+            if(userState == USER_STATE.joined
+                || IsMatchingRunning)
             {
                 isBackground = true;
             }
