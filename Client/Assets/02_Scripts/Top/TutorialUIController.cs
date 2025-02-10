@@ -35,9 +35,11 @@ public class TutorialUIController : MonoBehaviour
         if(page == 0)
         {
             btnBackPage.interactable = false;
+            btnNextPage.interactable = true;
         }
         else if(page == spritePages.Count - 1)
         {
+            btnBackPage.interactable = true;
             btnNextPage.interactable = false;
         }
         else

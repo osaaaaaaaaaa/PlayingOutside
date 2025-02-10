@@ -3205,7 +3205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugUiParent: {fileID: 345555466}
   inputFieldDebugId: {fileID: 345555471}
-  isDebug: 1
+  isDebug: 0
 --- !u!4 &1089827719
 Transform:
   m_ObjectHideFlags: 0
