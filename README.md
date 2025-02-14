@@ -30,6 +30,11 @@ https://play.google.com/store/apps/details?id=com.yoshidahcc.SuperHiyokoOnline&p
 ---  
 1人  
 
+[担当領域]  
+---  
+クライアント・サーバーサイドのプログラミング  
+
+
 [ 開発期間 ]  
 ---
 2024年11月～2025年1月    
