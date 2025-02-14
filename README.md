@@ -51,7 +51,7 @@
 
 [ サーバー構成 ]
 ---  
-![Image](https://github.com/user-attachments/assets/294d295d-99bf-434d-a2da-0d0f72c21ad6)  
+![Image](https://github.com/user-attachments/assets/aefe3203-515f-4bdc-aa74-7fe6df61e917)  
 
 [ フォルダ構成 ]
 ---  
