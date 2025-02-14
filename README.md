@@ -56,7 +56,7 @@
 [ フォルダ構成 ]
 ---  
 ├ Admin\               # DB環境  
-│├ app\                # 管理ツール  
+│├ app\                # migration管理用  
 │└ db\                 # Laravel用のdocker構成ファイル  
 │  
 ├ Client\              # Unityを使用したクライアントのプロジェクト  
