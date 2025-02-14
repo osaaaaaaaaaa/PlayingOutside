@@ -2,6 +2,14 @@
 
 ![Image](https://github.com/user-attachments/assets/c2291047-1ff0-4101-b1e7-13ac0d3f442d)    
 
+[ ストアリンク ]  
+---  
+[ App Store ]  
+審査中    
+
+[ Google Play ]  
+https://play.google.com/store/apps/details?id=com.yoshidahcc.SuperHiyokoOnline&pcampaignid=web_share  
+
 [ 概要 ]  
 ---  
 ~ スーパーヒヨコ。それは足が生えた可愛らしいヒヨコのことである ~  
