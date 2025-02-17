@@ -2,6 +2,14 @@
 
 ![Image](https://github.com/user-attachments/assets/c2291047-1ff0-4101-b1e7-13ac0d3f442d)    
 
+[ ストアリンク ]  
+---  
+[ App Store ]  
+審査中    
+
+[ Google Play ]  
+https://play.google.com/store/apps/details?id=com.yoshidahcc.SuperHiyokoOnline&pcampaignid=web_share  
+
 [ 概要 ]  
 ---  
 ~ スーパーヒヨコ。それは足が生えた可愛らしいヒヨコのことである ~  
@@ -21,6 +29,11 @@
 [ 開発人数 ]  
 ---  
 1人  
+
+[担当領域]  
+---  
+クライアント・サーバーサイドのプログラミング  
+
 
 [ 開発期間 ]  
 ---
@@ -51,12 +64,12 @@
 
 [ サーバー構成 ]
 ---  
-![Image](https://github.com/user-attachments/assets/294d295d-99bf-434d-a2da-0d0f72c21ad6)  
+![Image](https://github.com/user-attachments/assets/aefe3203-515f-4bdc-aa74-7fe6df61e917)  
 
 [ フォルダ構成 ]
 ---  
 ├ Admin\               # DB環境  
-│├ app\                # 管理ツールのソース(未着手)  
+│├ app\                # migration管理用  
 │└ db\                 # Laravel用のdocker構成ファイル  
 │  
 ├ Client\              # Unityを使用したクライアントのプロジェクト  
