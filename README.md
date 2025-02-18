@@ -5,7 +5,7 @@
 [ ストアリンク ]  
 ---  
 [ App Store ]  
-審査中    
+https://apps.apple.com/jp/app/superhiyokoonline/id6741830066    
 
 [ Google Play ]  
 https://play.google.com/store/apps/details?id=com.yoshidahcc.SuperHiyokoOnline&pcampaignid=web_share  
